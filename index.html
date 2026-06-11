@@ -24,7 +24,6 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden">
 
-  <!-- -->
   <!-- TELEFON ÜST STATUS BAR -->
   <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-50 backdrop-blur-md">
     <div class="max-w-md mx-auto flex justify-between items-center">
@@ -35,7 +34,7 @@
             <span id="connection-indicator" class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
             <span id="connection-text">Bulut Canlı</span>
           </span>
-          <h1 id="app-title-name" class="text-base font-black text-white italic tracking-tighter mt-0.5">AKMA KOLEKTİF</h1>
+          <h1 id="app-title-name" class="text-base font-black text-white italic tracking-tighter mt-0.5 font-bold uppercase">AKMA KOLEKTİF</h1>
         </div>
       </div>
 
@@ -48,7 +47,6 @@
     </div>
   </header>
 
-  <!-- -->
   <!-- ANA EKRAN ALANI -->
   <main class="flex-1 max-w-md w-full mx-auto p-4 space-y-6 pb-24">
     
@@ -77,7 +75,6 @@
           </div>
         </div>
 
-        <!-- -->
         <!-- Tasarım Alanı -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-5">
           <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">🪡 BİLEKLİĞİNİ TASARLA</h3>
@@ -132,7 +129,6 @@
         </div>
       </div>
 
-      <!-- -->
       <!-- SEPET SEKMESİ -->
       <div id="view-cart" class="hidden space-y-6">
         <div id="cart-empty-state" class="text-center py-16 bg-slate-900/40 rounded-[2.5rem] border border-slate-900">
@@ -191,7 +187,7 @@
 
           <div class="space-y-2">
             <label class="text-[10px] font-black text-slate-500 uppercase px-1">Adın / Takma Adın</label>
-            <input type="text" id="profile-name-input" required placeholder="Örn: Yusuf, Kaptan..." class="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-sm font-bold text-slate-100 outline-none focus:border-blue-500">
+            <input type="text" id="profile-name-input" required placeholder="Örn: Yusuf, Kaptan..." class="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-sm font-bold text-slate-100 outline-none focus:border-blue-500 transition-all font-bold">
           </div>
 
           <div class="grid grid-cols-2 gap-3">
@@ -254,7 +250,6 @@
             <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Aktif Çalışan</span>
             <h2 id="staff-active-name" class="text-xl font-black text-white">FARUK</h2>
             <p id="staff-active-role" class="text-xs text-indigo-400 font-black mt-1 uppercase">GÖREV: ÖRÜCÜ</p>
-            <!-- Elemanın Kendi Biriken Maaş Bilgisi -->
             <p class="text-xs text-emerald-400 font-black mt-1">Biriken Maaş: <span id="staff-active-salary" class="font-mono">0₺</span></p>
           </div>
           <button onclick="logOutStaff()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-full font-black border border-slate-700">Geri Çık</button>
@@ -269,7 +264,6 @@
       </div>
     </div>
 
-    <!-- -->
     <!-- ======================================= -->
     <!-- PATRON PANELİ (ŞİFRE KORUMALI)         -->
     <!-- ======================================= -->
@@ -334,7 +328,6 @@
      AKMA KOLEKTİF • GAZİANTEP MERKEZ SIRALAR
   </footer>
 
-  <!-- -->
   <!-- ======================================= -->
   <!-- MODAL VE TOAST EKRANLARI                -->
   <!-- ======================================= -->
@@ -357,7 +350,7 @@
     </div>
   </div>
 
-  <!-- BİLDİRİM / MESAJ KUTUSU MODALI (alert yerine kullanılacak) -->
+  <!-- BİLDİRİM / MESAJ KUTUSU MODALI -->
   <div id="info-modal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 p-8 rounded-[3rem] text-center max-w-xs w-full shadow-2xl space-y-4">
        <div id="info-modal-icon" class="text-4xl">⚠️</div>
@@ -378,7 +371,6 @@
     </div>
   </div>
 
-  <!-- -->
   <!-- ======================================= -->
   <!-- JAVASCRIPT & STATE YÖNETİMİ             -->
   <!-- ======================================= -->
@@ -457,7 +449,7 @@
       document.getElementById('info-modal').classList.add('hidden');
     }
 
-    //    // --- GERÇEK ZAMANLI DİNLEYİCİLER (Realtime Sync) ---
+    // --- GERÇEK ZAMANLI DİNLEYİCİLER (Realtime Sync) ---
     function initSync() {
       if (db) {
         // 1. Siparişleri dinle
@@ -467,7 +459,6 @@
             snapshot.forEach((doc) => {
               fetchedOrders.push({ id: doc.id, ...doc.data() });
             });
-            // Tarihe göre sırala
             fetchedOrders.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
             state.orders = fetchedOrders;
             render();
@@ -481,8 +472,6 @@
               fetchedStaff.push({ id: doc.id, ...doc.data() });
             });
             state.staffList = fetchedStaff;
-            
-            // Eğer giriş yapmış aktif eleman varsa verisini güncelle
             if (state.activeStaff) {
               const updated = fetchedStaff.find(s => s.id === state.activeStaff.id);
               if (updated) state.activeStaff = updated;
@@ -490,13 +479,12 @@
             render();
           });
 
-        // 3. Kasayı dinle (Patron kasası bulutta tek dökümanda tutulur)
+        // 3. Kasayı dinle
         db.collection('artifacts').doc(appId).collection('economy').doc('vault')
           .onSnapshot((docSnap) => {
             if (docSnap.exists()) {
               state.money = docSnap.data().money || 980;
             } else {
-              // Yoksa oluştur
               db.collection('artifacts').doc(appId).collection('economy').doc('vault').set({ money: 980 });
             }
             render();
@@ -504,7 +492,6 @@
       }
     }
 
-    // Kasayı buluta güncelleme yardımcısı
     function updateCloudVault(newMoney) {
       if (db) {
         db.collection('artifacts').doc(appId).collection('economy').doc('vault').set({ money: newMoney });
@@ -514,7 +501,7 @@
       }
     }
 
-    //    // --- RENDER DÖNGÜSÜ ---
+    // --- RENDER DÖNGÜSÜ ---
     function render() {
       // 1. Üst Durum Güncellemesi
       document.getElementById('user-avatar-badge').innerText = state.role === 'customer' ? state.profile.avatar : (state.activeStaff ? (state.activeStaff.role === 'örüsü' ? '🪡' : '🛵') : '👷');
@@ -553,7 +540,7 @@
       }
     }
 
-    //    // --- MÜŞTERİ MODU RENDER ---
+    // --- MÜŞTERİ MODU RENDER ---
     function renderCustomer() {
       if (!state.profile.isRegistered && state.activeTab !== 'profile') {
         state.activeTab = 'profile';
@@ -567,7 +554,7 @@
       document.getElementById(`view-${state.activeTab}`).classList.remove('hidden');
       document.getElementById(`tab-btn-${state.activeTab}`).className = "flex-1 py-2.5 rounded-xl font-black text-[10px] tracking-tight transition-all bg-white text-black font-bold";
 
-      // 1. KATALOG RENDER (Dinamik fiyat: tek renk 30, karışık/boş 20)
+      // 1. Dinamik Fiyatlandırma Gösterimi (Düz Bileklik)
       const dynamicPrice = state.customOptions.selectedColors.length === 1 ? 30 : 20;
       const totalDynamic = dynamicPrice + (state.customOptions.envelope === 'O ELENDİN Kara Zarf' ? 15 : 0);
       document.getElementById('dynamic-price-tag').innerText = `SEPETE EKLE (${totalDynamic} TL)`;
@@ -654,7 +641,7 @@
       }
     }
 
-    //    // --- ELEMAN MODU RENDER ---
+    // --- ELEMAN MODU RENDER ---
     function renderStaff() {
       const authView = document.getElementById('staff-auth-view');
       const panelView = document.getElementById('staff-panel-view');
@@ -713,7 +700,7 @@
                     <h4 class="font-black text-sm text-white">${order.customer} (${order.classRoom})</h4>
                     <p class="text-[10px] text-slate-400">${order.deskRow}</p>
                   </div>
-                  <span class="text-xs font-black text-green-400 font-mono">{order.total}₺</span>
+                  <span class="text-xs font-black text-green-400 font-mono">${order.total}₺</span>
                 </div>
                 <div class="space-y-1.5 bg-black/40 p-3 rounded-xl border border-slate-950 text-xs font-bold text-slate-400">
                   ${order.items.map(item => `
@@ -735,7 +722,7 @@
       }
     }
 
-    //    // --- PATRON MODU RENDER ---
+    // --- PATRON MODU RENDER ---
     function renderPatron() {
       ['orders', 'staff', 'resources'].forEach(t => {
         document.getElementById(`p-view-${t}`).classList.add('hidden');
@@ -843,7 +830,7 @@
       }
     }
 
-    //    // --- AKSIYONLAR ---
+    // --- AKSIYONLAR ---
     function switchTab(tabId) {
       state.activeTab = tabId;
       render();
@@ -894,7 +881,7 @@
             <span class="w-6 h-6 rounded-full border border-slate-800 shadow-md flex items-center justify-center text-[10px]" style="background-color: ${c.hex}">
               ${isSel ? '✓' : ''}
             </span>
-            <span class="text-[8px] font-black text-slate-400">${c.name}</span>
+            <span class="text-[8px] font-black text-slate-400">{c.name}</span>
           </button>
         `;
       });
@@ -1009,7 +996,6 @@
           })
           .catch((err) => {
             console.log("Buluta gönderilemedi, yerel koda yazılıyor:", err);
-            // Fallback
             state.orders.push(newOrder);
             state.cart = [];
             showSuccessToast();
@@ -1023,7 +1009,7 @@
       }
     }
 
-    //    // --- ELEMAN İŞLEMLERİ ---
+    // --- ELEMAN İŞLEMLERİ ---
     function applyForStaff(e) {
       e.preventDefault();
       const name = document.getElementById('staff-apply-name').value.trim();
@@ -1036,7 +1022,7 @@
         id: staffId,
         name,
         role: roleApply,
-        salary: 0, // İlk başvuru maaşı 0₺
+        salary: 0, 
         status: 'onay_bekliyor'
       };
 
@@ -1109,7 +1095,6 @@
         const remainingMoney = state.money - payout;
         
         if (db) {
-          // Bulutta elemanın maaşını sıfırla ve kasayı güncelle
           db.collection('artifacts').doc(appId).collection('staff').doc(id).update({ salary: 0 })
             .then(() => {
               updateCloudVault(remainingMoney);
@@ -1140,7 +1125,7 @@
       }
     }
 
-    //    function updateOrderStatus(orderId, currentStatus) {
+    function updateOrderStatus(orderId, currentStatus) {
       const statusCycle = {
         'Örülüyor': 'Paketlendi',
         'Paketlendi': 'Kuryede',
@@ -1156,19 +1141,16 @@
       let courierSalaryAward = 0;
       let vaultIncome = 0;
 
-      // İş kuralları
+      // İş kuralları: Örücü ve Kurye Primleri
       if (currentStatus === 'Örülüyor' && nextStatus === 'Paketlendi') {
-        // Örücü işini bitirdi: Örücüye +7₺
         weaverSalaryAward = 7;
       }
       if (currentStatus === 'Kuryede' && nextStatus === 'Teslim Edildi') {
-        // Kurye teslim etti: Kuryeye +7₺ ve kasaya sipariş parası girişi
         courierSalaryAward = 7;
         vaultIncome = order.total;
       }
 
       if (db) {
-        // Bulutta Güncelle
         db.collection('artifacts').doc(appId).collection('orders').doc(orderId).update({ status: nextStatus })
           .then(() => {
             // Örücü maaş ödülü
@@ -1194,7 +1176,6 @@
             }
           });
       } else {
-        // Yerel Simülasyonda Güncelle
         order.status = nextStatus;
         if (weaverSalaryAward > 0 && order.assignedWeaver) {
           const weaver = state.staffList.find(s => s.name === order.assignedWeaver && s.role === 'örüsü');
