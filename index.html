@@ -66,7 +66,7 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- MÜŞTERİ PANELİ                             -->
+    <!-- MÜŞTERI PANELİ                             -->
     <!-- ========================================== -->
     <div id="customer-panel" class="space-y-6 flex-1">
       <!-- Müşteri Kimlik Doğrulama Kapısı -->
@@ -265,7 +265,7 @@
           </div>
         </div>
 
-        <!-- MÜŞTERİ TAB: SİPARİŞLERİM -->
+        <!-- MÜŞTERI TAB: SİPARİŞLERİM -->
         <div id="cust-view-track" class="space-y-4 hidden animate-in fade-in duration-200">
           <div class="flex justify-between items-center px-1">
             <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest">Canlı Sipariş Takibi</h3>
@@ -297,7 +297,7 @@
         <div id="work-login-form" class="space-y-3">
           <div class="space-y-2">
             <label class="text-[9px] font-black text-slate-500 uppercase">Kullanıcı Adın</label>
-            <input type="text" id="login-work-name" placeholder="Kullanıcı adınızı yazın..." class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs font-bold text-slate-200 outline-none">
+            <input type="text" id="login-work-name" placeholder="Çalışan adınızı yazın..." class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs font-bold text-slate-200 outline-none">
           </div>
           <div class="space-y-2">
             <label class="text-[9px] font-black text-slate-500 uppercase">Özel Şifren</label>
@@ -343,18 +343,6 @@
         <div class="space-y-3">
           <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest px-1">GÖREV LİSTEM</h3>
           <div id="worker-tasks-list" class="space-y-4"></div>
-        </div>
-
-        <!-- Telsiz -->
-        <div class="bg-slate-900 border border-slate-800 p-4 rounded-3xl space-y-3">
-          <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
-            <i data-lucide="message-square" class="text-blue-500 w-4 h-4"></i> Telsiz Sohbeti
-          </h4>
-          <div id="worker-chat-box" class="bg-slate-950 border border-slate-850 p-3 rounded-2xl h-24 overflow-y-auto space-y-1.5 scrollbar-hide text-[10px]"></div>
-          <div class="flex gap-2">
-            <input type="text" id="worker-chat-input" placeholder="Telsiz mesajı..." class="flex-1 bg-slate-950 border border-slate-800 p-2.5 rounded-xl text-xs text-white outline-none">
-            <button onclick="sendChatMessage()" class="px-4 bg-blue-600 rounded-xl text-xs font-black">GÖNDER</button>
-          </div>
         </div>
 
         <button onclick="triggerResignation()" class="w-full py-3 bg-red-950/20 border border-red-900/30 text-red-500 font-black text-xs rounded-2xl hover:bg-red-600 hover:text-white transition-all uppercase">İstifa Et</button>
@@ -679,7 +667,6 @@
       document.getElementById(activeId).classList.remove('hidden');
     }
 
-    // --- STREAMING_CHUNK: User login and registration controls... ---
     function toggleCustAuth(mode) {
       state.currentAuthMode = mode;
       if (mode === 'login') {
@@ -846,7 +833,6 @@
       }
     }
 
-    // --- STREAMING_CHUNK: Patron actions, order flow and dynamic logs... ---
     function loginPatron() {
       const pass = document.getElementById('patron-password').value;
       if (pass === '1089') {
@@ -1015,7 +1001,32 @@
       switchCustTab('track');
     }
 
-    // --- STREAMING_CHUNK: Managing calculations, payouts and income statement... ---
+    function switchCustTab(tab) {
+      state.customerTab = tab;
+      if (tab === 'order') {
+        document.getElementById('cust-view-order').classList.remove('hidden');
+        document.getElementById('cust-view-track').classList.add('hidden');
+        document.getElementById('cust-tab-order').className = "flex-1 py-2.5 rounded-xl bg-white text-black";
+        document.getElementById('cust-tab-track').className = "flex-1 py-2.5 rounded-xl text-slate-500";
+      } else {
+        document.getElementById('cust-view-order').classList.add('hidden');
+        document.getElementById('cust-view-track').classList.remove('hidden');
+        document.getElementById('cust-tab-order').className = "flex-1 py-2.5 rounded-xl text-slate-500";
+        document.getElementById('cust-tab-track').className = "flex-1 py-2.5 rounded-xl bg-white text-black";
+      }
+    }
+
+    function switchPatrTab(tab) {
+      state.patronTab = tab;
+      const tabs = ['analytics', 'orders', 'staff'];
+      tabs.forEach(t => {
+        document.getElementById(`patr-view-${t}`).classList.add('hidden');
+        document.getElementById(`patr-tab-${t}`).className = "flex-1 py-2 rounded-xl text-slate-500";
+      });
+      document.getElementById(`patr-view-${tab}`).classList.remove('hidden');
+      document.getElementById(`patr-tab-${tab}`).className = "flex-1 py-2 rounded-xl bg-white text-black";
+    }
+
     function submitExpense() {
       const name = document.getElementById('patr-expense-name').value.trim();
       const amount = parseFloat(document.getElementById('patr-expense-amount').value);
@@ -1136,7 +1147,6 @@
       }
     }
 
-    // --- STREAMING_CHUNK: Handling weave and delivery calculations... ---
     function finishWeave(id) {
       const idx = state.orders.findIndex(x => x.id === id);
       if (idx !== -1) {
@@ -1304,8 +1314,6 @@ Teşekkürler kanka!
       document.getElementById('top-acknowledged-notification').classList.add('hidden');
     }
 
-    // --- RENDER MOTORU ---
-    // --- STREAMING_CHUNK: Rendering elements dynamically... ---
     function render() {
       if (state.theme === 'light') {
         document.body.className = "bg-slate-100 text-slate-900 min-h-screen font-sans overflow-x-hidden selection:bg-blue-600/30 light-theme";
@@ -1432,7 +1440,6 @@ Teşekkürler kanka!
       lucide.createIcons();
     }
 
-    // --- STREAMING_CHUNK: Görev kartlarının dinamik renk ve adres bilgileriyle basılması... ---
     function renderWorkerTasks() {
       const list = document.getElementById('worker-tasks-list');
       if (!list) return;
@@ -1460,227 +1467,7 @@ Teşekkürler kanka!
           actionBtn = `<button onclick="deliverOrder('${ord.id}')" class="w-full py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl text-xs font-black uppercase">MÜŞTERİYE TESLİM ET</button>`;
         }
 
-        list.innerHTML += `
-          <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-4">
-            <div class="flex justify-between items-start">
-              <div>
-                <span class="text-[9px] font-mono text-blue-400 font-bold">${ord.id}</span>
-                <h4 class="font-black text-sm text-white">${ord.customer}</h4>
-              </div>
-              <span class="text-xs font-black text-slate-400 font-mono">${ord.total}₺</span>
-            </div>
+        const isWeaver = state.currentUser.role === 'weaver';
+        const colorsFormatted = ord.colors.map(c => COLOR_OPTIONS.find(x => x.id === c)?.name).join(', ').toUpperCase();
 
-            <div class="space-y-1.5 bg-black/40 p-3 rounded-xl border border-slate-850 text-[10px] leading-tight text-slate-400">
-               <p class="text-white"><span class="font-black text-indigo-400">🎨 BİLEKLİK RENKLERİ:</span> <span class="bg-indigo-950/80 text-indigo-300 px-2 py-0.5 rounded font-black">${ord.colors.map(c => COLOR_OPTIONS.find(x => x.id === c)?.name).join(', ').toUpperCase()}</span></p>
-               <p class="text-white mt-1"><span class="font-black text-green-400">📍 TESLİMAT ADRESİ (NEREYE):</span> <span class="bg-green-950/80 text-green-300 px-2 py-0.5 rounded font-black">${ord.classRoom} - ${ord.deskRow}</span></p>
-               ${state.currentUser.role === 'courier' ? `
-                 <p class="text-white mt-1"><span class="font-black text-blue-400">🧶 ÖRÜCÜSÜ (KİMDEN ALACAKSIN):</span> <span class="bg-blue-950/80 text-blue-300 px-2 py-0.5 rounded font-black">${ord.assignedWeaver || 'Patron'}</span></p>
-               ` : ''}
-               <p class="text-white mt-1"><span class="font-black text-slate-400">✉️ PAKET ZARFI:</span> <span class="bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-black">${ord.envelope === 'kara' ? 'O ELENDİN Kara Zarf' : 'Standart Şeffaf'}</span></p>
-            </div>
-
-            ${actionBtn}
-          </div>
-        `;
-      });
-    }
-
-    function renderWorkerChat() {
-      const box = document.getElementById('worker-chat-box');
-      if (!box) return;
-      box.innerHTML = '';
-      simChat.forEach(msg => {
-        box.innerHTML += `
-          <div>
-            <span class="font-black text-blue-400">[${msg.sender}]:</span>
-            <span class="text-slate-300">${msg.text}</span>
-          </div>
-        `;
-      });
-      box.scrollTop = box.scrollHeight;
-    }
-
-    // --- DETAYLI GELİR VE GİDER KAYIT TABLOSU (RESMİ MUHASEBE) ---
-    function renderPatronAnalytics() {
-      document.getElementById('patron-kasa-display').innerText = `${state.kasa}₺`;
-      
-      const list = document.getElementById('patron-expenses-list');
-      if (!list) return;
-      list.innerHTML = '';
-
-      if (!state.ledger || state.ledger.length === 0) {
-        list.innerHTML = `<div class="text-slate-500 italic text-[10px]">Henüz finansal gelir/gider hareketi gerçekleşmedi.</div>`;
-        return;
-      }
-
-      state.ledger.forEach(entry => {
-        const isGelir = entry.type === 'gelir';
-        list.innerHTML += `
-          <div class="flex justify-between items-center bg-black/40 p-3 rounded-2xl border ${isGelir ? 'border-green-500/20' : 'border-red-500/20'}">
-            <div>
-              <span class="font-black text-white text-[11px]">${entry.text}</span>
-              <p class="text-[8px] text-slate-600 mt-0.5">${entry.date}</p>
-            </div>
-            <span class="font-mono font-black text-xs ${isGelir ? 'text-green-400' : 'text-red-400'}">
-              ${isGelir ? '+' : '-'}${entry.amount}₺
-            </span>
-          </div>
-        `;
-      });
-    }
-
-    let patrOrderFilter = 'all';
-    function filterPatrOrders(type) {
-      patrOrderFilter = type;
-      renderPatronOrders();
-    }
-
-    function renderPatronOrders() {
-      const list = document.getElementById('patron-orders-list');
-      if (!list) return;
-      list.innerHTML = '';
-
-      let filtered = state.orders;
-      if (patrOrderFilter === 'unassigned') {
-        filtered = state.orders.filter(o => !o.assignedWeaver || !o.assignedCourier);
-      }
-
-      if (filtered.length === 0) {
-        list.innerHTML = `<div class="text-center py-8 text-slate-500 text-xs italic">Sırada aktif sipariş bulunmuyor kanka!</div>`;
-        return;
-      }
-
-      filtered.forEach(ord => {
-        let weaverOptions = '<option value="">Örücü Seç...</option>';
-        let courierOptions = '<option value="">Kurye Seç...</option>';
-
-        state.staff.filter(x => x.status === 'approved' && x.type === 'worker').forEach(s => {
-          if (s.role === 'weaver') {
-            weaverOptions += `<option value="${s.id}" ${ord.assignedWeaver === s.name ? 'selected' : ''}>${s.name}</option>`;
-          } else {
-            courierOptions += `<option value="${s.id}" ${ord.assignedCourier === s.name ? 'selected' : ''}>${s.name}</option>`;
-          }
-        });
-
-        list.innerHTML += `
-          <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-4">
-            <div class="flex justify-between items-start">
-              <div>
-                <span class="text-[9px] font-mono text-blue-400 font-bold">${ord.id}</span>
-                <h4 class="font-black text-sm text-white">${ord.customer}</h4>
-                <p class="text-[9px] text-slate-500">${ord.classRoom} • ${ord.deskRow}</p>
-              </div>
-              <span class="text-xs font-black text-green-400 font-mono">${ord.total}₺</span>
-            </div>
-
-            <div class="space-y-1 bg-black/40 p-2.5 rounded-xl text-[10px] leading-tight text-slate-400">
-               <p><span class="font-bold text-white">Renkler:</span> ${ord.colors.map(c => COLOR_OPTIONS.find(x => x.id === c)?.name).join(', ')}</p>
-               <p><span class="font-bold text-white">Zarf:</span> ${ord.envelope === 'kara' ? 'O ELENDİN Kara Zarf' : 'Standart'}</p>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-              <select onchange="assignOrder('${ord.id}', this.value)" class="bg-slate-950 border border-slate-850 p-2 rounded-xl text-[10px] font-bold text-white outline-none">
-                ${weaverOptions}
-              </select>
-              <select onchange="assignOrder('${ord.id}', this.value)" class="bg-slate-950 border border-slate-850 p-2 rounded-xl text-[10px] font-bold text-white outline-none">
-                ${courierOptions}
-              </select>
-            </div>
-          </div>
-        `;
-      });
-    }
-
-    function renderPatronStaff() {
-      const requests = document.getElementById('patron-staff-requests');
-      const active = document.getElementById('patron-staff-active');
-      if (!requests || !active) return;
-
-      requests.innerHTML = '';
-      active.innerHTML = '';
-
-      const pending = state.staff.filter(x => x.status === 'pending');
-      const approved = state.staff.filter(x => x.status === 'approved' && x.type === 'worker');
-
-      document.getElementById('onay-bekleyen-count').innerText = `${pending.length} Onay`;
-
-      if (pending.length === 0) {
-        requests.innerHTML = `<div class="text-[10px] text-slate-500 italic">Onay bekleyen yeni eleman başvurusu yok kanka.</div>`;
-      } else {
-        pending.forEach(p => {
-          requests.innerHTML += `
-            <div class="flex justify-between items-center bg-slate-950 border border-slate-850 p-3 rounded-2xl text-xs">
-              <div>
-                <span class="font-black text-white">${p.name}</span>
-                <p class="text-[9px] text-slate-500 font-bold uppercase">${p.role === 'weaver' ? '🧶 Örücü' : '🚴 Kurye'}</p>
-              </div>
-              <div class="flex gap-2">
-                <button onclick="approveStaff('${p.id}')" class="px-3 py-1.5 bg-green-600 text-white rounded-xl text-[9px] font-black uppercase">ONAYLA</button>
-                <button onclick="rejectStaff('${p.id}')" class="px-3 py-1.5 bg-red-600 text-white rounded-xl text-[9px] font-black uppercase">SİL</button>
-              </div>
-            </div>
-          `;
-        });
-      }
-
-      if (approved.length === 0) {
-        active.innerHTML = `<div class="text-[10px] text-slate-500 italic">Kadroda kayıtlı çalışan yok.</div>`;
-      } else {
-        approved.forEach(a => {
-          active.innerHTML += `
-            <div class="bg-slate-950 border border-slate-850 p-4 rounded-3xl space-y-3">
-              <div class="flex justify-between items-center text-xs">
-                <div>
-                  <span class="font-black text-white">${a.name}</span>
-                  <p class="text-[9px] text-slate-500 font-bold uppercase">${a.role === 'weaver' ? '🧶 Örücü' : '🚴 Kurye'}</p>
-                </div>
-                <div class="text-right">
-                  <span class="text-[9px] text-slate-500 font-bold">Kalıcı Görev Sayacı:</span>
-                  <p class="font-black text-blue-400">${a.totalJobsCompleted || 0} Tamamlanan</p>
-                </div>
-              </div>
-              <div class="flex justify-between items-center border-t border-slate-850 pt-2.5 gap-2">
-                <span class="text-[10px] font-bold text-yellow-400">Biriken: ${a.salary}₺</span>
-                <div class="flex gap-1.5">
-                  <button onclick="paySalary('${a.id}')" class="px-3 py-2 bg-yellow-600 hover:bg-yellow-500 text-black font-black uppercase text-[10px] rounded-xl tracking-wider transition-all">MAAŞI ÖDE</button>
-                  <button onclick="fireStaff('${a.id}')" class="px-3 py-2 bg-red-950/40 border border-red-900/30 text-red-500 font-black uppercase text-[10px] rounded-xl hover:bg-red-600 hover:text-white transition-all">İşten Çıkar</button>
-                </div>
-              </div>
-            </div>
-          `;
-        });
-      }
-    }
-
-    function renderNotifications() {
-      const list = document.getElementById('notification-modal-list');
-      if (!list) return;
-      list.innerHTML = '';
-
-      if (!state.currentUser) return;
-
-      const myNotifs = state.acknowledgedNotifications.filter(n => n.userId === state.currentUser.id);
-      if (myNotifs.length === 0) {
-        list.innerHTML = `Henüz yeni bir bildirim gelmedi kanka.`;
-        return;
-      }
-
-      myNotifs.forEach(n => {
-        list.innerHTML += `
-          <div class="bg-slate-950 p-3 rounded-2xl border border-slate-850 text-[10px] font-bold text-slate-300 leading-tight">
-             ${n.text}
-          </div>
-        `;
-      });
-    }
-
-    window.onload = function() {
-      loadState();
-      switchRole('customer');
-      toggleCustAuth('login');
-      toggleWorkAuth('login');
-    };
-  </script>
-
-</body>
-</html>
+        list.innerHTML +=
