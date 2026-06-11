@@ -24,6 +24,7 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden">
 
+  <!-- -->
   <!-- TELEFON ÜST STATUS BAR -->
   <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-50 backdrop-blur-md">
     <div class="max-w-md mx-auto flex justify-between items-center">
@@ -47,11 +48,12 @@
     </div>
   </header>
 
+  <!-- -->
   <!-- ANA EKRAN ALANI -->
   <main class="flex-1 max-w-md w-full mx-auto p-4 space-y-6 pb-24">
     
     <!-- ======================================= -->
-    <!-- MÜŞTERİ MODU EKRANLARI                  -->
+    <!-- MÜŞTERI MODU EKRANLARI                  -->
     <!-- ======================================= -->
     <div id="customer-container" class="space-y-6">
       <!-- Sekme Menüsü -->
@@ -75,6 +77,7 @@
           </div>
         </div>
 
+        <!-- -->
         <!-- Tasarım Alanı -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-5">
           <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">🪡 BİLEKLİĞİNİ TASARLA</h3>
@@ -129,6 +132,7 @@
         </div>
       </div>
 
+      <!-- -->
       <!-- SEPET SEKMESİ -->
       <div id="view-cart" class="hidden space-y-6">
         <div id="cart-empty-state" class="text-center py-16 bg-slate-900/40 rounded-[2.5rem] border border-slate-900">
@@ -150,7 +154,7 @@
                 <p class="text-[9px] text-slate-500 font-black uppercase">Toplam Tutar</p>
                 <p class="text-2xl font-black text-green-400 font-mono" id="cart-total-price">0₺</p>
               </div>
-              <button onclick="submitOrder()" class="bg-green-600 hover:bg-green-500 px-6 py-4 rounded-2xl font-black text-xs uppercase flex items-center gap-2 transition-all shadow-lg shadow-green-950/20">
+              <button type="button" onclick="submitOrder()" class="bg-green-600 hover:bg-green-500 px-6 py-4 rounded-2xl font-black text-xs uppercase flex items-center gap-2 transition-all shadow-lg shadow-green-950/20">
                 SİPARİŞİ GÖNDER
               </button>
             </div>
@@ -250,6 +254,8 @@
             <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Aktif Çalışan</span>
             <h2 id="staff-active-name" class="text-xl font-black text-white">FARUK</h2>
             <p id="staff-active-role" class="text-xs text-indigo-400 font-black mt-1 uppercase">GÖREV: ÖRÜCÜ</p>
+            <!-- Elemanın Kendi Biriken Maaş Bilgisi -->
+            <p class="text-xs text-emerald-400 font-black mt-1">Biriken Maaş: <span id="staff-active-salary" class="font-mono">0₺</span></p>
           </div>
           <button onclick="logOutStaff()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-full font-black border border-slate-700">Geri Çık</button>
         </div>
@@ -263,6 +269,7 @@
       </div>
     </div>
 
+    <!-- -->
     <!-- ======================================= -->
     <!-- PATRON PANELİ (ŞİFRE KORUMALI)         -->
     <!-- ======================================= -->
@@ -271,7 +278,7 @@
       <div class="flex bg-slate-900 p-1 rounded-2xl border border-slate-800 text-xs font-black">
         <button onclick="switchPatronTab('orders')" id="p-tab-orders" class="flex-1 py-2.5 rounded-xl transition-all bg-white text-black">SİPARİŞLER</button>
         <button onclick="switchPatronTab('staff')" id="p-tab-staff" class="flex-1 py-2.5 rounded-xl transition-all text-slate-500">ELEMANLAR</button>
-        <button onclick="switchPatronTab('resources')" id="p-tab-resources" class="flex-1 py-2.5 rounded-xl transition-all text-slate-500">KASA/STOK</button>
+        <button onclick="switchPatronTab('resources')" id="p-tab-resources" class="flex-1 py-2.5 rounded-xl transition-all text-slate-500">KASA</button>
       </div>
 
       <!-- PATRON TAB: SİPARİŞLER -->
@@ -303,19 +310,15 @@
 
       <!-- PATRON TAB: KASA & STOK -->
       <div id="p-view-resources" class="hidden space-y-6">
-        <div class="grid grid-cols-2 gap-3">
-          <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl">
-            <p className="text-[9px] text-slate-500 font-black uppercase">TOPLAM KASA</p>
-            <p class="text-2xl font-black text-yellow-400 font-mono" id="p-kasa-val">0₺</p>
-          </div>
-          <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl">
-            <p className="text-[9px] text-slate-500 font-black uppercase">LASTİK STOK</p>
-            <p class="text-2xl font-black text-blue-400 font-mono" id="p-stok-val">0 ADET</p>
+        <div class="grid grid-cols-1 gap-3">
+          <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl text-center">
+            <p class="text-[10px] text-slate-500 font-black uppercase tracking-wider">TOPLAM KASA</p>
+            <p class="text-3xl font-black text-yellow-400 font-mono mt-1" id="p-kasa-val">980₺</p>
           </div>
         </div>
 
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2.5rem] space-y-4">
-          <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest">Çarşı Toptancısından Lastik Al</h4>
+          <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest">Çarşı Toptancısından Lastik İp Al (Kasa Düşer)</h4>
           <button onclick="buyMaterials()" class="w-full py-4 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-2xl font-black text-xs flex justify-between px-6 items-center">
             <span>200 ADET RENKLİ LASTİK İP</span>
             <span>100₺</span>
@@ -331,6 +334,7 @@
      AKMA KOLEKTİF • GAZİANTEP MERKEZ SIRALAR
   </footer>
 
+  <!-- -->
   <!-- ======================================= -->
   <!-- MODAL VE TOAST EKRANLARI                -->
   <!-- ======================================= -->
@@ -343,11 +347,23 @@
           <h3 class="font-black text-lg text-white">Patron Girişi</h3>
           <p class="text-xs text-slate-400">Yönetim kabinine erişmek için 4 haneli şifreyi gir kanka.</p>
        </div>
-       <input type="password" id="patron-password-input" placeholder="Şifre" class="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-center text-xl font-mono text-white outline-none tracking-widest focus:border-yellow-500 transition-all">
-       <div class="flex gap-2">
-          <button onclick="cancelPatronGiriş()" class="flex-1 py-3 bg-slate-800 rounded-xl text-xs font-bold text-slate-400">Vazgeç</button>
-          <button onclick="submitPatronPassword()" class="flex-1 py-3 bg-yellow-500 text-slate-950 rounded-xl text-xs font-black">GİRİŞ YAP</button>
-       </div>
+       <form onsubmit="submitPatronPassword(event)" class="space-y-4">
+         <input type="password" id="patron-password-input" placeholder="Şifre" class="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-center text-xl font-mono text-white outline-none tracking-widest focus:border-yellow-500 transition-all">
+         <div class="flex gap-2">
+            <button type="button" onclick="cancelPatronGiriş()" class="flex-1 py-3 bg-slate-800 rounded-xl text-xs font-bold text-slate-400">Vazgeç</button>
+            <button type="submit" class="flex-1 py-3 bg-yellow-500 text-slate-950 rounded-xl text-xs font-black">GİRİŞ YAP</button>
+         </div>
+       </form>
+    </div>
+  </div>
+
+  <!-- BİLDİRİM / MESAJ KUTUSU MODALI (alert yerine kullanılacak) -->
+  <div id="info-modal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 p-8 rounded-[3rem] text-center max-w-xs w-full shadow-2xl space-y-4">
+       <div id="info-modal-icon" class="text-4xl">⚠️</div>
+       <h3 id="info-modal-title" class="font-black text-base text-white uppercase tracking-tight">UYARI</h3>
+       <p id="info-modal-text" class="text-xs text-slate-400 leading-relaxed">Bir sorun oluştu kanka.</p>
+       <button onclick="closeInfoModal()" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-black uppercase">Tamam Kanka</button>
     </div>
   </div>
 
@@ -362,10 +378,26 @@
     </div>
   </div>
 
+  <!-- -->
   <!-- ======================================= -->
   <!-- JAVASCRIPT & STATE YÖNETİMİ             -->
   <!-- ======================================= -->
   <script>
+    const COLOR_OPTIONS = [
+      { id: 'siyah', name: 'Siyah', hex: '#000000' },
+      { id: 'beyaz', name: 'Beyaz', hex: '#FFFFFF' },
+      { id: 'kirmizi', name: 'Kırmızı', hex: '#EF4444' },
+      { id: 'mavi', name: 'Mavi', hex: '#3B82F6' },
+      { id: 'yesil', name: 'Yeşil', hex: '#10B981' },
+      { id: 'sari', name: 'Sarı', hex: '#FBBF24' },
+      { id: 'turuncu', name: 'Turuncu', hex: '#F97316' },
+      { id: 'mor', name: 'Mor', hex: '#A855F7' },
+      { id: 'pembe', name: 'Pembe', hex: '#EC4899' },
+      { id: 'turkuaz', name: 'Turkuaz', hex: '#06B6D4' }
+    ];
+
+    const AVATAR_OPTIONS = ["🦁", "🐼", "🦊", "🐯", "🐱", "🐨", "🐸", "🐵", "👑", "🚀", "⚡", "👾"];
+
     // --- STATE MANAGEMENT ---
     let state = {
       user: null,
@@ -376,8 +408,7 @@
       orders: [],
       staffList: [],
       activeStaff: null,
-      materials: 400,
-      money: 600,
+      money: 980, // Başlangıç kasası 980₺
       profile: {
         name: '',
         classRoom: '',
@@ -394,8 +425,9 @@
       }
     };
 
-    // Firebase Mock / Fallback ve Senkronizasyon Altyapısı
-    let db;
+    // Firebase Mock ve Senkronizasyon Altyapısı
+    let db = null;
+    const appId = "akma-siparis-ve-eleman-v1";
     try {
       const firebaseConfig = {
         apiKey: "mock-api-key",
@@ -410,18 +442,90 @@
       document.getElementById('connection-text').innerText = "Bulut Canlı";
     } catch (e) {
       console.log("Mock bulut veri tabanı modu aktif.");
-      document.getElementById('connection-text').innerText = "Yerel Simülasyon";
+      document.getElementById('connection-text').innerText = "Simülatör Modu";
     }
 
-    // --- RENDER DÖNGÜSÜ (Dinamik DOM Güncelleme) ---
+    // --- ÖZEL MODAL UYARI KUTUSU (alert yerine) ---
+    function openInfoModal(title, text, icon = "⚠️") {
+      document.getElementById('info-modal-title').innerText = title;
+      document.getElementById('info-modal-text').innerText = text;
+      document.getElementById('info-modal-icon').innerText = icon;
+      document.getElementById('info-modal').classList.remove('hidden');
+    }
+
+    function closeInfoModal() {
+      document.getElementById('info-modal').classList.add('hidden');
+    }
+
+    //    // --- GERÇEK ZAMANLI DİNLEYİCİLER (Realtime Sync) ---
+    function initSync() {
+      if (db) {
+        // 1. Siparişleri dinle
+        db.collection('artifacts').doc(appId).collection('orders')
+          .onSnapshot((snapshot) => {
+            let fetchedOrders = [];
+            snapshot.forEach((doc) => {
+              fetchedOrders.push({ id: doc.id, ...doc.data() });
+            });
+            // Tarihe göre sırala
+            fetchedOrders.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            state.orders = fetchedOrders;
+            render();
+          });
+
+        // 2. Elemanları dinle
+        db.collection('artifacts').doc(appId).collection('staff')
+          .onSnapshot((snapshot) => {
+            let fetchedStaff = [];
+            snapshot.forEach((doc) => {
+              fetchedStaff.push({ id: doc.id, ...doc.data() });
+            });
+            state.staffList = fetchedStaff;
+            
+            // Eğer giriş yapmış aktif eleman varsa verisini güncelle
+            if (state.activeStaff) {
+              const updated = fetchedStaff.find(s => s.id === state.activeStaff.id);
+              if (updated) state.activeStaff = updated;
+            }
+            render();
+          });
+
+        // 3. Kasayı dinle (Patron kasası bulutta tek dökümanda tutulur)
+        db.collection('artifacts').doc(appId).collection('economy').doc('vault')
+          .onSnapshot((docSnap) => {
+            if (docSnap.exists()) {
+              state.money = docSnap.data().money || 980;
+            } else {
+              // Yoksa oluştur
+              db.collection('artifacts').doc(appId).collection('economy').doc('vault').set({ money: 980 });
+            }
+            render();
+          });
+      }
+    }
+
+    // Kasayı buluta güncelleme yardımcısı
+    function updateCloudVault(newMoney) {
+      if (db) {
+        db.collection('artifacts').doc(appId).collection('economy').doc('vault').set({ money: newMoney });
+      } else {
+        state.money = newMoney;
+        render();
+      }
+    }
+
+    //    // --- RENDER DÖNGÜSÜ ---
     function render() {
       // 1. Üst Durum Güncellemesi
       document.getElementById('user-avatar-badge').innerText = state.role === 'customer' ? state.profile.avatar : (state.activeStaff ? (state.activeStaff.role === 'örüsü' ? '🪡' : '🛵') : '👷');
       
       const appTitle = state.role === 'customer' && state.profile.isRegistered 
         ? `${state.profile.name.toUpperCase()} (${state.profile.classRoom})` 
-        : (state.role === 'patron' ? "PATRON KABİNİ (1089)" : (state.role === 'staff' && state.activeStaff ? `${state.activeStaff.name.toUpperCase()} (${state.activeStaff.role === 'örüsü' ? 'Örücü' : 'Kurye'})` : "AKMA KOLEKTİF"));
+        : (state.role === 'patron' ? `PATRON KABİNİ` : (state.role === 'staff' && state.activeStaff ? `${state.activeStaff.name.toUpperCase()}` : "AKMA KOLEKTİF"));
       document.getElementById('app-title-name').innerText = appTitle;
+
+      // Kasa Güncelleme
+      document.getElementById('p-kasa-val').innerText = `${state.money}₺`;
 
       // 2. Rol Ekranlarını Gösterme/Gizleme
       document.getElementById('customer-container').classList.add('hidden');
@@ -449,14 +553,12 @@
       }
     }
 
-    // --- MÜŞTERİ MODU RENDER ---
+    //    // --- MÜŞTERİ MODU RENDER ---
     function renderCustomer() {
-      // Eğer müşteri kayıtlı değilse profil tabına zorla
       if (!state.profile.isRegistered && state.activeTab !== 'profile') {
         state.activeTab = 'profile';
       }
 
-      // Tab Görünümleri
       ['catalog', 'cart', 'tracking', 'profile'].forEach(t => {
         document.getElementById(`view-${t}`).classList.add('hidden');
         document.getElementById(`tab-btn-${t}`).className = "flex-1 py-2.5 rounded-xl font-black text-[10px] tracking-tight transition-all text-slate-500";
@@ -465,7 +567,7 @@
       document.getElementById(`view-${state.activeTab}`).classList.remove('hidden');
       document.getElementById(`tab-btn-${state.activeTab}`).className = "flex-1 py-2.5 rounded-xl font-black text-[10px] tracking-tight transition-all bg-white text-black font-bold";
 
-      // 1. KATALOG RENDER
+      // 1. KATALOG RENDER (Dinamik fiyat: tek renk 30, karışık/boş 20)
       const dynamicPrice = state.customOptions.selectedColors.length === 1 ? 30 : 20;
       const totalDynamic = dynamicPrice + (state.customOptions.envelope === 'O ELENDİN Kara Zarf' ? 15 : 0);
       document.getElementById('dynamic-price-tag').innerText = `SEPETE EKLE (${totalDynamic} TL)`;
@@ -510,7 +612,8 @@
       // 3. SİPARİŞ TAKİBİ RENDER
       const trackingList = document.getElementById('tracking-list');
       trackingList.innerHTML = "";
-      const myOrders = state.orders.filter(o => o.userUid === state.user?.uid);
+      
+      const myOrders = state.orders.filter(o => o.customer === state.profile.name && o.classRoom === state.profile.classRoom);
       if (myOrders.length === 0) {
         trackingList.innerHTML = `<div class="text-center py-16 text-slate-500 text-xs bg-slate-900/30 rounded-[2rem] border border-slate-900">Henüz sipariş vermedin kanka.</div>`;
       } else {
@@ -551,8 +654,7 @@
       }
     }
 
-    // --- STREAMING_CHUNK: Eleman Bölümü renderlama motoru... ---
-    // --- ELEMAN MODU RENDER ---
+    //    // --- ELEMAN MODU RENDER ---
     function renderStaff() {
       const authView = document.getElementById('staff-auth-view');
       const panelView = document.getElementById('staff-panel-view');
@@ -574,7 +676,7 @@
               <button onclick="logInStaff('${st.id}')" class="w-full bg-slate-950 hover:bg-slate-800 border border-slate-800 p-4 rounded-2xl text-left font-black text-xs uppercase tracking-wider flex justify-between items-center">
                 <span>${st.name}</span>
                 <span class="text-[9px] bg-blue-500/10 text-blue-400 px-2.5 py-1 rounded-full uppercase">
-                  ${st.role === 'örüsü' ? '🔨 Örücü' : '🛵 Kurye'}
+                  ${st.role === 'örüsü' ? '🪡 Örücü' : '🛵 Kurye'}
                 </span>
               </button>
             `;
@@ -586,6 +688,7 @@
 
         document.getElementById('staff-active-name').innerText = state.activeStaff.name.toUpperCase();
         document.getElementById('staff-active-role').innerText = `GÖREV: ${state.activeStaff.role === 'örüsü' ? '🪡 ÖRÜCÜ' : '🛵 KURYE'}`;
+        document.getElementById('staff-active-salary').innerText = `${state.activeStaff.salary || 0}₺`;
 
         const assignedOrdersList = document.getElementById('staff-assigned-orders');
         assignedOrdersList.innerHTML = "";
@@ -610,20 +713,20 @@
                     <h4 class="font-black text-sm text-white">${order.customer} (${order.classRoom})</h4>
                     <p class="text-[10px] text-slate-400">${order.deskRow}</p>
                   </div>
-                  <span class="text-xs font-black text-green-400 font-mono">${order.total}₺</span>
+                  <span class="text-xs font-black text-green-400 font-mono">{order.total}₺</span>
                 </div>
                 <div class="space-y-1.5 bg-black/40 p-3 rounded-xl border border-slate-950 text-xs font-bold text-slate-400">
                   ${order.items.map(item => `
                     <div class="flex justify-between">
-                      <span>${item.name} (${item.size}) • ${item.envelope} <span class="text-[9px] text-blue-400 block">Tasarım: ${item.colors}</span></span>
+                      <span>${item.name} (${item.size}) • ${item.envelope} <span class="text-[9px] text-blue-400 block font-black">Tasarım: ${item.colors}</span></span>
                       <span>${item.price}₺</span>
                     </div>
                   `).join('')}
                 </div>
-                <button onclick="updateOrderStatus('${order.id}', '${order.status}')" disabled="${order.status === 'Teslim Edildi'}" class="w-full py-3.5 rounded-2xl font-black text-xs uppercase tracking-wider bg-indigo-600 hover:bg-indigo-500 text-white">
-                  ${order.status === 'Örülüyor' ? 'ÖRGÜYÜ BİTİR VE PAKETLE' : 
+                <button onclick="updateOrderStatus('${order.id}', '${order.status}')" class="w-full py-3.5 rounded-2xl font-black text-xs uppercase tracking-wider bg-indigo-600 hover:bg-indigo-500 text-white">
+                  ${order.status === 'Örülüyor' ? 'ÖRGÜYÜ BİTİR VE PAKETLE (+7₺ Maaş)' : 
                     order.status === 'Paketlendi' ? 'KURYEYE BAŞLAT (YOLA ÇIKAR)' : 
-                    order.status === 'Kuryede' ? 'TESLİMATI TAMAMLA (SIRA ALTINDA)' : 'TESLİMAT TAMAMLANDI ✔'}
+                    order.status === 'Kuryede' ? 'TESLİMATI TAMAMLA (+7₺ Maaş & Kasaya Ekle)' : 'TESLİMAT TAMAMLANDI ✔'}
                 </button>
               </div>
             `;
@@ -632,10 +735,8 @@
       }
     }
 
-    // --- STREAMING_CHUNK: Patron Bölümü renderlama motoru... ---
-    // --- PATRON MODU RENDER ---
+    //    // --- PATRON MODU RENDER ---
     function renderPatron() {
-      // Patron Tablarını Yönet
       ['orders', 'staff', 'resources'].forEach(t => {
         document.getElementById(`p-view-${t}`).classList.add('hidden');
         document.getElementById(`p-tab-${t}`).className = "flex-1 py-2.5 rounded-xl transition-all text-slate-500";
@@ -688,7 +789,7 @@
                     </select>
                   </div>
                 </div>
-                <button onclick="updateOrderStatus('${order.id}', '${order.status}')" disabled="${order.status === 'Teslim Edildi'}" class="w-full py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-black text-xs uppercase">
+                <button onclick="updateOrderStatus('${order.id}', '${order.status}')" class="w-full py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-black text-xs uppercase">
                   MANUEL DURUM İLERLET: ${order.status}
                 </button>
               </div>
@@ -709,7 +810,7 @@
                   <p class="font-black text-white text-sm uppercase">${st.name}</p>
                   <p class="text-[10px] text-yellow-400 font-bold uppercase mt-0.5">${st.role === 'örüsü' ? '🔨 Örücü' : '🛵 Kurye'}</p>
                 </div>
-                <button onclick="approveStaff('${st.id}')" class="bg-green-600 hover:bg-green-500 text-white text-[10px] font-black px-4 py-2 rounded-xl">ONAYLA</button>
+                <button onclick="approveStaff('${st.id}')" class="bg-green-600 hover:bg-green-500 text-white text-[10px] font-black px-4 py-2 rounded-xl">ONAYLA (+10₺ Hoşgeldin Primi)</button>
               </div>
             `;
           });
@@ -727,20 +828,22 @@
                 <div>
                   <p class="font-black text-white text-sm uppercase">${st.name}</p>
                   <p class="text-[10px] text-slate-400 font-bold uppercase mt-0.5">${st.role === 'örüsü' ? '🪡 Örücü' : '🛵 Kurye'}</p>
+                  <p class="text-[11px] text-emerald-400 font-black mt-1">Biriken Maaş: ${st.salary || 0}₺</p>
                 </div>
-                <button onclick="deleteStaff('${st.id}')" class="text-red-500 p-2 hover:bg-red-500/10 rounded-xl">✕</button>
+                <div class="flex items-center gap-2">
+                  <button onclick="payStaffSalary('${st.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-black px-3 py-2 rounded-xl">Maaşı Öde</button>
+                  <button onclick="deleteStaff('${st.id}')" class="text-red-500 p-2 hover:bg-red-500/10 rounded-xl">✕</button>
+                </div>
               </div>
             `;
           });
         }
       } else if (state.patronTab === 'resources') {
         document.getElementById('p-kasa-val').innerText = `${state.money}₺`;
-        document.getElementById('p-stok-val').innerText = `${state.materials} ADET`;
       }
     }
 
-    // --- STREAMING_CHUNK: Etkileşim ve Tıklama Fonksiyonları... ---
-    // --- AKSIYONLAR ---
+    //    // --- AKSIYONLAR ---
     function switchTab(tabId) {
       state.activeTab = tabId;
       render();
@@ -753,7 +856,6 @@
 
     function selectSize(sz) {
       state.customOptions.size = sz;
-      // UI güncelle
       document.querySelectorAll('.size-btn').forEach(b => {
         b.className = "size-btn py-2 rounded-xl text-xs font-bold border bg-slate-800 border-slate-700 text-slate-400";
       });
@@ -798,7 +900,6 @@
       });
     }
 
-    // --- SEPET VE SİPARİŞ TAMAMLAMA ---
     function addToCart() {
       let colorSum = "Karışık Renk";
       if (state.customOptions.selectedColors.length === 1) {
@@ -812,6 +913,7 @@
         colorSum += ` [İstek: ${customText}]`;
       }
 
+      // Tek renk seçildiğinde 30TL, aksi takdirde 20TL. Zarf ekstrası +15TL
       const dynamicPrice = state.customOptions.selectedColors.length === 1 ? 30 : 20;
       const totalDynamic = dynamicPrice + (state.customOptions.envelope === 'O ELENDİN Kara Zarf' ? 15 : 0);
 
@@ -826,7 +928,8 @@
       };
 
       state.cart.push(cartItem);
-      // Reset
+      
+      // Temizle
       state.customOptions.selectedColors = [];
       document.getElementById('custom-color-text').value = "";
       document.getElementById('order-note-input').value = "";
@@ -841,13 +944,13 @@
     }
 
     function saveProfile(e) {
-      e.preventDefault();
+      if (e) e.preventDefault();
       const name = document.getElementById('profile-name-input').value.trim();
       const classRoom = document.getElementById('profile-classroom-input').value.trim().toUpperCase();
       const deskRow = document.getElementById('profile-row-input').value;
 
       if (!name || !classRoom) {
-        alert("Kanka lütfen adını ve sınıfını yaz!");
+        openInfoModal("Eksik Bilgi", "Kanka lütfen adını ve sınıfını yaz!");
         return;
       }
 
@@ -859,7 +962,6 @@
         isRegistered: true
       };
 
-      // Firestore'a kaydet (Varsa)
       if (db) {
         db.collection('artifacts').doc(appId).collection('users').doc(state.user?.uid || 'guest').set({
           profile: state.profile
@@ -869,11 +971,14 @@
       switchTab('catalog');
     }
 
-    // --- STREAMING_CHUNK: Firestore Bulut Sipariş Gönderme... ---
     function submitOrder() {
       if (!state.profile.isRegistered) {
-        alert("Sipariş göndermek için önce profil oluştur kanka!");
+        openInfoModal("Profil Yok", "Sipariş göndermek için önce profil oluştur kanka!");
         switchTab('profile');
+        return;
+      }
+      if (state.cart.length === 0) {
+        openInfoModal("Sepet Boş", "Sepetinde hiç ürün yok kanka!");
         return;
       }
 
@@ -896,14 +1001,21 @@
       };
 
       if (db) {
-        db.collection('artifacts').doc(appId).collection('public').doc('data').collection('orders').doc(orderId).set(newOrder)
+        db.collection('artifacts').doc(appId).collection('orders').doc(orderId).set(newOrder)
           .then(() => {
+            state.cart = [];
+            showSuccessToast();
+            switchTab('tracking');
+          })
+          .catch((err) => {
+            console.log("Buluta gönderilemedi, yerel koda yazılıyor:", err);
+            // Fallback
+            state.orders.push(newOrder);
             state.cart = [];
             showSuccessToast();
             switchTab('tracking');
           });
       } else {
-        // Fallback Local
         state.orders.push(newOrder);
         state.cart = [];
         showSuccessToast();
@@ -911,7 +1023,7 @@
       }
     }
 
-    // --- ELEMAN İŞLEMLERİ ---
+    //    // --- ELEMAN İŞLEMLERİ ---
     function applyForStaff(e) {
       e.preventDefault();
       const name = document.getElementById('staff-apply-name').value.trim();
@@ -924,18 +1036,19 @@
         id: staffId,
         name,
         role: roleApply,
+        salary: 0, // İlk başvuru maaşı 0₺
         status: 'onay_bekliyor'
       };
 
       if (db) {
-        db.collection('artifacts').doc(appId).collection('public').doc('data').collection('staff').doc(staffId).set(newStaff)
+        db.collection('artifacts').doc(appId).collection('staff').doc(staffId).set(newStaff)
           .then(() => {
-            alert("Başvurun patrona iletildi kanka, onaylanmayı bekle!");
+            openInfoModal("Başvuru Gönderildi", "Başvurun patrona iletildi kanka, onaylanmayı bekle!", "👷");
             document.getElementById('staff-apply-name').value = "";
           });
       } else {
         state.staffList.push(newStaff);
-        alert("Başvurun patrona iletildi kanka, onaylanmayı bekle!");
+        openInfoModal("Başvuru Gönderildi", "Başvurun patrona iletildi kanka, onaylanmayı bekle!", "👷");
         document.getElementById('staff-apply-name').value = "";
         render();
       }
@@ -956,30 +1069,67 @@
 
     // --- PATRON VE ELEMAN GÜNCELLEMELERİ ---
     function approveStaff(id) {
+      // Katıldığında 10 TL prim kazanır
       if (db) {
-        db.collection('artifacts').doc(appId).collection('public').doc('data').collection('staff').doc(id).update({
-          status: 'onaylandı'
+        db.collection('artifacts').doc(appId).collection('staff').doc(id).update({
+          status: 'onaylandı',
+          salary: 10
         });
       } else {
         const staff = state.staffList.find(s => s.id === id);
-        if (staff) staff.status = 'onaylandı';
+        if (staff) {
+          staff.status = 'onaylandı';
+          staff.salary = 10;
+        }
         render();
       }
     }
 
     function deleteStaff(id) {
       if (db) {
-        db.collection('artifacts').doc(appId).collection('public').doc('data').collection('staff').doc(id).delete();
+        db.collection('artifacts').doc(appId).collection('staff').doc(id).delete();
       } else {
         state.staffList = state.staffList.filter(s => s.id !== id);
         render();
       }
     }
 
+    // Elemana maaş ödeme ve kasadan düşme fonksiyonu
+    function payStaffSalary(id) {
+      const staff = state.staffList.find(s => s.id === id);
+      if (!staff) return;
+
+      const payout = staff.salary || 0;
+      if (payout <= 0) {
+        openInfoModal("Ödeme Yapılamaz", "Bu elemanın birikmiş maaşı zaten bulunmuyor kanka!", "❌");
+        return;
+      }
+
+      if (state.money >= payout) {
+        const remainingMoney = state.money - payout;
+        
+        if (db) {
+          // Bulutta elemanın maaşını sıfırla ve kasayı güncelle
+          db.collection('artifacts').doc(appId).collection('staff').doc(id).update({ salary: 0 })
+            .then(() => {
+              updateCloudVault(remainingMoney);
+              openInfoModal("Maaş Ödendi", `${staff.name} kankamıza ${payout}₺ maaş ödemesi yapıldı, kasadan düşüldü!`, "💰");
+            });
+        } else {
+          staff.salary = 0;
+          state.money = remainingMoney;
+          openInfoModal("Maaş Ödendi", `${staff.name} kankamıza ${payout}₺ maaş ödemesi yapıldı, kasadan düşüldü!`, "💰");
+          render();
+        }
+      } else {
+        openInfoModal("Yetersiz Bütçe", "Kasada elemanın maaşını ödeyecek yeterli nakit bulunmuyor kanka! Önce teslimatları tamamla.", "❌");
+      }
+    }
+
     function assignStaffToOrder(orderId, staffName, type) {
       const updateData = type === 'weaver' ? { assignedWeaver: staffName } : { assignedCourier: staffName };
       if (db) {
-        db.collection('artifacts').doc(appId).collection('public').doc('data').collection('orders').doc(orderId).update(updateData);
+        db.collection('artifacts').doc(appId).collection('orders').doc(orderId).update(updateData);
       } else {
         const order = state.orders.find(o => o.id === orderId);
         if (order) {
@@ -990,7 +1140,7 @@
       }
     }
 
-    function updateOrderStatus(orderId, currentStatus) {
+    //    function updateOrderStatus(orderId, currentStatus) {
       const statusCycle = {
         'Örülüyor': 'Paketlendi',
         'Paketlendi': 'Kuryede',
@@ -999,18 +1149,63 @@
       };
 
       const nextStatus = statusCycle[currentStatus];
+      const order = state.orders.find(o => o.id === orderId);
+      if (!order) return;
+
+      let weaverSalaryAward = 0;
+      let courierSalaryAward = 0;
+      let vaultIncome = 0;
+
+      // İş kuralları
+      if (currentStatus === 'Örülüyor' && nextStatus === 'Paketlendi') {
+        // Örücü işini bitirdi: Örücüye +7₺
+        weaverSalaryAward = 7;
+      }
+      if (currentStatus === 'Kuryede' && nextStatus === 'Teslim Edildi') {
+        // Kurye teslim etti: Kuryeye +7₺ ve kasaya sipariş parası girişi
+        courierSalaryAward = 7;
+        vaultIncome = order.total;
+      }
+
       if (db) {
-        db.collection('artifacts').doc(appId).collection('public').doc('data').collection('orders').doc(orderId).update({
-          status: nextStatus
-        });
+        // Bulutta Güncelle
+        db.collection('artifacts').doc(appId).collection('orders').doc(orderId).update({ status: nextStatus })
+          .then(() => {
+            // Örücü maaş ödülü
+            if (weaverSalaryAward > 0 && order.assignedWeaver) {
+              const weaver = state.staffList.find(s => s.name === order.assignedWeaver && s.role === 'örüsü');
+              if (weaver) {
+                db.collection('artifacts').doc(appId).collection('staff').doc(weaver.id).update({
+                  salary: (weaver.salary || 0) + weaverSalaryAward
+                });
+              }
+            }
+            // Kurye maaş ödülü & Kasaya ekleme
+            if (courierSalaryAward > 0 && order.assignedCourier) {
+              const courier = state.staffList.find(s => s.name === order.assignedCourier && s.role === 'kurye');
+              if (courier) {
+                db.collection('artifacts').doc(appId).collection('staff').doc(courier.id).update({
+                  salary: (courier.salary || 0) + courierSalaryAward
+                });
+              }
+            }
+            if (vaultIncome > 0) {
+              updateCloudVault(state.money + vaultIncome);
+            }
+          });
       } else {
-        const order = state.orders.find(o => o.id === orderId);
-        if (order) {
-          order.status = nextStatus;
-          if (nextStatus === 'Teslim Edildi' && currentStatus !== 'Teslim Edildi') {
-            state.money += order.total;
-            state.materials = Math.max(0, state.materials - (order.items.length * 8));
-          }
+        // Yerel Simülasyonda Güncelle
+        order.status = nextStatus;
+        if (weaverSalaryAward > 0 && order.assignedWeaver) {
+          const weaver = state.staffList.find(s => s.name === order.assignedWeaver && s.role === 'örüsü');
+          if (weaver) weaver.salary = (weaver.salary || 0) + weaverSalaryAward;
+        }
+        if (courierSalaryAward > 0 && order.assignedCourier) {
+          const courier = state.staffList.find(s => s.name === order.assignedCourier && s.role === 'kurye');
+          if (courier) courier.salary = (courier.salary || 0) + courierSalaryAward;
+        }
+        if (vaultIncome > 0) {
+          state.money += vaultIncome;
         }
         render();
       }
@@ -1018,11 +1213,11 @@
 
     function buyMaterials() {
       if (state.money >= 100) {
-        state.money -= 100;
-        state.materials += 200;
-        render();
+        const remainingMoney = state.money - 100;
+        updateCloudVault(remainingMoney);
+        openInfoModal("Malzeme Alındı", "Çarşıdan 200 adet renkli lastik ip alındı. 100₺ kasadan düşüldü kanka!", "📦");
       } else {
-        alert("Kasada yeterli nakit yok kanka!");
+        openInfoModal("Yetersiz Bakiye", "Kasada malzeme alacak yeterli nakit yok kanka!", "❌");
       }
     }
 
@@ -1037,7 +1232,8 @@
       }
     });
 
-    function submitPatronPassword() {
+    function submitPatronPassword(e) {
+      if (e) e.preventDefault();
       const pwd = document.getElementById('patron-password-input').value;
       if (pwd === "1089") {
         state.role = 'patron';
@@ -1046,7 +1242,7 @@
         document.getElementById('patron-password-input').value = "";
         render();
       } else {
-        alert("Şifre Yanlış Kanka!");
+        openInfoModal("Hatalı Şifre", "Şifre Yanlış Kanka! Patron değilsen zorlama.");
       }
     }
 
@@ -1063,7 +1259,7 @@
       el.select();
       document.execCommand('copy');
       document.body.removeChild(el);
-      alert("Okul linki panoya kopyalandı kanka, arkadaşlarına gönder!");
+      openInfoModal("Link Kopyalandı", "Sınıf linki panoya kopyalandı kanka, arkadaşlarına gönder!", "🔗");
     }
 
     function showSuccessToast() {
@@ -1090,6 +1286,7 @@
 
     // --- BAŞLATMA ---
     renderColorGrid();
+    initSync();
     render();
   </script>
 </body>
