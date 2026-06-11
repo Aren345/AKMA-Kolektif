@@ -1081,35 +1081,6 @@
       switchRole('customer');
       lucide.createIcons();
     }
-// --- GARANTİ ÇALIŞAN CANLI SENKRONİZASYON ---
-  async function fetchOrdersFromCloud() {
-    try {
-      const response = await fetch("https://script.google.com/macros/s/AKfycbySF_3m7GTWTlZYNXRNvnP_cEDZRTMBcojMr98ZR9m3R-Fno2MlWSca65uXaBtKVa68fg/exec");
-      const rawData = await response.json();
-      
-      if (rawData && rawData.length > 1) {
-        // Gelen veriyi eşle
-        appState.orders = rawData.slice(1).map(row => ({
-          id: row[0],
-          customer: row[1],
-          classRoom: row[2],
-          total: row[3],
-          status: row[4]
-        }));
-        
-        // Burası kritik: Eğer patron panelindeyse listeyi anında güncelle
-        if (appState.activeRole === 'patron') {
-            console.log("Buluttan güncel siparişler çekildi:", appState.orders);
-            renderPatronOrders(); 
-        }
-      }
-    } catch (e) {
-      console.log("Bulut bağlantısı hata verdi:", e);
-    }
-  }
-
-  // Patron panelini 5 saniyede bir zorla güncelle
-  setInterval(fetchOrdersFromCloud, 5000);
   </script>
 </body>
 </html>
