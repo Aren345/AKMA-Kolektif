@@ -2,1099 +2,371 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AKMA Kolektif - Sipariş & Eleman Ağı</title>
-  
-  <!-- React & ReactDOM (Canlı CDN) -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  
-  <!-- Babel Standalone (JSX derleyicisi) -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  
-  <!-- Tailwind CSS (Canlı Tasarım CDN) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AKMA Lastik Savaşları</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Kararlı Firebase Compat SDK'ları (Çökmeyi Önleyen Küresel Kütüphaneler) -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-  
   <style>
-    .scrollbar-hide::-webkit-scrollbar { display: none; }
-    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-    html, body {
-      overscroll-behavior-y: contain;
+    body {
+      touch-action: none;
       -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    canvas {
+      display: block;
+      background: radial-gradient(circle, #0f172a 0%, #020617 100%);
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen">
+<body class="bg-slate-950 text-slate-100 min-h-screen overflow-hidden flex flex-col justify-between">
 
-  <div id="root"></div>
+  <!-- Oyun Arayüzü -->
+  <div class="absolute top-4 left-4 z-10 pointer-events-none">
+    <div class="bg-slate-900/80 backdrop-blur border border-slate-800 px-4 py-2.5 rounded-2xl">
+      <span class="text-[9px] text-blue-400 font-black uppercase tracking-widest block">Skor</span>
+      <span id="score-val" class="text-xl font-black font-mono text-white">0</span>
+    </div>
+  </div>
 
-  <!-- React ve Uygulama Mantığı -->
-  <script type="text/babel">
-    
-    // --- BURAYA KENDİ FIREBASE ANAHTARLARINI YAPIŞTIRABİLİRSİN ---
-    // Eğer yapıştırmazsan sistem otomatik olarak "Canlı Yerel Simülasyon" modunda çalışır ve asla çökmez!
-    const firebaseConfig = {
-      apiKey: "mock-api-key",
-      authDomain: "mock-auth-domain",
-      projectId: "mock-project",
-      storageBucket: "mock-storage",
-      messagingSenderId: "mock-sender",
-      appId: "mock-app"
+  <div class="absolute top-4 right-4 z-10 pointer-events-none">
+    <div class="bg-slate-900/80 backdrop-blur border border-slate-800 px-4 py-2.5 rounded-2xl text-right">
+      <span class="text-[9px] text-red-500 font-black uppercase tracking-widest block">Can</span>
+      <span id="lives-val" class="text-xl font-black font-mono text-red-400">❤❤❤</span>
+    </div>
+  </div>
+
+  <!-- Oyun Alanı -->
+  <canvas id="gameCanvas" class="w-full h-full flex-1"></canvas>
+
+  <!-- Game Over Ekranı -->
+  <div id="gameOverScreen" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 p-8 rounded-[2.5rem] text-center max-w-xs w-full shadow-2xl space-y-6">
+      <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto border border-red-500/20">
+        <span class="text-3xl">💥</span>
+      </div>
+      <div class="space-y-1">
+        <h3 class="font-black text-xl text-white">OYUN BİTTİ!</h3>
+        <p class="text-xs text-slate-400">Faruk'un tahta karalamaları sıramızı işgal etti!</p>
+      </div>
+      <div class="bg-slate-950 p-3 rounded-2xl border border-slate-850">
+        <span class="text-[9px] text-slate-500 font-bold block uppercase">Yaptığın Skor</span>
+        <span id="final-score" class="text-2xl font-black font-mono text-green-400">0</span>
+      </div>
+      <button 
+        id="restartBtn" 
+        class="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black text-xs uppercase tracking-wider transition-all"
+      >
+        Yeniden Başla
+      </button>
+    </div>
+  </div>
+
+  <!-- Kontrol Kılavuzu -->
+  <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 bg-slate-900/40 backdrop-blur-sm border border-slate-800/40 px-6 py-2.5 rounded-full text-center pointer-events-none">
+    <p class="text-[10px] text-slate-500 font-black uppercase tracking-widest">
+      Sapanı çek, hedefi vur kanka!
+    </p>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Skor ve Can Elementleri
+    const scoreVal = document.getElementById('score-val');
+    const livesVal = document.getElementById('lives-val');
+    const gameOverScreen = document.getElementById('gameOverScreen');
+    const finalScore = document.getElementById('final-score');
+    const restartBtn = document.getElementById('restartBtn');
+
+    // Oyun State'i
+    let gameActive = true;
+    let score = 0;
+    let lives = 3;
+
+    // Sapan (Sling) Bilgileri
+    const sling = {
+      x: 0,
+      y: 0,
+      radius: 20,
+      dragX: 0,
+      dragY: 0,
+      isDragging: false,
+      maxDrag: 80
     };
 
-    let db = null;
-    let auth = null;
-    let isDemoMode = true;
+    // Diziler
+    let projectiles = [];
+    let targets = [];
+    let particles = [];
 
-    // Firebase'i kararlı şekilde başlatma denemesi
-    try {
-      if (window.firebase && firebaseConfig.apiKey !== "mock-api-key") {
-        window.firebase.initializeApp(firebaseConfig);
-        db = window.firebase.firestore();
-        auth = window.firebase.auth();
-        isDemoMode = false;
-        console.log("🔥 Firebase Bulut Veritabanı başarıyla bağlandı!");
-      } else {
-        console.warn("⚠️ Firebase anahtarları bulunamadı. Yerel Simülasyon moduna geçiliyor.");
-      }
-    } catch (e) {
-      console.error("Firebase başlatılamadı, Yerel Simülasyona geçiliyor:", e);
-      isDemoMode = true;
+    // Canvas Boyutlandırma
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      sling.x = canvas.width / 2;
+      sling.y = canvas.height - 120;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // Ses Efektleri (Kararlı sentetik Web Audio)
+    function playTone(freq, duration, type = 'sine') {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
     }
 
-    // --- REAKTİF VERİ SEÇENEKLERİ ---
-    const COLOR_OPTIONS = [
-      { id: 'siyah', name: 'Siyah', hex: '#000000' },
-      { id: 'beyaz', name: 'Beyaz', hex: '#FFFFFF' },
-      { id: 'kirmizi', name: 'Kırmızı', hex: '#EF4444' },
-      { id: 'mavi', name: 'Mavi', hex: '#3B82F6' },
-      { id: 'yesil', name: 'Yeşil', hex: '#10B981' },
-      { id: 'sari', name: 'Sarı', hex: '#FBBF24' },
-      { id: 'turuncu', name: 'Turuncu', hex: '#F97316' },
-      { id: 'mor', name: 'Mor', hex: '#A855F7' },
-      { id: 'pembe', name: 'Pembe', hex: '#EC4899' },
-      { id: 'turkuaz', name: 'Turkuaz', hex: '#06B6D4' },
-      { id: 'lacivert', name: 'Lacivert', hex: '#1E3A8A' }
-    ];
+    // Dokunmatik / Fare Olayları
+    function getEventPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
 
-    const AVATAR_OPTIONS = ["🦁", "🐼", "🦊", "🐯", "🐱", "🐨", "🐸", "🐵", "👑", "🚀", "⚡", "👾"];
+    function startDrag(e) {
+      if (!gameActive) return;
+      const pos = getEventPos(e);
+      const dist = Math.hypot(pos.x - sling.x, pos.y - sling.y);
+      if (dist < 40) {
+        sling.isDragging = true;
+        sling.dragX = pos.x;
+        sling.dragY = pos.y;
+        playTone(300, 0.1, 'triangle');
+      }
+    }
 
-    const { useState, useEffect } = React;
-
-    // --- ÖZEL İKONLAR (Sıfır Hata İçin Saf SVG) ---
-    const Icons = {
-      Wifi: () => (
-        <svg className="w-3.5 h-3.5 text-green-400 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M5 12.5a13.38 13.38 0 0 1 14 0" /><path d="M8.5 16.29a8.34 8.34 0 0 1 7 0" /><path d="M12 20h.01" />
-        </svg>
-      ),
-      WifiOff: () => (
-        <svg className="w-3.5 h-3.5 text-yellow-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0 1 19 12.5M5 12.5a10.94 10.94 0 0 1 5.83-2.84" /><path d="M12 20h.01" />
-        </svg>
-      ),
-      ShoppingBag: ({ className = "" }) => (
-        <svg className={`${className} w-4 h-4`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" />
-        </svg>
-      ),
-      Scissors: ({ className = "" }) => (
-        <svg className={`${className} w-4 h-4`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="6" cy="6" r="3" /><circle cx="6" cy="18" r="3" /><line x1="9.8" y1="8.2" x2="21" y2="19.4" /><line x1="21" y1="4.6" x2="14.5" y2="11" /><line x1="11" y1="14.5" x2="8.2" y2="17.3" />
-        </svg>
-      ),
-      Trash2: ({ className = "" }) => (
-        <svg className={`${className} w-4 h-4`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" />
-        </svg>
-      ),
-      MapPin: ({ className = "" }) => (
-        <svg className={`${className} w-4 h-4`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
-        </svg>
-      ),
-      Send: ({ className = "" }) => (
-        <svg className={`${className} w-4 h-4`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" />
-        </svg>
-      ),
-      Check: ({ className = "" }) => (
-        <svg className={`${className} w-4 h-4`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="20 6 9 17 4 12" />
-        </svg>
-      ),
-      Plus: ({ className = "" }) => (
-        <svg className={`${className} w-4 h-4`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-        </svg>
-      )
-    };
-
-    // --- STREAMING_CHUNK: React Component Başlangıcı... ---
-    const App = () => {
-      const [role, setRole] = useState('customer'); // 'customer', 'staff', 'patron'
-      const [activeTab, setActiveTab] = useState('catalog'); // 'catalog', 'cart', 'tracking', 'profile'
-      const [patronTab, setPatronTab] = useState('orders'); // 'orders', 'staff', 'resources'
-      const [cart, setCart] = useState([]);
-      const [showToast, setShowToast] = useState(false);
-      const [copied, setCopied] = useState(false);
-
-      // Şifre Giriş Kontrolleri (1089)
-      const [showPasswordModal, setShowPasswordModal] = useState(false);
-      const [passwordInput, setPasswordInput] = useState("");
+    function drag(e) {
+      if (!sling.isDragging) return;
+      const pos = getEventPos(e);
+      const angle = Math.atan2(pos.y - sling.y, pos.x - sling.x);
+      const dist = Math.min(Math.hypot(pos.x - sling.x, pos.y - sling.y), sling.maxDrag);
       
-      // Eleman Giriş State'leri
-      const [activeStaff, setActiveStaff] = useState(null); 
-      const [staffNameInput, setStaffNameInput] = useState("");
-      const [staffRoleInput, setStaffRoleInput] = useState("örüsü");
+      sling.dragX = sling.x + Math.cos(angle) * dist;
+      sling.dragY = sling.y + Math.sin(angle) * dist;
+    }
 
-      // Müşteri Profil State
-      const [profile, setProfile] = useState({
-        name: '',
-        classRoom: '', 
-        deskRow: 'Orta Sıra',
-        avatar: '🦁',
-        isRegistered: false
+    function endDrag() {
+      if (!sling.isDragging) return;
+      sling.isDragging = false;
+
+      // Hızı sapanın çekilme mesafesine göre ayarla
+      const dx = sling.x - sling.dragX;
+      const dy = sling.y - sling.dragY;
+      const power = 0.18;
+
+      projectiles.push({
+        x: sling.x,
+        y: sling.y,
+        vx: dx * power,
+        vy: dy * power,
+        radius: 6
       });
 
-      // Bileklik Özelleştirme State
-      const [customOptions, setCustomOptions] = useState({
-        size: 'M (Standart)',
-        envelope: 'Standart Şeffaf',
-        selectedColors: [], 
-        customColorText: '', 
-        note: ''
-      });
+      playTone(600, 0.2, 'sawtooth');
+    }
 
-      // Canlı Veri Listeleri
-      const [orders, setOrders] = useState([]);
-      const [staffList, setStaffList] = useState([]);
-      const [staffRequests, setStaffRequests] = useState([]);
+    canvas.addEventListener('mousedown', startDrag);
+    canvas.addEventListener('mousemove', drag);
+    canvas.addEventListener('mouseup', endDrag);
 
-      const [materials, setMaterials] = useState(500); 
-      const [money, setMoney] = useState(1500); 
+    canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrag(e); });
+    canvas.addEventListener('touchmove', (e) => { e.preventDefault(); drag(e); });
+    canvas.addEventListener('touchend', (e) => { e.preventDefault(); endDrag(); });
 
-      // --- SENTETİK BİLDİRİM SESİ ---
-      const playNotificationSound = () => {
-        try {
-          const ctx = new (window.AudioContext || window.webkitAudioContext)();
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(523.25, ctx.currentTime); 
-          osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.12); 
-          gain.gain.setValueAtTime(0.08, ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
-          osc.start(ctx.currentTime);
-          osc.stop(ctx.currentTime + 0.35);
-        } catch (e) {
-          console.log("Ses çalma engellendi.");
-        }
-      };
-
-      // --- STREAMING_CHUNK: LocalStorage ve Firebase Veri Entegrasyonu... ---
-      useEffect(() => {
-        // Profil ve sepeti LocalStorage'dan alarak canlandır
-        const storedProfile = localStorage.getItem('akma_profile');
-        if (storedProfile) {
-          setProfile(JSON.parse(storedProfile));
-        } else {
-          setActiveTab('profile');
-        }
-
-        // Eğer Demo/Simülasyon modundaysak verileri LocalStorage üzerinden realtime simüle et
-        if (isDemoMode) {
-          const storedOrders = localStorage.getItem('akma_orders');
-          if (storedOrders) setOrders(JSON.parse(storedOrders));
-          
-          const storedStaff = localStorage.getItem('akma_staff');
-          if (storedStaff) setStaffList(JSON.parse(storedStaff));
-
-          const storedRequests = localStorage.getItem('akma_requests');
-          if (storedRequests) setStaffRequests(JSON.parse(storedRequests));
-        } else {
-          // Canlı Firebase Bağlantı Dinleyicileri
-          const unsubscribeOrders = onSnapshot(collection(db, 'orders'), (snapshot) => {
-            const list = [];
-            snapshot.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
-            list.sort((a,b) => b.createdAt - a.createdAt);
-            setOrders(list);
-          });
-
-          const unsubscribeStaff = onSnapshot(collection(db, 'staff'), (snapshot) => {
-            const list = [];
-            snapshot.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
-            setStaffList(list);
-          });
-
-          const unsubscribeRequests = onSnapshot(collection(db, 'requests'), (snapshot) => {
-            const list = [];
-            snapshot.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
-            setStaffRequests(list);
-          });
-
-          return () => {
-            unsubscribeOrders();
-            unsubscribeStaff();
-            unsubscribeRequests();
-          };
-        }
-      }, [role]);
-
-      // --- DİNAMİK FİYATLANDIRMA HESAPLAMA ---
-      const getCalculatedPrice = () => {
-        // Tek renk seçilmişse 30 TL, karışık veya seçilmemişse 20 TL
-        const basePrice = customOptions.selectedColors.length === 1 ? 30 : 20;
-        const envelopeCost = customOptions.envelope === 'O ELENDİN Kara Zarf' ? 15 : 0;
-        return basePrice + envelopeCost;
-      };
-
-      const handleToggleColor = (colorName) => {
-        setCustomOptions(prev => {
-          const isSelected = prev.selectedColors.includes(colorName);
-          const updated = isSelected 
-            ? prev.selectedColors.filter(c => c !== colorName)
-            : [...prev.selectedColors, colorName];
-          return { ...prev, selectedColors: updated };
+    // Parçacık Patlama Efekti
+    function spawnParticles(x, y, color) {
+      for (let i = 0; i < 15; i++) {
+        particles.push({
+          x: x,
+          y: y,
+          vx: (Math.random() - 0.5) * 8,
+          vy: (Math.random() - 0.5) * 8,
+          radius: Math.random() * 3 + 1,
+          color: color,
+          alpha: 1,
+          decay: Math.random() * 0.03 + 0.01
         });
-      };
+      }
+    }
 
-      // --- STREAMING_CHUNK: Sepete Ekleme ve Sipariş Gönderme... ---
-      const handleAddToCart = () => {
-        let colorSummary = "Karışık Renkli";
-        if (customOptions.selectedColors.length === 1) {
-          colorSummary = `Tek Renk (${customOptions.selectedColors[0]})`;
-        } else if (customOptions.selectedColors.length > 1) {
-          colorSummary = customOptions.selectedColors.join(" + ");
-        }
-
-        if (customOptions.customColorText.trim()) {
-          colorSummary += ` [Özel: ${customOptions.customColorText.trim()}]`;
-        }
-
-        const calculatedPrice = getCalculatedPrice();
-
-        const cartItem = {
-          id: Date.now(),
-          name: "Düz Bileklik",
-          price: calculatedPrice,
-          size: customOptions.size,
-          envelope: customOptions.envelope,
-          colors: colorSummary,
-          note: customOptions.note
-        };
-
-        setCart(prev => [...prev, cartItem]);
-        setCustomOptions(prev => ({ ...prev, selectedColors: [], customColorText: '', note: '' }));
-        setActiveTab('cart');
-      };
-
-      const handleRemoveFromCart = (id) => {
-        setCart(prev => prev.filter(item => item.id !== id));
-      };
-
-      // --- SİPARİŞİ TAMAMLAYIP GÖNDERME ---
-      const submitOrder = async (e) => {
-        e.preventDefault();
-        if (!profile.isRegistered) return alert("Sipariş vermeden önce profil oluşturmalısın kanka!");
-        if (cart.length === 0) return;
-
-        const total = cart.reduce((sum, item) => sum + item.price, 0);
-        const orderId = `ORD-${Math.floor(1000 + Math.random() * 9000)}`;
-
-        const newOrder = {
-          id: orderId,
-          customer: profile.name,
-          classRoom: profile.classRoom,
-          deskRow: profile.deskRow,
-          avatar: profile.avatar,
-          items: cart,
-          status: "Örülüyor", 
-          total: total,
-          assignedWeaver: "", 
-          assignedCourier: "", 
-          createdAt: Date.now()
-        };
-
-        if (isDemoMode) {
-          // Demo Simülasyon Kaydı
-          const updated = [newOrder, ...orders];
-          setOrders(updated);
-          localStorage.setItem('akma_orders', JSON.stringify(updated));
-        } else {
-          // Firebase Canlı Kayıt
-          await setDoc(doc(db, 'orders', orderId), newOrder);
-        }
-
-        setCart([]);
-        setShowToast(true);
-        setTimeout(() => {
-          setShowToast(false);
-          setActiveTab('tracking');
-        }, 1800);
-      };
-
-      // --- PROFİL KAYDETME ---
-      const handleSaveProfile = (e) => {
-        e.preventDefault();
-        if (!profile.name.trim() || !profile.classRoom.trim()) return;
-
-        const updatedProfile = {
-          ...profile,
-          classRoom: profile.classRoom.toUpperCase(),
-          isRegistered: true
-        };
-        setProfile(updatedProfile);
-        localStorage.setItem('akma_profile', JSON.stringify(updatedProfile));
-        setActiveTab('catalog');
-      };
-
-      // --- ELEMAN BAŞVURUSU GÖNDERME (OTOMATİK PATRONA BİLDİRİM) ---
-      const handleSendStaffRequest = async (e) => {
-        e.preventDefault();
-        if (!staffNameInput.trim()) return;
-
-        const reqId = `REQ-${Math.floor(100 + Math.random() * 900)}`;
-        const newRequest = {
-          id: reqId,
-          name: staffNameInput.trim(),
-          role: staffRoleInput,
-          createdAt: Date.now()
-        };
-
-        if (isDemoMode) {
-          const updated = [newRequest, ...staffRequests];
-          setStaffRequests(updated);
-          localStorage.setItem('akma_requests', JSON.stringify(updated));
-        } else {
-          await setDoc(doc(db, 'requests', reqId), newRequest);
-        }
-
-        alert("Başvurun başarıyla Patron ekranına iletildi! Patron onaylayana kadar bekle kanka.");
-        setStaffNameInput("");
-      };
-
-      // --- PATRON: BAŞVURU ONAYLAMA ---
-      const handleApproveStaff = async (req) => {
-        const staffId = `STF-${Math.floor(100 + Math.random() * 900)}`;
-        const newStaff = {
-          id: staffId,
-          name: req.name,
-          role: req.role
-        };
-
-        if (isDemoMode) {
-          // İstek sil
-          const updatedRequests = staffRequests.filter(r => r.id !== req.id);
-          setStaffRequests(updatedRequests);
-          localStorage.setItem('akma_requests', JSON.stringify(updatedRequests));
-
-          // Elemanı ekle
-          const updatedStaff = [...staffList, newStaff];
-          setStaffList(updatedStaff);
-          localStorage.setItem('akma_staff', JSON.stringify(updatedStaff));
-        } else {
-          await setDoc(doc(db, 'staff', staffId), newStaff);
-          await deleteDoc(doc(db, 'requests', req.id));
-        }
-        alert(`${req.name} başarıyla AKMA kadrosuna alındı!`);
-      };
-
-      // --- PATRON: ELEMAN SİLME ---
-      const handleDeleteStaff = async (id) => {
-        if (isDemoMode) {
-          const updated = staffList.filter(s => s.id !== id);
-          setStaffList(updated);
-          localStorage.setItem('akma_staff', JSON.stringify(updated));
-        } else {
-          await deleteDoc(doc(db, 'staff', id));
-        }
-      };
-
-      // --- PATRON: GÖREVLENDİRME ATAMA ---
-      const handleAssignStaff = async (orderId, staffName, assignType) => {
-        if (isDemoMode) {
-          const updated = orders.map(o => {
-            if (o.id === orderId) {
-              return assignType === 'weaver' 
-                ? { ...o, assignedWeaver: staffName }
-                : { ...o, assignedCourier: staffName };
-            }
-            return o;
-          });
-          setOrders(updated);
-          localStorage.setItem('akma_orders', JSON.stringify(updated));
-        } else {
-          const orderDocRef = doc(db, 'orders', orderId);
-          if (assignType === 'weaver') {
-            await updateDoc(orderDocRef, { assignedWeaver: staffName });
-          } else {
-            await updateDoc(orderDocRef, { assignedCourier: staffName });
-          }
-        }
-      };
-
-      // --- SİPARİŞ DURUMUNU İLERLETME ---
-      const handleUpdateStatus = async (orderId, currentStatus) => {
-        const statusCycle = {
-          'Örülüyor': 'Paketlendi',
-          'Paketlendi': 'Kuryede',
-          'Kuryede': 'Teslim Edildi',
-          'Teslim Edildi': 'Teslim Edildi'
-        };
-
-        const nextStatus = statusCycle[currentStatus];
-
-        if (isDemoMode) {
-          const updated = orders.map(o => {
-            if (o.id === orderId) {
-              return { ...o, status: nextStatus };
-            }
-            return o;
-          });
-          setOrders(updated);
-          localStorage.setItem('akma_orders', JSON.stringify(updated));
-          
-          if (nextStatus === 'Teslim Edildi' && currentStatus !== 'Teslim Edildi') {
-            setMoney(m => m + 30); // Sanal kazanç
-            setMaterials(mat => Math.max(0, mat - 5));
-          }
-        } else {
-          const orderDocRef = doc(db, 'orders', orderId);
-          await updateDoc(orderDocRef, { status: nextStatus });
-        }
-      };
-
-      // --- PATRON ŞİFRE DOĞRULAMA (1089) ---
-      const handlePasswordSubmit = (e) => {
-        e.preventDefault();
-        if (passwordInput === "1089") {
-          setRole('patron');
-          setPatronTab('orders');
-          setShowPasswordModal(false);
-          setPasswordInput("");
-        } else {
-          alert("Yanlış Şifre Kanka! 1089'u dene.");
-        }
-      };
-
-      const copyAppUrl = () => {
-        const el = document.createElement('textarea');
-        el.value = window.location.href;
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand('copy');
-        document.body.removeChild(el);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      };
-
-      const myOrders = orders.filter(o => o.userUid === user?.uid);
-      const assignedToMeOrders = orders.filter(o => {
-        if (!activeStaff) return false;
-        return activeStaff.role === 'örüsü' 
-          ? o.assignedWeaver === activeStaff.name
-          : o.assignedCourier === activeStaff.name;
+    // Hedefleri Güncelle / Oluştur
+    function spawnTarget() {
+      if (!gameActive) return;
+      const radius = Math.random() * 15 + 15;
+      targets.push({
+        x: Math.random() * (canvas.width - radius * 2) + radius,
+        y: -radius,
+        vy: Math.random() * 2 + 1 + (score * 0.05),
+        radius: radius,
+        color: `hsl(${Math.random() * 360}, 80%, 60%)`
       });
+    }
 
-      // --- STREAMING_CHUNK: Görsel Kod Arayüzünün Render Edilmesi... ---
-      return (
-        <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between font-sans selection:bg-blue-600/30">
+    let spawnTimer = setInterval(spawnTarget, 1500);
+
+    // Fizik ve Render Döngüsü
+    function update() {
+      // 1. Mermileri Güncelle
+      for (let i = projectiles.length - 1; i >= 0; i--) {
+        const p = projectiles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        // Ekrandan çıkanları sil
+        if (p.x < 0 || p.x > canvas.width || p.y < 0 || p.y > canvas.height) {
+          projectiles.splice(i, 1);
+        }
+      }
+
+      // 2. Hedefleri Güncelle
+      for (let i = targets.length - 1; i >= 0; i--) {
+        const t = targets[i];
+        t.y += t.vy;
+
+        // Hedef tabana ulaşırsa can git
+        if (t.y - t.radius > canvas.height) {
+          targets.splice(i, 1);
+          lives--;
+          playTone(150, 0.3, 'sine');
+          livesVal.innerText = "❤".repeat(Math.max(0, lives));
           
-          {/* ÜST PANEL */}
-          <header className="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-50 backdrop-blur-md">
-            <div className="max-w-md mx-auto flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                {profile.isRegistered && role === 'customer' && (
-                  <span className="text-2xl bg-slate-800 w-10 h-10 rounded-full flex items-center justify-center border border-slate-700 animate-pulse">
-                    {profile.avatar}
-                  </span>
-                )}
-                {activeStaff && role === 'staff' && (
-                  <span className="text-2xl bg-slate-800 w-10 h-10 rounded-full flex items-center justify-center border border-slate-700">
-                    {activeStaff.role === 'örüsü' ? "🪡" : "🛵"}
-                  </span>
-                )}
-                <div>
-                  <span className="text-[10px] bg-blue-600/10 text-blue-400 px-2 py-0.5 rounded-full font-black uppercase tracking-widest flex items-center gap-1.5">
-                    {dbConnected ? <Icons.Wifi /> : <Icons.WifiOff />}
-                    {dbConnected ? "Bulut Aktif" : "Sanal Simülasyon"}
-                  </span>
-                  <h1 className="text-base font-black text-white italic tracking-tighter mt-0.5">
-                    {role === 'customer' && profile.isRegistered ? `${profile.name.toUpperCase()} (${profile.classRoom})` : 
-                     role === 'patron' ? "PATRON KABİNİ" : 
-                     role === 'staff' && activeStaff ? `${activeStaff.name.toUpperCase()}` : 
-                     "AKMA KOLEKTİF"}
-                  </h1>
-                </div>
-              </div>
+          if (lives <= 0) {
+            gameActive = false;
+            gameOverScreen.classList.remove('hidden');
+            finalScore.innerText = score;
+          }
+          continue;
+        }
 
-              <div className="flex gap-2">
-                <select 
-                  value={role} 
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    if (val === 'patron') {
-                      setShowPasswordModal(true);
-                    } else if (val === 'staff') {
-                      setRole('staff');
-                      setActiveStaff(null);
-                    } else {
-                      setRole('customer');
-                    }
-                  }}
-                  className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-full text-xs font-black px-3 py-1.5 outline-none cursor-pointer"
-                >
-                  <option value="customer">MÜŞTERİ</option>
-                  <option value="staff">ELEMAN</option>
-                  <option value="patron">🏆 PATRON</option>
-                </select>
-              </div>
-            </div>
-          </header>
+        // Çarpışma Kontrolü (Mermi - Hedef)
+        for (let j = projectiles.length - 1; j >= 0; j--) {
+          const p = projectiles[j];
+          const dist = Math.hypot(p.x - t.x, p.y - t.y);
+          if (dist < t.radius + p.radius) {
+            spawnParticles(t.x, t.y, t.color);
+            targets.splice(i, 1);
+            projectiles.splice(j, 1);
+            score += 10;
+            scoreVal.innerText = score;
+            playTone(400 + (score * 2), 0.15, 'triangle');
+            break;
+          }
+        }
+      }
 
-          {/* ANA GÖVDE */}
-          <main className="flex-1 max-w-md w-full mx-auto p-4 space-y-6 pb-24">
-            
-            {/* ======================================= */}
-            {/* MÜŞTERİ MODU                            */}
-            {/* ======================================= */}
-            {role === 'customer' && (
-              <div className="space-y-6">
-                
-                {/* Alt Tablar */}
-                <div className="flex bg-slate-900 p-1.5 rounded-2xl border border-slate-800">
-                  {['catalog', 'cart', 'tracking', 'profile'].map(tab => (
-                    <button 
-                      key={tab}
-                      onClick={() => setActiveTab(tab)}
-                      className={`flex-1 py-2.5 rounded-xl font-black text-[10px] tracking-tight transition-all ${activeTab === tab ? 'bg-white text-black font-bold' : 'text-slate-500'}`}
-                    >
-                      {tab === 'catalog' ? 'TASARIM' : tab === 'cart' ? 'SEPET' : tab === 'tracking' ? 'TAKİBİM' : 'PROFİLİM'}
-                    </button>
-                  ))}
-                </div>
+      // 3. Parçacıkları Güncelle
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha -= p.decay;
+        if (p.alpha <= 0) {
+          particles.splice(i, 1);
+        }
+      }
+    }
 
-                {/* KATALOG (TASARIM) TAB */}
-                {activeTab === 'catalog' && (
-                  <div className="space-y-6 animate-in fade-in duration-300">
-                    
-                    {/* Bileklik Kartı */}
-                    <div className="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 p-5 rounded-[2rem] space-y-2 relative overflow-hidden">
-                      <span className="text-[9px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded-full font-black uppercase tracking-widest">AKMA Klasiği</span>
-                      <h2 className="text-xl font-black italic text-white tracking-tight uppercase">Düz Bileklik</h2>
-                      <p className="text-[11px] text-slate-400 leading-relaxed">Özel dokuma iplerle hazırlanan, okul kıyafetlerinle %100 uyumlu düz model.</p>
-                      <div className="pt-2 flex gap-4 text-xs font-black">
-                        <span className="text-slate-400">Karışık Renk: <strong className="text-green-400">20 TL</strong></span>
-                        <span className="text-slate-400">Tek Renk Özel: <strong className="text-green-400">30 TL</strong></span>
-                      </div>
-                    </div>
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                    {/* Tasarla Kutusu */}
-                    <div className="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-5">
-                      <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                        <Icons.Scissors /> BİLEKLİĞİNİ TASARLA
-                      </h3>
+      // Sapan Direklerini Çiz
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 6;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(sling.x - 30, sling.y);
+      ctx.lineTo(sling.x - 30, sling.y + 40);
+      ctx.moveTo(sling.x + 30, sling.y);
+      ctx.lineTo(sling.x + 30, sling.y + 40);
+      ctx.stroke();
 
-                      {/* Bilek Ölçüsü */}
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-500 uppercase">Bilek Ölçüsü</label>
-                        <div className="grid grid-cols-3 gap-2">
-                          {['S (İnce)', 'M (Standart)', 'L (Geniş)'].map(sz => (
-                            <button
-                              key={sz}
-                              type="button"
-                              onClick={() => setCustomOptions(prev => ({ ...prev, size: sz }))}
-                              className={`py-2 rounded-xl text-xs font-bold border transition-all ${customOptions.size === sz ? 'bg-blue-600 text-white border-blue-500' : 'bg-slate-800 border-slate-700 text-slate-400'}`}
-                            >
-                              {sz.split(' ')[0]}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+      // Çekilme Aşamasındaki Lastiği Çiz
+      if (sling.isDragging) {
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(sling.x - 30, sling.y);
+        ctx.lineTo(sling.dragX, sling.dragY);
+        ctx.lineTo(sling.x + 30, sling.y);
+        ctx.stroke();
 
-                      {/* Çoklu Renk Seçici */}
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <label className="text-[10px] font-black text-slate-500 uppercase">Renk Seçimi (Çoklu Seçim)</label>
-                          <span className="text-[9px] text-blue-400 font-black uppercase">Tek Seçim: 30 TL | Çoklu: 20 TL</span>
-                        </div>
-                        <div className="grid grid-cols-4 gap-2 bg-slate-950 p-3 rounded-2xl border border-slate-800">
-                          {COLOR_OPTIONS.map(c => {
-                            const isSelected = customOptions.selectedColors.includes(c.name);
-                            return (
-                              <button
-                                key={c.id}
-                                type="button"
-                                onClick={() => handleToggleColor(c.name)}
-                                className={`flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all border ${isSelected ? 'bg-blue-600/20 border-blue-500' : 'border-transparent hover:bg-slate-800'}`}
-                              >
-                                <span className="w-6 h-6 rounded-full border border-slate-800 shadow-md flex items-center justify-center text-[10px]" style={{ backgroundColor: c.hex }}>
-                                  {isSelected && "✓"}
-                                </span>
-                                <span className="text-[8px] font-black text-slate-400">{c.name}</span>
-                              </button>
-                            );
-                          })}
-                        </div>
+        // Çekilen Mermiyi Çiz
+        ctx.fillStyle = '#f8fafc';
+        ctx.beginPath();
+        ctx.arc(sling.dragX, sling.dragY, 8, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        // Dinlenme Durumundaki Lastiği Çiz
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(sling.x - 30, sling.y);
+        ctx.lineTo(sling.x + 30, sling.y);
+        ctx.stroke();
+      }
 
-                        {/* Özel Renk */}
-                        <div className="space-y-1.5">
-                          <label className="text-[9px] font-black text-slate-500 uppercase">Özel İstediğin Başka Renk / Desen?</label>
-                          <input 
-                            type="text"
-                            value={customOptions.customColorText}
-                            onChange={(e) => setCustomOptions(prev => ({ ...prev, customColorText: e.target.value }))}
-                            placeholder="Örn: Sarı-Lacivert sarmal deseni..."
-                            className="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs text-slate-100 outline-none focus:border-blue-500 transition-all font-bold"
-                          />
-                        </div>
-                      </div>
+      // Mermileri Çiz
+      ctx.fillStyle = '#f8fafc';
+      for (const p of projectiles) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
 
-                      {/* Paket Tasarımı */}
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-500 uppercase">Paketleme Zarfı</label>
-                        <div className="grid grid-cols-2 gap-2">
-                          {[
-                            { id: 'Standart Şeffaf', label: 'Standart Paket', bonus: '+0₺' },
-                            { id: 'O ELENDİN Kara Zarf', label: 'Kara Zarf (Gizli)', bonus: '+15₺' }
-                          ].map(env => (
-                            <button
-                              key={env.id}
-                              type="button"
-                              onClick={() => setCustomOptions(prev => ({ ...prev, envelope: env.id }))}
-                              className={`py-3 px-2 rounded-xl text-xs font-bold border flex flex-col items-center justify-center transition-all ${customOptions.envelope === env.id ? 'bg-blue-600 text-white border-blue-500' : 'bg-slate-800 border-slate-700 text-slate-400'}`}
-                            >
-                              <span>{env.label}</span>
-                              <span className="text-[8px] font-bold opacity-60 mt-0.5">{env.bonus}</span>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+      // Hedefleri Çiz
+      for (const t of targets) {
+        ctx.fillStyle = t.color;
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, t.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
 
-                      {/* Not */}
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-500 uppercase">Özel Sipariş Notun</label>
-                        <input 
-                          type="text" 
-                          value={customOptions.note}
-                          onChange={(e) => setCustomOptions(prev => ({ ...prev, note: e.target.value }))}
-                          placeholder="Renk talebi, teslimat saati vb..."
-                          className="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs text-slate-100 outline-none focus:border-blue-500 transition-all font-bold"
-                        />
-                      </div>
+      // Parçacıkları Çiz
+      for (const p of particles) {
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.alpha;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+      }
+    }
 
-                      <button onClick={handleAddToCart} className="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2">
-                        <Icons.ShoppingBag /> SEPETE EKLE ({getCalculatedPrice()} TL)
-                      </button>
-                    </div>
-                  </div>
-                )}
+    // Oyun Döngüsü
+    function gameLoop() {
+      update();
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
 
-                {/* SEPET TAB */}
-                {activeTab === 'cart' && (
-                  <div className="space-y-6 animate-in fade-in duration-300">
-                    {cart.length === 0 ? (
-                      <div className="text-center py-16 bg-slate-900/40 rounded-[2.5rem] border border-slate-900 text-slate-500 text-xs">Sepetin bomboş kanka!</div>
-                    ) : (
-                      <form onSubmit={submitOrder} className="space-y-6">
-                        <div className="space-y-3">
-                          <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest px-1">Sepetimdekiler</h3>
-                          {cart.map(item => (
-                            <div key={item.id} className="bg-slate-900 border border-slate-800 p-4 rounded-3xl flex justify-between items-center relative">
-                              <div>
-                                <h4 className="font-black text-sm uppercase text-white">{item.name}</h4>
-                                <p className="text-[10px] text-slate-400 mt-0.5">{item.size} • {item.envelope}</p>
-                                <p className="text-[9px] text-blue-400 font-black mt-1">Renk: {item.colors}</p>
-                              </div>
-                              <div className="flex items-center gap-4">
-                                <span className="font-mono font-black text-sm text-green-400">{item.price}₺</span>
-                                <button type="button" onClick={() => handleRemoveFromCart(item.id)} className="text-red-500 p-2 hover:bg-red-500/10 rounded-xl transition-all">
-                                  <Icons.Trash2 />
-                                </button>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+    // Yeniden Başlatma Mekanizması
+    restartBtn.addEventListener('click', () => {
+      score = 0;
+      lives = 3;
+      projectiles = [];
+      targets = [];
+      particles = [];
+      gameActive = true;
+      scoreVal.innerText = '0';
+      livesVal.innerText = '❤❤❤';
+      gameOverScreen.classList.add('hidden');
+    });
 
-                        {/* Alıcı Bilgileri */}
-                        <div className="bg-slate-900 border border-slate-800 p-6 rounded-[2rem] space-y-4">
-                          <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 border-b border-slate-800 pb-3">
-                            <Icons.MapPin /> TESLİMAT BİLGİLERİ
-                          </h3>
-                          {profile.isRegistered ? (
-                            <div className="flex items-center justify-between text-xs">
-                              <div>
-                                <p className="font-black text-white">{profile.name} ({profile.classRoom})</p>
-                                <p className="text-slate-500 mt-0.5">{profile.deskRow}</p>
-                              </div>
-                              <span className="text-3xl bg-slate-800 p-2 rounded-2xl">{profile.avatar}</span>
-                            </div>
-                          ) : (
-                            <button type="button" onClick={() => setActiveTab('profile')} className="w-full py-3 bg-blue-600 rounded-xl font-black text-xs uppercase">ÖNCE PROFİL OLUŞTUR</button>
-                          )}
-
-                          <div className="pt-4 border-t border-slate-800 flex justify-between items-center">
-                            <p className="text-2xl font-black text-green-400 font-mono">
-                              {cart.reduce((sum, item) => sum + item.price, 0)}₺
-                            </p>
-                            <button type="submit" disabled={!profile.isRegistered} className="bg-green-600 disabled:opacity-50 hover:bg-green-500 px-6 py-4 rounded-2xl font-black text-xs uppercase flex items-center gap-2 shadow-lg">
-                              <Icons.Send /> SİPARİŞİ TAMAMLA
-                            </button>
-                          </div>
-                        </div>
-                      </form>
-                    )}
-                  </div>
-                )}
-
-                {/* TAKİBİM TAB */}
-                {activeTab === 'tracking' && (
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center px-1">
-                       <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest">Siparişlerim</h3>
-                       <button onClick={copyAppUrl} className="text-[10px] text-blue-400 font-bold flex items-center gap-1 hover:underline">
-                         <Icons.Check /> {copied ? 'Kopyalandı!' : 'Sınıf Linkini Paylaş'}
-                       </button>
-                    </div>
-                    {myOrders.length === 0 ? (
-                      <div className="text-center py-16 text-slate-500 text-xs bg-slate-900/30 rounded-[2rem] border border-slate-800">Siparişin bulunmuyor kanka.</div>
-                    ) : (
-                      myOrders.map((order) => (
-                        <div key={order.id} className="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-4">
-                          <div className="flex justify-between items-start">
-                            <h4 className="font-black text-sm text-white">{order.customer} ({order.classRoom})</h4>
-                            <span className="text-[10px] font-black px-3 py-1 rounded-full uppercase bg-slate-800 text-blue-400">{order.status}</span>
-                          </div>
-                          <div className="bg-slate-950 p-3 rounded-xl border border-slate-800/80 text-[10px] flex justify-between text-slate-400 font-bold">
-                            <span>🔨 Örücü: {order.assignedWeaver || "Atanmadı"}</span>
-                            <span>🛵 Kurye: {order.assignedCourier || "Atanmadı"}</span>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                )}
-
-                {/* PROFİL TAB */}
-                {activeTab === 'profile' && (
-                  <form onSubmit={handleSaveProfile} className="space-y-6">
-                    <div className="bg-slate-900 border border-slate-800 p-6 rounded-[2.5rem] space-y-6">
-                      <div className="text-center space-y-2">
-                        <span className="text-5xl bg-slate-800 w-20 h-20 rounded-full flex items-center justify-center mx-auto border-2 border-blue-500 shadow-xl shadow-blue-500/10">
-                          {profile.avatar}
-                        </span>
-                        <h3 className="font-black text-lg text-white">AKMA Profilini Oluştur</h3>
-                      </div>
-
-                      <div className="grid grid-cols-6 gap-2 bg-slate-950 p-3 rounded-2xl border border-slate-800">
-                        {AVATAR_OPTIONS.map(av => (
-                          <button key={av} type="button" onClick={() => setProfile(prev => ({ ...prev, avatar: av }))} className={`text-2xl p-1 rounded-xl transition-all ${profile.avatar === av ? 'bg-blue-600 scale-110 shadow-lg' : ''}`}>{av}</button>
-                        ))}
-                      </div>
-
-                      <input type="text" required value={profile.name} onChange={(e) => setProfile(prev => ({ ...prev, name: e.target.value }))} placeholder="Adın veya Takma Adın" className="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-sm font-bold text-slate-100 outline-none focus:border-blue-500 transition-all"/>
-                      
-                      <div className="grid grid-cols-2 gap-3">
-                        <input type="text" required value={profile.classRoom} onChange={(e) => setProfile(prev => ({ ...prev, classRoom: e.target.value }))} placeholder="Sınıfın (Örn: 10-A, 11-FEN)" className="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-xs font-bold text-slate-100 outline-none focus:border-blue-500 transition-all"/>
-                        <select value={profile.deskRow} onChange={(e) => setProfile(prev => ({ ...prev, deskRow: e.target.value }))} className="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-2xl text-xs font-bold text-slate-100 outline-none">
-                          {['Ön Sıra', 'Orta Sıra', 'Arka Sıra', 'Pencere Kenarı', 'Duvar Kenarı'].map(r => <option key={r} value={r}>{r}</option>)}
-                        </select>
-                      </div>
-
-                      <button type="submit" className="w-full py-4 bg-blue-600 rounded-2xl font-black text-xs uppercase shadow-lg transition-all active:scale-95">PROFİLİ KAYDET VE BULUTA BAĞLAN</button>
-                    </div>
-                  </form>
-                )}
-
-              </div>
-            )}
-
-            {/* ======================================= */}
-            {/* ELEMAN MODU (Örücü & Kurye Doğrulama)     */}
-            {/* ======================================= */}
-            {role === 'staff' && (
-              <div className="space-y-6">
-                {!activeStaff ? (
-                  <div className="bg-slate-900 border border-slate-800 p-6 rounded-[2.5rem] space-y-6">
-                    <div className="text-center space-y-2">
-                      <span className="text-5xl">👷</span>
-                      <h3 className="font-black text-lg text-white">Eleman Başvuru & Giriş</h3>
-                      <p className="text-xs text-slate-400">Önce başvuru yap kanka, onaylanınca ismini seçip sisteme girersin.</p>
-                    </div>
-                    
-                    {/* Giriş Listesi */}
-                    <div className="space-y-2 max-h-40 overflow-y-auto scrollbar-hide">
-                      {staffList.map(st => (
-                        <button
-                          key={st.id}
-                          onClick={() => setActiveStaff(st)}
-                          className="w-full bg-slate-950 hover:bg-slate-800 border border-slate-800 p-4 rounded-2xl text-left font-black text-xs uppercase flex justify-between items-center"
-                        >
-                          <span>{st.name}</span>
-                          <span className="text-[9px] bg-blue-500/10 text-blue-400 px-2.5 py-1 rounded-full uppercase">{st.role === 'örüsü' ? '🪡 Örücü' : '🛵 Kurye'}</span>
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* Başvuru Gönderme */}
-                    <form onSubmit={handleSendStaffRequest} className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4">
-                      <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Kadroya Katıl (Başvuru Gönder)</h4>
-                      <input 
-                        type="text" 
-                        required 
-                        value={staffNameInput} 
-                        onChange={(e) => setStaffNameInput(e.target.value)} 
-                        placeholder="İsmin kanka" 
-                        className="w-full bg-slate-900 border border-slate-800 p-3.5 rounded-xl text-xs font-bold text-slate-100 outline-none"
-                      />
-                      <div className="grid grid-cols-2 gap-2">
-                        <button type="button" onClick={() => setStaffRoleInput('örüsü')} className={`py-2 rounded-xl text-xs font-bold border ${staffRoleInput === 'örüsü' ? 'bg-blue-600 text-white' : 'bg-slate-900 text-slate-500'}`}>🔨 Örücü</button>
-                        <button type="button" onClick={() => setStaffRoleInput('kurye')} className={`py-2 rounded-xl text-xs font-bold border ${staffRoleInput === 'kurye' ? 'bg-blue-600 text-white' : 'bg-slate-900 text-slate-500'}`}>🛵 Kurye</button>
-                      </div>
-                      <button type="submit" className="w-full py-3 bg-blue-600 rounded-xl font-black text-xs uppercase flex justify-center items-center gap-2">
-                        <Icons.Plus /> PATRONA GÖNDER
-                      </button>
-                    </form>
-                  </div>
-                ) : (
-                  // Aktif Eleman Sipariş Paneli
-                  <div className="space-y-6">
-                    <div className="bg-slate-900 p-5 rounded-[2rem] flex justify-between items-center border border-slate-800">
-                      <div>
-                        <h2 className="text-lg font-black text-white">{activeStaff.name.toUpperCase()}</h2>
-                        <p className="text-[10px] text-blue-400 font-bold uppercase mt-0.5">Atanan Rol: {activeStaff.role === 'örüsü' ? '🔨 Örücü (Dokuma)' : '🛵 Kurye (Dağıtım)'}</p>
-                      </div>
-                      <button onClick={() => setActiveStaff(null)} className="text-xs bg-slate-800 px-3 py-1.5 rounded-full font-black">Değiştir</button>
-                    </div>
-
-                    <div className="space-y-3">
-                      <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest px-1">Sana Atanan Siparişler</h3>
-                      {assignedToMeOrders.length === 0 ? (
-                        <div className="text-center py-16 bg-slate-900/30 border border-slate-800 rounded-3xl text-slate-500 text-xs">Sana yönlendirilmiş sipariş yok kanka.</div>
-                      ) : (
-                        assignedToMeOrders.map(order => (
-                          <div key={order.id} className="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-4">
-                            <div className="flex justify-between items-start">
-                              <h4 className="font-black text-sm text-white">{order.customer} ({order.classRoom})</h4>
-                              <span className="text-xs font-black text-green-400">{order.total}₺</span>
-                            </div>
-                            <button onClick={() => handleUpdateStatus(order.id, order.status)} disabled={order.status === 'Teslim Edildi'} className="w-full py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-black text-xs uppercase">
-                              {order.status === 'Örülüyor' && 'PAKETLENDİ OLARAK İŞARETLE'}
-                              {order.status === 'Paketlendi' && 'KURYEYE DEVRET (YOLA ÇIKAR)'}
-                              {order.status === 'Kuryede' && 'SIRAYA BIRAKILDI (TESLİM ET)'}
-                              {order.status === 'Teslim Edildi' && 'TESLİMAT BİTTİ ✔️'}
-                            </button>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* ======================================= */}
-            {/* PATRON PANELİ (Şifre Korumalı 1089)     */}
-            {role === 'patron' && (
-              <div className="space-y-6 animate-in fade-in duration-300">
-                
-                {/* Patron Tab Değiştirici */}
-                <div className="flex bg-slate-900 p-1 rounded-2xl border border-slate-800 text-xs font-black">
-                  <button onClick={() => setPatronTab('orders')} className={`flex-1 py-2.5 rounded-xl transition-all ${patronTab === 'orders' ? 'bg-white text-black' : 'text-slate-500'}`}>SİPARİŞLER ({orders.length})</button>
-                  <button onClick={() => setPatronTab('staff')} className={`flex-1 py-2.5 rounded-xl transition-all ${patronTab === 'staff' ? 'bg-white text-black' : 'text-slate-500'}`}>ELEMANLAR ({staffList.length})</button>
-                  <button onClick={() => setPatronTab('resources')} className={`flex-1 py-2.5 rounded-xl transition-all ${patronTab === 'resources' ? 'bg-white text-black' : 'text-slate-500'}`}>KASA/STOK</button>
-                </div>
-
-                {/* SİPARİŞ ATAMA VE REALTIME LİSTE */}
-                {patronTab === 'orders' && (
-                  <div className="space-y-4">
-                    {orders.length === 0 ? (
-                      <div className="text-center py-16 text-slate-500 text-xs">Sipariş bekleniyor...</div>
-                    ) : (
-                      orders.map(order => (
-                        <div key={order.id} className="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-4">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <span className="text-[9px] font-mono text-blue-400 font-black">{order.id}</span>
-                              <h4 className="font-black text-sm text-white">{order.customer} ({order.classRoom})</h4>
-                              <p className="text-[10px] text-slate-400">{order.deskRow}</p>
-                            </div>
-                            <span className="text-xs font-black text-green-400">{order.total}₺</span>
-                          </div>
-
-                          {/* İŞ DAĞILIMI / ELEMANA YÖNLENDİRME */}
-                          <div className="grid grid-cols-2 gap-3 bg-slate-950 p-4 rounded-2xl border border-slate-800/80 text-[10px]">
-                            <div className="space-y-1">
-                              <label className="font-black text-slate-500 uppercase">🔨 ÖRÜCÜ ATAMA</label>
-                              <select 
-                                value={order.assignedWeaver || ""} 
-                                onChange={(e) => handleAssignStaff(order.id, e.target.value, 'weaver')}
-                                className="w-full bg-slate-900 text-white font-bold p-2 rounded-xl outline-none"
-                              >
-                                <option value="">Seçilmedi</option>
-                                {staffList.filter(s => s.role === 'örüsü').map(st => (
-                                  <option key={st.id} value={st.name}>{st.name}</option>
-                                ))}
-                              </select>
-                            </div>
-
-                            <div className="space-y-1">
-                              <label className="font-black text-slate-500 uppercase">🛵 KURYE ATAMA</label>
-                              <select 
-                                value={order.assignedCourier || ""} 
-                                onChange={(e) => handleAssignStaff(order.id, e.target.value, 'courier')}
-                                className="w-full bg-slate-900 text-white font-bold p-2 rounded-xl outline-none"
-                              >
-                                <option value="">Seçilmedi</option>
-                                {staffList.filter(s => s.role === 'kurye').map(st => (
-                                  <option key={st.id} value={st.name}>{st.name}</option>
-                                ))}
-                              </select>
-                            </div>
-                          </div>
-
-                          <button onClick={() => handleUpdateStatus(order.id, order.status)} className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-xs font-black uppercase rounded-xl">YÖNETİCİ GÜNCELLE: {order.status}</button>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                )}
-
-                {/* ELEMAN ONAYLARI VE YÖNETİMİ */}
-                {patronTab === 'staff' && (
-                  <div className="space-y-6">
-                    {/* Onay Bekleyenler */}
-                    <div className="space-y-2">
-                      <h4 className="text-xs font-black text-yellow-500 uppercase tracking-widest px-1 animate-pulse">Onay Bekleyen Başvurular ({staffRequests.length})</h4>
-                      {staffRequests.length === 0 ? (
-                        <p className="text-xs text-slate-500 text-center py-4 bg-slate-900/30 rounded-2xl border border-slate-800">Başvuru bulunmuyor.</p>
-                      ) : (
-                        staffRequests.map(req => (
-                          <div key={req.id} className="bg-slate-900 border border-yellow-500/20 p-4 rounded-2xl flex justify-between items-center">
-                            <div>
-                              <p className="font-black text-white text-sm uppercase">{req.name}</p>
-                              <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5">{req.role === 'örüsü' ? '🪡 Örücü' : '🛵 Kurye'}</p>
-                            </div>
-                            <button onClick={() => handleApproveStaff(req)} className="bg-yellow-500 text-slate-950 px-4 py-2 rounded-xl text-xs font-black">ONAYLA</button>
-                          </div>
-                        ))
-                      )}
-                    </div>
-
-                    {/* Onaylı Çalışanlar */}
-                    <div className="space-y-2">
-                      <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest px-1">Kayıtlı Çalışanlar ({staffList.length})</h4>
-                      {staffList.map(st => (
-                        <div key={st.id} className="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex justify-between items-center">
-                          <div>
-                            <p className="font-black text-white text-sm uppercase">{st.name}</p>
-                            <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5">{st.role === 'örüsü' ? '🪡 Örücü' : '🛵 Kurye'}</p>
-                          </div>
-                          <button onClick={() => handleDeleteStaff(st.id)} className="text-red-500 p-2"><Icons.Trash2 /></button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* KASA & STOK YÖNETİMİ */}
-                {patronTab === 'resources' && (
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="bg-slate-900 border border-slate-800 p-5 rounded-3xl">
-                        <p className="text-[9px] text-slate-500 font-black uppercase">TOPLAM KASA</p>
-                        <p className="text-2xl font-black text-yellow-400 font-mono">{money}₺</p>
-                      </div>
-                      <div className="bg-slate-900 border border-slate-800 p-5 rounded-3xl">
-                        <p className="text-[9px] text-slate-500 font-black uppercase">LASTİK HAMMADDE</p>
-                        <p className="text-2xl font-black text-blue-400 font-mono">{materials} ADET</p>
-                      </div>
-                    </div>
-
-                    <div className="bg-slate-900 border border-slate-800 p-6 rounded-[2.5rem] space-y-4">
-                      <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest">Çarşı Toptancısından Lastik İp Satın Al</h4>
-                      <button 
-                        onClick={() => {
-                          if (money >= 150) {
-                            setMoney(m => m - 150);
-                            setMaterials(mat => mat + 350);
-                          }
-                        }}
-                        className="w-full py-4 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-2xl font-black text-xs flex justify-between px-6 items-center"
-                      >
-                        <span>350 ADET RENKLİ LASTİK İP</span>
-                        <span>150₺</span>
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-              </div>
-            )}
-
-          </main>
-
-          {/* SİPARİŞ BAŞARILI TOAST */}
-          {showToast && (
-            <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-              <div className="bg-slate-900 border border-slate-800 p-8 rounded-[3rem] text-center max-w-xs w-full shadow-2xl">
-                 <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/20">
-                    <Icons.Check />
-                 </div>
-                 <h3 className="font-black text-lg text-white">SİPARİŞ ALINDI!</h3>
-                 <p className="text-xs text-slate-400 mt-2">Siparişin buluta başarıyla kaydedildi kanka! Örücü ve Kurye ekibimiz atandıktan sonra hazırlık başlayacak.</p>
-              </div>
-            </div>
-          )}
-
-          {/* ŞİFRE MODAL (1089) */}
-          {showPasswordModal && (
-            <div className="fixed inset-0 bg-black/95 backdrop-blur-md z-[120] flex items-center justify-center p-4">
-              <form onSubmit={handlePasswordSubmit} className="bg-slate-900 border border-slate-800 p-8 rounded-[3rem] text-center max-w-xs w-full shadow-2xl space-y-6">
-                 <div className="w-16 h-16 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto border border-yellow-500/20">
-                    <span className="text-3xl">🔑</span>
-                 </div>
-                 <div className="space-y-1">
-                    <h3 className="font-black text-lg text-white">Patron Yetki Girişi</h3>
-                    <p className="text-xs text-slate-400">Yönetim kabinine erişmek için 4 haneli şifreyi gir kanka.</p>
-                 </div>
-                 <input 
-                    type="password" 
-                    required
-                    value={passwordInput}
-                    onChange={(e) => setPasswordInput(e.target.value)}
-                    placeholder="Şifre"
-                    className="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-center text-xl font-mono text-white outline-none tracking-widest focus:border-yellow-500 transition-all"
-                 />
-                 <div className="flex gap-2">
-                    <button type="button" onClick={() => { setShowPasswordModal(false); setRole('customer'); }} className="flex-1 py-3 bg-slate-800 rounded-xl text-xs font-bold text-slate-400">Vazgeç</button>
-                    <button type="submit" className="flex-1 py-3 bg-yellow-500 text-slate-950 rounded-xl text-xs font-black">GİRİŞ</button>
-                 </div>
-              </form>
-            </div>
-          )}
-
-          {/* ALT BİLGİ BANNERI */}
-          <footer className="bg-slate-950 p-4 border-t border-slate-900 text-center text-[10px] text-slate-600 font-bold uppercase tracking-widest">
-             AKMA KOLEKTİF • GAZİANTEP MERKEZ SIRALAR
-          </footer>
-
-        </div>
-      );
-    };
-
-    // React'ı ekrana yerleştirme
-    const container = document.getElementById('root');
-    const root = ReactDOM.createRoot(container);
-    root.render(<App />);
+    // Başlat
+    gameLoop();
   </script>
 </body>
 </html>
