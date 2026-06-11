@@ -118,7 +118,7 @@
           <button id="cust-tab-track" onclick="switchCustTab('track')" class="flex-1 py-2.5 rounded-xl text-slate-500">SİPARİŞLERİM (<span id="my-orders-count">0</span>)</button>
         </div>
 
-        <!-- MÜŞTERİ TAB: BİLEKLİK TASARLA -->
+        <!-- MÜŞTERI TAB: BİLEKLİK TASARLA -->
         <div id="cust-view-order" class="space-y-6 animate-in fade-in duration-200">
           <div class="bg-slate-900 border border-slate-800 p-4 rounded-3xl flex justify-between items-center text-xs">
             <div class="flex items-center gap-2">
@@ -515,6 +515,18 @@
       </div>
     </div>
 
+    <!-- SIPARIS BASARILI TOAST -->
+    <div id="order-success-toast" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div class="bg-slate-900 border border-slate-800 p-8 rounded-[3rem] text-center max-w-xs w-full shadow-2xl space-y-4">
+        <div class="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto border border-green-500/20">
+          <i data-lucide="check" class="text-green-400 w-8 h-8"></i>
+        </div>
+        <h3 class="font-black text-lg text-white">SİPARİŞ ALINDI!</h3>
+        <p class="text-xs text-slate-400 leading-relaxed">Siparişiniz sisteme kaydedildi kanka! Takip sekmesinden anlık olarak durumu izleyebilirsiniz.</p>
+        <button onclick="closeSuccessToast()" class="w-full py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl text-xs font-black uppercase">HARİKA</button>
+      </div>
+    </div>
+
     <footer class="text-center text-[9px] text-slate-700 font-bold uppercase tracking-widest mt-6">
       AKMA KOLEKTİF • GAZİANTEP MERKEZ SIRALAR
     </footer>
@@ -769,6 +781,32 @@
         document.getElementById('work-btn-login').className = "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-300 text-xs font-black";
         document.getElementById('work-btn-register').className = "flex-1 py-2 rounded-lg bg-white text-black text-xs font-black";
       }
+    }
+
+    function switchCustTab(tab) {
+      state.customerTab = tab;
+      if (tab === 'order') {
+        document.getElementById('cust-view-order').classList.remove('hidden');
+        document.getElementById('cust-view-track').classList.add('hidden');
+        document.getElementById('cust-tab-order').className = "flex-1 py-2.5 rounded-xl bg-white text-black";
+        document.getElementById('cust-tab-track').className = "flex-1 py-2.5 rounded-xl text-slate-500";
+      } else {
+        document.getElementById('cust-view-order').classList.add('hidden');
+        document.getElementById('cust-view-track').classList.remove('hidden');
+        document.getElementById('cust-tab-order').className = "flex-1 py-2.5 rounded-xl text-slate-500";
+        document.getElementById('cust-tab-track').className = "flex-1 py-2.5 rounded-xl bg-white text-black";
+      }
+    }
+
+    function switchPatrTab(tab) {
+      state.patronTab = tab;
+      const tabs = ['analytics', 'orders', 'staff'];
+      tabs.forEach(t => {
+        document.getElementById(`patr-view-${t}`).classList.add('hidden');
+        document.getElementById(`patr-tab-${t}`).className = "flex-1 py-2 rounded-xl text-slate-500";
+      });
+      document.getElementById(`patr-view-${tab}`).classList.remove('hidden');
+      document.getElementById(`patr-tab-${tab}`).className = "flex-1 py-2 rounded-xl bg-white text-black";
     }
 
     function registerWorker() {
@@ -1087,15 +1125,15 @@
       }
     }
 
-    // --- STREAMING_CHUNK: Handling weave and delivery calculations... ---
+    // --- STREAMING_CHUNK: Örücü ve kurye prim hesaplamaları... ---
     function finishWeave(id) {
       const idx = state.orders.findIndex(x => x.id === id);
       if (idx !== -1) {
         state.orders[idx].status = 'Paketlendi';
         
-        // Örücü Prim Hesabı (Kara Zarf: +12₺, Standart: +7₺)
+        // Örücü Prim Hesabı (Kara Zarf: +17₺ (7₺ taban + 10₺ ek), Standart: +7₺)
         const isKaraZarf = state.orders[idx].envelope === 'kara';
-        const prim = isKaraZarf ? 12 : 7;
+        const prim = isKaraZarf ? 17 : 7;
 
         if (state.currentUser && state.currentUser.type === 'worker') {
           const sIdx = state.staff.findIndex(x => x.id === state.currentUser.id);
@@ -1122,9 +1160,9 @@
         const order = state.orders[idx];
         order.status = 'Teslim Edildi';
 
-        // Kurye Prim Hesabı (Eve Teslimat: +50₺, Sınıf: +7₺)
+        // Kurye Prim Hesabı (Eve Teslimat: +75₺, Sınıf: +7₺)
         const isEveTeslim = order.deliveryType === 'home';
-        const prim = isEveTeslim ? 50 : 7;
+        const prim = isEveTeslim ? 75 : 7;
 
         state.kasa += order.total;
 
@@ -1255,8 +1293,8 @@ Teşekkürler kanka!
       document.getElementById('top-acknowledged-notification').classList.add('hidden');
     }
 
+    // --- STREAMING_CHUNK: Render motoru ve ana sayfa güncellemeleri... ---
     // --- RENDER MOTORU ---
-    // --- STREAMING_CHUNK: Rendering elements dynamically... ---
     function render() {
       if (state.theme === 'light') {
         document.body.className = "bg-slate-100 text-slate-900 min-h-screen font-sans overflow-x-hidden selection:bg-blue-600/30 light-theme";
@@ -1399,7 +1437,7 @@ Teşekkürler kanka!
       lucide.createIcons();
     }
 
-    // --- STREAMING_CHUNK: Rendering tasks and accounting statements... ---
+    // --- STREAMING_CHUNK: Görev kartlarının dinamik renk ve adres bilgileriyle basılması... ---
     function renderWorkerTasks() {
       const list = document.getElementById('worker-tasks-list');
       if (!list) return;
@@ -1433,17 +1471,17 @@ Teşekkürler kanka!
               <div>
                 <span class="text-[9px] font-mono text-blue-400 font-bold">${ord.id}</span>
                 <h4 class="font-black text-sm text-white">${ord.customer}</h4>
-                <p class="text-[9px] text-slate-500">${ord.classRoom} • ${ord.deskRow}</p>
               </div>
               <span class="text-xs font-black text-slate-400 font-mono">${ord.total}₺</span>
             </div>
 
-            <div class="space-y-1 bg-black/40 p-3 rounded-xl border border-slate-850 text-[10px] leading-tight text-slate-400">
-               ${state.currentUser.role === 'weaver' ? `
-                 <p class="text-white"><span class="font-black text-blue-400">DOKUMA RENKLERİ:</span> ${ord.colors.map(c => COLOR_OPTIONS.find(x => x.id === c)?.name).join(', ').toUpperCase()}</p>
-               ` : `
-                 <p class="text-white"><span class="font-black text-blue-400">ALACAĞIN ÖRÜCÜ:</span> ${ord.assignedWeaver || 'Patron'}</p>
-               `}
+            <div class="space-y-1.5 bg-black/40 p-3 rounded-xl border border-slate-850 text-[10px] leading-tight text-slate-400">
+               <p class="text-white"><span class="font-black text-indigo-400">🎨 BİLEKLİK RENKLERİ:</span> <span class="bg-indigo-950/80 text-indigo-300 px-2 py-0.5 rounded font-black">${ord.colors.map(c => COLOR_OPTIONS.find(x => x.id === c)?.name).join(', ').toUpperCase()}</span></p>
+               <p class="text-white mt-1"><span class="font-black text-green-400">📍 TESLİMAT ADRESİ (NEREYE):</span> <span class="bg-green-950/80 text-green-300 px-2 py-0.5 rounded font-black">${ord.classRoom} - ${ord.deskRow}</span></p>
+               ${state.currentUser.role === 'courier' ? `
+                 <p class="text-white mt-1"><span class="font-black text-blue-400">🧶 ÖRÜCÜSÜ (KİMDEN ALACAKSIN):</span> <span class="bg-blue-950/80 text-blue-300 px-2 py-0.5 rounded font-black">${ord.assignedWeaver || 'Patron'}</span></p>
+               ` : ''}
+               <p class="text-white mt-1"><span class="font-black text-slate-400">✉️ PAKET ZARFI:</span> <span class="bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-black">${ord.envelope === 'kara' ? 'O ELENDİN Kara Zarf' : 'Standart Şeffaf'}</span></p>
             </div>
 
             ${actionBtn}
