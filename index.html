@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AKMA Kolektif - Sipariş & Eleman Ağı V7</title>
+  <title>AKMA Kolektif - Sipariş & Eleman Ağı V8</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons CDN -->
@@ -22,22 +22,21 @@
 
   <div class="max-w-md mx-auto min-h-screen flex flex-col justify-between p-4" id="app-container">
     
-    <!-- PATRON DUYURU KÜRSÜSÜ (ÖZELLİK 7) -->
-    <div class="bg-blue-600/10 border border-blue-500/20 text-blue-400 py-1.5 px-3 rounded-full text-[9px] font-black uppercase tracking-wider mb-2 overflow-hidden relative">
-      <div class="animate-marquee whitespace-nowrap inline-block" id="marquee-text">
+    <!-- PATRON DUYURU KÜRSÜSÜ -->
+    <div class="bg-blue-600/10 border border-blue-500/20 text-blue-400 py-1.5 px-3 rounded-full text-[9px] font-black uppercase tracking-wider mb-2 overflow-hidden relative text-center">
+      <div class="inline-block" id="marquee-text">
         AKMA Kolektif Sezon 3 Canlı Sipariş ve Eleman Ağına Hoş Geldiniz kanka!
       </div>
     </div>
 
     <!-- --- ÜST BAR --- -->
     <header class="bg-slate-900 border border-slate-800 p-4 rounded-3xl mb-4 flex justify-between items-center sticky top-2 z-40 backdrop-blur-md" id="header-bar">
-      <!-- Sol Üst: Bildirim Çanı (ÖZELLİK 15 Ses Kontrolü ve 15 Bildirim Çanı) -->
+      <!-- Sol Üst: Bildirim Çanı & Gece/Gündüz Modu -->
       <div class="flex items-center gap-2">
         <button onclick="openNotificationModal()" class="relative p-2.5 bg-slate-950 border border-slate-800 rounded-2xl hover:bg-slate-800 transition-all flex items-center justify-center">
           <i data-lucide="bell" class="text-blue-400 w-5 h-5"></i>
           <span id="notif-badge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[8px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-black animate-pulse">0</span>
         </button>
-        <!-- Gece/Gündüz Modu (ÖZELLİK 2) -->
         <button onclick="toggleTheme()" class="p-2.5 bg-slate-950 border border-slate-800 rounded-2xl hover:bg-slate-800 transition-all text-yellow-500" id="theme-toggle-btn">
           <i data-lucide="sun" class="w-5 h-5"></i>
         </button>
@@ -45,13 +44,13 @@
 
       <!-- Sağ Üst: Rol Değiştirici -->
       <div class="flex gap-1 bg-slate-950 p-1 rounded-2xl border border-slate-800">
-        <button id="role-cust-btn" onclick="switchRole('customer')" class="px-3 py-1.5 rounded-xl text-[10px] font-black transition-all bg-white text-black">MÜŞTERİ</button>
+        <button id="role-cust-btn" onclick="switchRole('customer')" class="px-3 py-1.5 rounded-xl text-[10px] font-black transition-all bg-white text-black">MÜŞTERI</button>
         <button id="role-work-btn" onclick="switchRole('worker')" class="px-3 py-1.5 rounded-xl text-[10px] font-black transition-all text-slate-500">ELEMAN</button>
         <button id="role-patr-btn" onclick="switchRole('patron')" class="px-3 py-1.5 rounded-xl text-[10px] font-black transition-all text-slate-500">PATRON</button>
       </div>
     </header>
 
-    <!-- KASA ALARM SİSTEMİ (ÖZELLİK 20) -->
+    <!-- KASA ALARM SİSTEMİ -->
     <div id="kasa-alarm-bar" class="hidden bg-red-600 border border-red-500 text-white p-3 rounded-2xl mb-4 text-center text-xs font-black animate-pulse flex items-center justify-center gap-2">
       <i data-lucide="alert-triangle" class="w-4 h-4 animate-bounce"></i>
       <span>KASA LIMIT ALARMI! BÜTÇE 100₺ ALTINA DÜŞTÜ kanka!</span>
@@ -70,7 +69,6 @@
     <!-- MÜŞTERİ PANELİ                             -->
     <!-- ========================================== -->
     <div id="customer-panel" class="space-y-6 flex-1">
-      
       <!-- Müşteri Kimlik Doğrulama Kapısı -->
       <div id="cust-auth-block" class="bg-slate-900 border border-slate-800 p-6 rounded-[2.5rem] space-y-4">
         <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest text-center flex items-center justify-center gap-2">
@@ -106,15 +104,6 @@
             <input type="text" id="reg-cust-name" placeholder="Örn: Yusuf..." class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs font-bold text-slate-200 outline-none">
           </div>
           <div class="space-y-2">
-            <label class="text-[9px] font-black text-slate-500 uppercase">Profil Rütben (ÖZELLİK 11)</label>
-            <select id="reg-cust-badge" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs text-white">
-              <option value="👑 Kaptan">👑 Kaptan</option>
-              <option value="⭐ Sadık Müşteri">⭐ Sadık Müşteri</option>
-              <option value="⚡ Bileklik Sever">⚡ Bileklik Sever</option>
-              <option value="💎 Gurme Koleksiyoncu">💎 Gurme Koleksiyoncu</option>
-            </select>
-          </div>
-          <div class="space-y-2">
             <label class="text-[9px] font-black text-slate-500 uppercase">Özel Şifren</label>
             <input type="password" id="reg-cust-pass" placeholder="Özel şifreniz..." class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs font-bold text-slate-200 outline-none">
           </div>
@@ -124,7 +113,6 @@
 
       <!-- Müşteri İşlem Ekranı -->
       <div id="customer-dashboard-block" class="space-y-6 hidden">
-        <!-- Müşteri Alt Tabları -->
         <div class="flex bg-slate-900 p-1 rounded-2xl border border-slate-800 text-[10px] font-black">
           <button id="cust-tab-order" onclick="switchCustTab('order')" class="flex-1 py-2.5 rounded-xl bg-white text-black">BİLEKLİK TASARLA</button>
           <button id="cust-tab-track" onclick="switchCustTab('track')" class="flex-1 py-2.5 rounded-xl text-slate-500">SİPARİŞLERİM (<span id="my-orders-count">0</span>)</button>
@@ -132,14 +120,12 @@
 
         <!-- MÜŞTERİ TAB: BİLEKLİK TASARLA -->
         <div id="cust-view-order" class="space-y-6 animate-in fade-in duration-200">
-          
-          <!-- Müşteri Bilgi Paneli (ÖZELLİK 6 Sadakat Puanı) -->
           <div class="bg-slate-900 border border-slate-800 p-4 rounded-3xl flex justify-between items-center text-xs">
             <div class="flex items-center gap-2">
               <span id="cust-avatar-display" class="text-xl">🦁</span>
               <div>
                 <p id="cust-name-display" class="font-black text-white">Yusuf</p>
-                <p id="cust-badge-display" class="text-[9px] text-blue-400 font-bold uppercase">👑 KAPTAN</p>
+                <p class="text-[9px] text-blue-400 font-bold uppercase"> Sadık Müdavim </p>
               </div>
             </div>
             <div class="text-right">
@@ -148,13 +134,12 @@
             </div>
           </div>
 
-          <!-- Adres Bilgileri Formu (ÖZELLİK 1 Sınıf Sınırlaması: Sadece 8. ve 10. sınıflar) -->
+          <!-- Adres Bilgileri Formu (Sadece 8. ve 10. sınıflar) -->
           <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-4">
             <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
               <i data-lucide="map-pin" class="text-blue-500 w-4 h-4"></i> TESLİMAT ADRESİ SEÇİMİ
             </h3>
 
-            <!-- Adres Tipi Seçimi -->
             <div class="space-y-2">
               <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-850 text-[10px] font-black">
                 <button type="button" onclick="setDeliveryType('school')" id="delivery-school-btn" class="flex-1 py-2 rounded-lg bg-blue-600 text-white transition-all">Okul Sınıfı (Sıra)</button>
@@ -162,10 +147,10 @@
               </div>
             </div>
 
-            <!-- Okul İçi Teslimat Alanları -->
+            <!-- Okul İçi -->
             <div id="school-delivery-fields" class="grid grid-cols-2 gap-3">
               <div class="space-y-2">
-                <label class="text-[9px] font-black text-slate-500 uppercase">Sınıfın (Sadece 8. ve 10. Sınıflar)</label>
+                <label class="text-[9px] font-black text-slate-500 uppercase">Sınıfın (8 veya 10. Sınıflar)</label>
                 <select id="cust-class-select" class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs font-bold text-slate-200 outline-none">
                   <option value="8-A">8-A</option>
                   <option value="8-B">8-B</option>
@@ -187,7 +172,7 @@
               </div>
             </div>
 
-            <!-- Ev/Dış Adres Teslimat Alanları -->
+            <!-- Ev/Dış Adres -->
             <div id="home-delivery-fields" class="space-y-3 hidden">
               <div class="grid grid-cols-3 gap-2">
                 <div class="space-y-1">
@@ -200,7 +185,7 @@
                 </div>
                 <div class="space-y-1">
                   <label class="text-[8px] font-black text-slate-500 uppercase">Apartman/No</label>
-                  <input type="text" id="cust-home-apt" placeholder="Örn: Doğan Apt No:5..." class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs text-white outline-none">
+                  <input type="text" id="cust-home-apt" placeholder="Örn: No:5..." class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs text-white outline-none">
                 </div>
               </div>
             </div>
@@ -215,14 +200,13 @@
             <div class="grid grid-cols-4 gap-2" id="color-checkbox-grid"></div>
           </div>
 
-          <!-- Mühür Zarf ve Diğer Seçenekler -->
+          <!-- Paketleme ve Ekstralar -->
           <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-4">
             <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
               <i data-lucide="package" class="text-blue-500 w-4 h-4"></i> PAKETLEME VE EKSTRALAR
             </h3>
             
             <div class="space-y-3">
-              <!-- Zarf Tasarımı -->
               <div class="space-y-1.5">
                 <label class="text-[9px] font-black text-slate-500 uppercase">Mühürlü Paket Zarfı</label>
                 <div class="grid grid-cols-2 gap-2">
@@ -237,29 +221,7 @@
                 </div>
               </div>
 
-              <!-- VIP / Öncelikli (ÖZELLİK 9) -->
-              <div class="flex justify-between items-center bg-slate-950 p-3 rounded-xl border border-slate-850">
-                <div>
-                  <p class="text-xs font-bold text-red-400 flex items-center gap-1.5">
-                    <i data-lucide="zap" class="w-3.5 h-3.5 animate-pulse"></i> VIP Öncelikli Sipariş
-                  </p>
-                  <p class="text-[8px] text-slate-500 leading-tight mt-0.5">Siparişinizi en tepeye taşır ve kırmızı flaşörle gösterir.</p>
-                </div>
-                <button type="button" onclick="toggleVip()" id="vip-toggle-btn" class="px-3 py-1.5 bg-slate-800 rounded-lg text-[9px] font-black uppercase text-slate-400">EKLE (+15₺)</button>
-              </div>
-
-              <!-- Dinamik Bahşiş Sistemi (ÖZELLİK 8) -->
-              <div class="space-y-1.5">
-                <label class="text-[9px] font-black text-slate-500 uppercase">Ekibimize Bahşiş (Doğan Maaşa Eklenir)</label>
-                <div class="grid grid-cols-4 gap-2">
-                  <button type="button" onclick="setTip(0)" id="tip-0-btn" class="py-2 rounded-xl text-xs font-bold bg-blue-600 text-white border border-blue-500">Yok</button>
-                  <button type="button" onclick="setTip(5)" id="tip-5-btn" class="py-2 rounded-xl text-xs font-bold bg-slate-950 text-slate-400 border border-slate-800">+5₺</button>
-                  <button type="button" onclick="setTip(10)" id="tip-10-btn" class="py-2 rounded-xl text-xs font-bold bg-slate-950 text-slate-400 border border-slate-800">+10₺</button>
-                  <button type="button" onclick="setTip(20)" id="tip-20-btn" class="py-2 rounded-xl text-xs font-bold bg-slate-950 text-slate-400 border border-slate-800">+20₺</button>
-                </div>
-              </div>
-
-              <!-- İndirim Kuponu (ÖZELLİK 5) -->
+              <!-- İndirim Kuponu -->
               <div class="space-y-1">
                 <label class="text-[9px] font-black text-slate-500 uppercase">İndirim Kuponu Gir</label>
                 <div class="flex gap-2">
@@ -269,16 +231,14 @@
                 <p id="coupon-msg" class="text-[8px] font-bold text-green-400 mt-1 hidden">Kupon başarıyla uygulandı kanka!</p>
               </div>
 
-              <!-- Özel Sipariş Notu -->
               <div class="space-y-1">
-                <label class="text-[9px] font-black text-slate-500 uppercase">Ekip Arkadaşlarına Özel Not</label>
-                <input type="text" id="cust-order-note" placeholder="Örn: 'Kurye teneffüste sıraya bıraksın kanka'..." class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs text-white outline-none">
+                <label class="text-[9px] font-black text-slate-500 uppercase">Ekip Arkadaşlarımıza Özel Not</label>
+                <input type="text" id="cust-order-note" placeholder="Örn: 'Kurye teneffüste bıraksın kanka'..." class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs text-white outline-none">
               </div>
-
             </div>
           </div>
 
-          <!-- Hesap Özeti ve Sipariş Gönderimi -->
+          <!-- Hesap Özeti -->
           <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-4">
             <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">ÖDEME ÖZETİ</h3>
             <div class="space-y-2 border-b border-slate-800 pb-3 text-xs">
@@ -291,16 +251,8 @@
                 <span id="price-envelope-display">0₺</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-slate-500">Kurye / Teslimat Bedeli:</span>
+                <span class="text-slate-500">Kargo / Teslimat Bedeli:</span>
                 <span id="price-delivery-display">0₺</span>
-              </div>
-              <div class="flex justify-between" id="price-vip-row">
-                <span class="text-slate-500">VIP / Acil Sürat:</span>
-                <span id="price-vip-display">0₺</span>
-              </div>
-              <div class="flex justify-between" id="price-tip-row">
-                <span class="text-slate-500">Bahşiş:</span>
-                <span id="price-tip-display">0₺</span>
               </div>
               <div class="flex justify-between text-green-400 hidden" id="price-discount-row">
                 <span>Sadakat / Kupon İndirimi:</span>
@@ -313,15 +265,14 @@
                 <p class="text-[8px] text-slate-500 font-black uppercase">TOPLAM TUTAR</p>
                 <p class="text-3xl font-black text-green-400 font-mono" id="price-total-display">20₺</p>
               </div>
-              <button onclick="submitOrder()" class="bg-green-600 hover:bg-green-500 text-white px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center gap-2 active:scale-95 transition-all shadow-lg shadow-green-950/20">
-                <i data-lucide="send" class="w-4 h-4"></i> BULUTA GÖNDER
+              <button onclick="submitOrder()" class="bg-green-600 hover:bg-green-500 text-white px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center gap-2 active:scale-95 transition-all shadow-lg">
+                <i data-lucide="send" class="w-4 h-4"></i> GÖNDER
               </button>
             </div>
           </div>
-
         </div>
 
-        <!-- MÜŞTERİ TAB: SİPARİŞLERİM (TAKİP) -->
+        <!-- MÜŞTERİ TAB: SİPARİŞLERİM -->
         <div id="cust-view-track" class="space-y-4 hidden animate-in fade-in duration-200">
           <div class="flex justify-between items-center px-1">
             <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest">Canlı Sipariş Takibi</h3>
@@ -331,17 +282,14 @@
           </div>
           <div id="customer-orders-list" class="space-y-4"></div>
         </div>
-
       </div>
-
     </div>
 
     <!-- ========================================== -->
     <!-- ELEMAN PANELİ                              -->
     <!-- ========================================== -->
     <div id="worker-panel" class="space-y-6 flex-1 hidden">
-      
-      <!-- Eleman Başvuru ve Kayıt Ekranı -->
+      <!-- Eleman Giriş ve Başvuru -->
       <div id="worker-auth-block" class="bg-slate-900 border border-slate-800 p-6 rounded-[2.5rem] space-y-4">
         <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest text-center flex items-center justify-center gap-2">
           <i data-lucide="user-check" class="text-blue-500 w-4 h-4"></i> ELEMAN BAŞVURU KAPISI
@@ -352,7 +300,7 @@
           <button id="work-btn-register" onclick="toggleWorkAuth('register')" class="flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-300 text-xs font-black">YENİ BAŞVURU</button>
         </div>
 
-        <!-- Eleman Giriş Formu -->
+        <!-- Eleman Giriş -->
         <div id="work-login-form" class="space-y-3">
           <div class="space-y-2">
             <label class="text-[9px] font-black text-slate-500 uppercase">Ekip Hesabın</label>
@@ -365,7 +313,7 @@
           <button onclick="loginWorker()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 rounded-xl text-xs font-black uppercase transition-all">PANELİME GİR</button>
         </div>
 
-        <!-- Eleman Kayıt Formu -->
+        <!-- Eleman Kayıt -->
         <div id="work-register-form" class="space-y-3 hidden">
           <div class="space-y-2">
             <label class="text-[9px] font-black text-slate-500 uppercase">Ekipteki Adın</label>
@@ -380,16 +328,14 @@
           </div>
           <div class="space-y-2">
             <label class="text-[9px] font-black text-slate-500 uppercase">Giriş Şifreniz</label>
-            <input type="password" id="reg-work-pass" placeholder="Örn: 4 haneli şifreniz..." class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs font-bold text-slate-200 outline-none">
+            <input type="password" id="reg-work-pass" placeholder="Şifreniz..." class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs font-bold text-slate-200 outline-none">
           </div>
-          <button onclick="registerWorker()" class="w-full py-3.5 bg-green-600 hover:bg-green-500 rounded-xl text-xs font-black uppercase transition-all">KAYDOL VE ONAY İSTE</button>
+          <button onclick="registerWorker()" class="w-full py-3.5 bg-green-600 hover:bg-green-500 rounded-xl text-xs font-black uppercase transition-all">KAYDOL VE BAŞVUR</button>
         </div>
       </div>
 
-      <!-- Eleman İşlem Paneli (Sadece Giriş Yapıldığında Görünür) -->
+      <!-- Eleman Dashboard -->
       <div id="worker-dashboard-block" class="space-y-6 hidden animate-in fade-in duration-300">
-        
-        <!-- Eleman İstatistik Kartı -->
         <div class="bg-slate-900 border border-slate-800 p-4 rounded-3xl flex justify-between items-center text-xs">
           <div>
             <p id="worker-name-display" class="font-black text-white">Mehmet</p>
@@ -397,28 +343,19 @@
           </div>
           <div class="text-right">
             <p class="text-[8px] text-slate-500 font-black">BİRİKEN MAAŞ / PRİMİN</p>
-            <p id="worker-salary-display" class="text-yellow-400 font-black font-mono">10₺</p>
+            <p id="worker-salary-display" class="text-yellow-400 font-black font-mono">0₺</p>
           </div>
         </div>
 
-        <!-- Kurye İçin Canlı Dağıtım Haritası Simülatörü (ÖZELLİK 4) -->
-        <div id="kurye-map-block" class="bg-slate-900 border border-slate-800 p-4 rounded-3xl space-y-3 hidden">
-          <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
-            <i data-lucide="activity" class="text-green-500 w-4 h-4 animate-pulse"></i> Canlı Dağıtım Haritası
-          </h4>
-          <canvas id="kurye-live-map" class="w-full bg-slate-950 rounded-2xl border border-slate-800 h-24"></canvas>
-        </div>
-
-        <!-- Bana Atanan Siparişler -->
         <div class="space-y-3">
           <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest px-1">GÖREV LİSTEM</h3>
           <div id="worker-tasks-list" class="space-y-4"></div>
         </div>
 
-        <!-- Eleman Canlı Telsiz Sohbeti (ÖZELLİK 10) -->
+        <!-- Telsiz -->
         <div class="bg-slate-900 border border-slate-800 p-4 rounded-3xl space-y-3">
           <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
-            <i data-lucide="message-square" class="text-blue-500 w-4 h-4 animate-bounce"></i> Eleman Telsizi / Sohbet Odası
+            <i data-lucide="message-square" class="text-blue-500 w-4 h-4"></i> Telsiz Sohbeti
           </h4>
           <div id="worker-chat-box" class="bg-slate-950 border border-slate-850 p-3 rounded-2xl h-24 overflow-y-auto space-y-1.5 scrollbar-hide text-[10px]"></div>
           <div class="flex gap-2">
@@ -427,61 +364,45 @@
           </div>
         </div>
 
-        <!-- İstifa Et Butonu -->
         <button onclick="triggerResignation()" class="w-full py-3 bg-red-950/20 border border-red-900/30 text-red-500 font-black text-xs rounded-2xl hover:bg-red-600 hover:text-white transition-all uppercase">İstifa Et</button>
-
       </div>
-
     </div>
 
     <!-- ========================================== -->
     <!-- PATRON PANELİ                              -->
     <!-- ========================================== -->
     <div id="patron-panel" class="space-y-6 flex-1 hidden">
-      
-      <!-- Şifreli Patron Kapısı -->
+      <!-- Şifreli Kapı -->
       <div id="patron-auth-block" class="bg-slate-900 border border-slate-800 p-6 rounded-[2.5rem] space-y-4">
         <h3 class="text-xs font-black text-yellow-500 uppercase tracking-widest text-center flex items-center justify-center gap-2 animate-pulse">
           <i data-lucide="shield-alert" class="w-4 h-4"></i> PATRON GİRİŞ KAPISI
         </h3>
-        <p class="text-[10px] text-slate-500 text-center">Giriş yapabilmek için özel 4 haneli patron şifrenizi girmeniz gerekir kanka!</p>
+        <p class="text-[10px] text-slate-500 text-center font-bold">4 haneli patron şifresini gir kanka!</p>
         <div class="space-y-2">
-          <label class="text-[9px] font-black text-slate-500 uppercase">Patron Şifresi</label>
           <input type="password" id="patron-password" placeholder="Örn: 1089..." class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs text-slate-200 outline-none text-center tracking-widest">
         </div>
         <button onclick="loginPatron()" class="w-full py-3.5 bg-yellow-600 hover:bg-yellow-500 text-black font-black uppercase rounded-xl text-xs transition-all">GİRİŞ YETKİSİ AL</button>
       </div>
 
-      <!-- Patron Yönetim Alanı -->
+      <!-- Patron Dashboard -->
       <div id="patron-dashboard-block" class="space-y-6 hidden animate-in fade-in duration-300">
-        
-        <!-- Patron Yönetim Alt Tabları -->
         <div class="flex bg-slate-900 p-1 rounded-2xl border border-slate-800 text-[10px] font-black">
-          <button id="patr-tab-analytics" onclick="switchPatrTab('analytics')" class="flex-1 py-2 rounded-xl bg-white text-black">ANALİTİKLER</button>
+          <button id="patr-tab-analytics" onclick="switchPatrTab('analytics')" class="flex-1 py-2 rounded-xl bg-white text-black">MUHASEBE & KASA</button>
           <button id="patr-tab-orders" onclick="switchPatrTab('orders')" class="flex-1 py-2 rounded-xl text-slate-500">SİPARİŞ ATAMA</button>
           <button id="patr-tab-staff" onclick="switchPatrTab('staff')" class="flex-1 py-2 rounded-xl text-slate-500">ELEMANLAR</button>
         </div>
 
-        <!-- PATRON TAB: ANALİTİKLER -->
+        <!-- MUHASEBE VE KASA SEKMEDE -->
         <div id="patr-view-analytics" class="space-y-6 animate-in fade-in duration-200">
-          <!-- Kasa ve Bütçe Durumu -->
           <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] flex justify-between items-center">
             <div>
-              <p class="text-[9px] text-slate-500 font-black uppercase">PATRON KASASI (NET BÜTÇE)</p>
+              <p class="text-[9px] text-slate-500 font-black uppercase">PATRON NET KASASI</p>
               <p class="text-3xl font-black text-yellow-400 font-mono" id="patron-kasa-display">980₺</p>
             </div>
             <i data-lucide="coins" class="text-yellow-500 w-10 h-10 animate-bounce"></i>
           </div>
 
-          <!-- Canlı Gelir/Gider Grafik Paneli (ÖZELLİK 1) -->
-          <div class="bg-slate-900 border border-slate-800 p-4 rounded-3xl space-y-2">
-            <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
-              <i data-lucide="bar-chart-3" class="text-blue-500 w-4 h-4"></i> Finansal Analiz Grafiği
-            </h4>
-            <canvas id="live-financial-chart" class="w-full bg-slate-950 border border-slate-850 rounded-2xl h-32"></canvas>
-          </div>
-
-          <!-- Malzeme ve Gider Girişi (Stok Kelimesi Tamamen Kaldırıldı!) -->
+          <!-- Gider Giriş Paneli -->
           <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-4">
             <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
               <i data-lucide="dollar-sign" class="text-red-500 w-4 h-4"></i> MALZEME & GİDER GİRİŞİ
@@ -489,22 +410,22 @@
             <div class="space-y-3">
               <div class="grid grid-cols-2 gap-2">
                 <div class="space-y-1">
-                  <label class="text-[8px] font-black text-slate-500 uppercase">Gider Adı/Açıklaması</label>
+                  <label class="text-[8px] font-black text-slate-500 uppercase">Gider / Hammadde Adı</label>
                   <input type="text" id="patr-expense-name" placeholder="Örn: 200 adet lastik..." class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs text-white outline-none">
                 </div>
                 <div class="space-y-1">
-                  <label class="text-[8px] font-black text-slate-500 uppercase">Miktar/Fiyat (₺)</label>
+                  <label class="text-[8px] font-black text-slate-500 uppercase">Fiyatı (Maliyet ₺)</label>
                   <input type="number" id="patr-expense-amount" placeholder="Örn: 100..." class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs text-white outline-none">
                 </div>
               </div>
-              <button onclick="submitExpense()" class="w-full py-3 bg-red-600 hover:bg-red-500 rounded-xl text-xs font-black uppercase transition-all">GİDERİ KASADAN DÜŞ</button>
+              <button onclick="submitExpense()" class="w-full py-3 bg-red-600 hover:bg-red-500 rounded-xl text-xs font-black uppercase transition-all">SATIN ALIMI KASADAN DÜŞ</button>
             </div>
           </div>
 
-          <!-- Gider ve Malzeme Geçmiş Listesi -->
+          <!-- DETAYLI GİDER GELİR TABLOSU -->
           <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-3">
-            <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Son Gider Hareketleri</h4>
-            <div id="patron-expenses-list" class="space-y-2 max-h-32 overflow-y-auto scrollbar-hide text-xs"></div>
+            <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Resmi Gelir & Gider Kayıt Tablosu</h4>
+            <div id="patron-expenses-list" class="space-y-2 max-h-48 overflow-y-auto scrollbar-hide text-xs"></div>
           </div>
         </div>
 
@@ -522,7 +443,6 @@
 
         <!-- PATRON TAB: ELEMANLAR -->
         <div id="patr-view-staff" class="space-y-6 hidden animate-in fade-in duration-200">
-          <!-- Eleman Onaylama Listesi -->
           <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-4">
             <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center justify-between">
               <span>YENİ ELEMAN BAŞVURULARI</span>
@@ -531,20 +451,17 @@
             <div id="patron-staff-requests" class="space-y-3"></div>
           </div>
 
-          <!-- Mevcut Eleman Listesi (Maaş Ödeme & Kalıcı İstatistikler) -->
           <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-4">
             <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">AKMA KOLEKTİF KADROSU</h3>
             <div id="patron-staff-active" class="space-y-4"></div>
           </div>
         </div>
-
       </div>
-
     </div>
 
-    <!-- Oturumu Kapat / Çıkış Hatırlatması -->
+    <!-- Güvenli Çıkış Barı -->
     <div id="footer-logout-bar" class="hidden bg-slate-900 border border-slate-800 p-3 rounded-2xl mt-4 flex justify-between items-center text-[10px]">
-      <span class="text-slate-500 font-bold leading-tight">🔒 Güvenliğiniz için işiniz bittiğinde çıkış yapın kanka!</span>
+      <span class="text-slate-500 font-bold leading-tight">🔒 Güvenle çıkış yap kanka!</span>
       <button onclick="handleLogout()" class="bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-xl font-black uppercase tracking-wider active:scale-95 transition-all">Girişi Kapat</button>
     </div>
 
@@ -559,7 +476,6 @@
           <i data-lucide="bell" class="text-blue-500 w-4.5 h-4.5"></i> BİLDİRİM MERKEZİ
         </h3>
         
-        <!-- Ses Kontrolü (ÖZELLİK 15) -->
         <div class="flex justify-between items-center bg-slate-950 p-2.5 rounded-xl border border-slate-850 text-xs">
           <span class="text-slate-400 font-bold">Uygulama İçi Sesler:</span>
           <button onclick="toggleAudio()" id="audio-toggle-btn" class="p-2 bg-slate-900 border border-slate-800 rounded-xl text-green-400">
@@ -573,19 +489,7 @@
       </div>
     </div>
 
-    <!-- SİPARİŞ TAMAMLANDI BİLDİRİM MODALİ -->
-    <div id="order-success-toast" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div class="bg-slate-900 border border-slate-800 p-8 rounded-[3rem] text-center max-w-xs w-full shadow-2xl">
-        <div class="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/20">
-          <i data-lucide="check" class="text-green-400 w-8 h-8"></i>
-        </div>
-        <h3 class="font-black text-lg text-white">SİPARİŞ ALINDI!</h3>
-        <p class="text-xs text-slate-400 mt-2 leading-relaxed">Siparişin buluta başarıyla kaydedildi kanka! Patronlar sırasından örüm işlemini başlattı.</p>
-        <button onclick="closeSuccessToast()" class="w-full mt-6 py-3 bg-white text-black font-black uppercase rounded-2xl text-xs">KAPAT</button>
-      </div>
-    </div>
-
-    <!-- DETAYLI DIJITAL FATURA MODALİ (ÖZELLİK 13) -->
+    <!-- DETAYLI DIJITAL SİPARİŞ MODALİ -->
     <div id="invoice-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
       <div class="bg-slate-900 border border-slate-800 w-full max-w-xs rounded-[3rem] p-6 space-y-4 shadow-2xl relative">
         <button onclick="closeInvoiceModal()" class="absolute top-5 right-5 text-slate-500 hover:text-white transition-all"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -619,7 +523,7 @@
 
   <!-- --- JAVASCRIPT MOTORU VE MÜKEMMEL VERİ AKIŞI --- -->
   <script>
-    // RENK SEÇENEKLERİ (ÖZELLİK: İstenen tüm renk listesi)
+    // RENK SEÇENEKLERİ
     const COLOR_OPTIONS = [
       { id: 'kirmizi', name: 'Kırmızı', color: '#ef4444' },
       { id: 'siyah', name: 'Siyah', color: '#0f172a' },
@@ -637,29 +541,24 @@
 
     const AVATARS = ["🦁", "🐼", "🦊", "🐯", "🐱", "🐨", "👑", "🚀", "⚡", "👾"];
 
-    // SİMÜLE EDİLMİŞ VERİ TABANI (Firestore taklidi - Çökmeyi engelleyen, Vercel'de tıkır tıkır çalışan model)
     let state = {
       theme: 'dark',
       currentRole: 'customer',
       customerTab: 'order',
       patronTab: 'analytics',
       currentAuthMode: 'login',
-      currentUser: null, // Giriş yapmış kişinin profil objesi
+      currentUser: null, 
       orders: [],
       staff: [],
-      expenses: [],
+      ledger: [], // GİDER GELİR DETAY TABLOSU
       kasa: 980,
       soundEnabled: true,
-      marqueeText: 'AKMA Kolektif Sezon 3 Canlı Sipariş ve Eleman Ağına Hoş Geldiniz kanka!',
-      acknowledgedNotifications: [], // Kişiye göre okundu olarak işaretlenen bildirim id'leri
+      acknowledgedNotifications: [], 
       
-      // Sipariş Form State'i
       orderForm: {
-        deliveryType: 'school', // 'school' veya 'home'
+        deliveryType: 'school', 
         selectedColors: [],
-        envelopeType: 'standard', // 'standard' veya 'kara'
-        isVip: false,
-        tipAmount: 0,
+        envelopeType: 'standard', 
         appliedCoupon: null,
         note: '',
         addressDetails: {
@@ -672,7 +571,6 @@
       }
     };
 
-    // --- UYGULAMA İÇİ BİLDİRİM SESLERİ (ÖZELLİK 15 Ses Kontrolü) ---
     function playSound(freq1, freq2, duration) {
       if (!state.soundEnabled) return;
       try {
@@ -691,7 +589,6 @@
       } catch (e) { console.warn("Ses motoru kilitlendi."); }
     }
 
-    // --- ÖZEL BİLDİRİM ALARMI (MODAL) ---
     function openCustomAlert(title, text) {
       document.getElementById('alert-modal-title').innerText = title;
       document.getElementById('alert-modal-text').innerText = text;
@@ -703,52 +600,45 @@
       document.getElementById('custom-alert-modal').classList.add('hidden');
     }
 
-    // --- LOCAL STORAGE'A YAZIP OKUMA (VERİ KORUMA) ---
     function saveState() {
-      localStorage.setItem('akma_kolektif_state_v7', JSON.stringify(state));
+      localStorage.setItem('akma_kolektif_state_v8', JSON.stringify(state));
       render();
     }
 
     function loadState() {
-      const stored = localStorage.getItem('akma_kolektif_state_v7');
+      const stored = localStorage.getItem('akma_kolektif_state_v8');
       if (stored) {
         state = JSON.parse(stored);
       } else {
-        // Mock Veriler
+        state.kasa = 980;
         state.staff = [
-          { name: "Yusuf", role: "weaver", status: "approved", totalJobsCompleted: 14, salary: 20, badge: "⭐ Sadık Müdavim", id: "staff-1", pass: "1111" },
-          { name: "Mehmet", role: "courier", status: "approved", totalJobsCompleted: 9, salary: 10, badge: "⚡ Hızlı Dağıtıcı", id: "staff-2", pass: "2222" }
+          { name: "Yusuf", role: "weaver", status: "approved", totalJobsCompleted: 14, salary: 20, badge: "🧶 Örücü", id: "staff-1", pass: "1111", type: "worker" },
+          { name: "Mehmet", role: "courier", status: "approved", totalJobsCompleted: 9, salary: 10, badge: "🚴 Kurye", id: "staff-2", pass: "2222", type: "worker" }
         ];
-        state.expenses = [
-          { name: "Sapan İpleri", amount: 80, date: "Gün 1" },
-          { name: "Kargo Poşetleri", amount: 50, date: "Gün 1" }
+        state.ledger = [
+          { type: 'gelir', text: 'Başlangıç Kasası', amount: 980, date: 'Canlı' }
         ];
         state.orders = [
-          { id: 'ORD-101', customer: 'Ahmet', classRoom: '10-A', deskRow: 'Ön Sıra', colors: ['kirmizi', 'siyah'], envelope: 'standard', isVip: true, total: 35, status: 'Örülüyor', assignedWeaver: 'Yusuf', createdAt: Date.now() - 3600000 },
-          { id: 'ORD-102', customer: 'Selin', classRoom: 'Eve Teslimat', deskRow: 'Güvenevler Mah. No:12', colors: ['pembe'], envelope: 'kara', isVip: false, total: 145, status: 'Paketlendi', assignedWeaver: 'Yusuf', assignedCourier: 'Mehmet', createdAt: Date.now() - 1800000 }
+          { id: 'ORD-101', customer: 'Ahmet', classRoom: '10-A', deskRow: 'Ön Sıra', colors: ['kirmizi', 'siyah'], envelope: 'standard', total: 35, status: 'Örülüyor', assignedWeaver: 'Yusuf', createdAt: Date.now() - 3600000, creatorId: 'cust-1', deliveryType: 'school' }
         ];
       }
       render();
     }
 
-    // --- OTURUM KAPATMA (ÇIKIŞ HATIRLATICISI VE GÜVENLİK) ---
     function handleLogout() {
       state.currentUser = null;
       document.getElementById('footer-logout-bar').classList.add('hidden');
-      openCustomAlert("Oturum Kapatıldı", "Güvenle çıkış yaptınız kanka! Bilgileriniz sunucuda koruma altında.");
+      openCustomAlert("Oturum Kapatıldı", "Güvenle çıkış yaptınız kanka!");
       saveState();
     }
 
-    // --- TEMALARI YÖNETME (ÖZELLİK 2) ---
     function toggleTheme() {
       state.theme = state.theme === 'dark' ? 'light' : 'dark';
       saveState();
     }
 
-    // --- ROL VE TAB GEZİNTİLERİ ---
     function switchRole(role) {
       if (role === 'patron') {
-        // Patron şifre kilidini açtır
         document.getElementById('patron-auth-block').classList.remove('hidden');
         document.getElementById('patron-dashboard-block').classList.add('hidden');
         setActiveRoleTab('patron-panel');
@@ -757,9 +647,8 @@
           document.getElementById('worker-auth-block').classList.add('hidden');
           document.getElementById('worker-dashboard-block').classList.remove('hidden');
           document.getElementById('footer-logout-bar').classList.remove('hidden');
-          initCourierMap();
         } else {
-          document.getElementById('worker-auth-block').classList.remove('remove');
+          document.getElementById('worker-auth-block').classList.remove('hidden');
           document.getElementById('worker-dashboard-block').classList.add('hidden');
         }
         setActiveRoleTab('worker-panel');
@@ -785,99 +674,7 @@
       document.getElementById(activeId).classList.remove('hidden');
     }
 
-    // --- STREAMING_CHUNK: Finansal ciro ve gider analitik grafiklerinin çizimi... ---
-    // --- PATRON ANALİTİKLER GRAFİĞİ (ÖZELLİK 1 Canvas Grafik Çizimi) ---
-    function drawLiveChart() {
-      const canvas = document.getElementById('live-financial-chart');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Kasa, ciro ve gider verilerini al
-      const ciro = state.orders.filter(o => o.status === 'Teslim Edildi').reduce((sum, o) => sum + o.total, 0);
-      const giderler = state.expenses.reduce((sum, e) => sum + e.amount, 0);
-      const netKar = state.kasa;
-
-      // Çizim Değerleri
-      const barWidth = 40;
-      const chartHeight = 100;
-      const maxVal = Math.max(ciro, giderler, netKar, 100);
-      
-      const ciroHeight = (ciro / maxVal) * chartHeight;
-      const giderHeight = (giderler / maxVal) * chartHeight;
-      const karHeight = (netKar / maxVal) * chartHeight;
-
-      // Arka Plan Çizgileri
-      ctx.strokeStyle = '#334155';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(10, 110);
-      ctx.lineTo(canvas.width - 10, 110);
-      ctx.stroke();
-
-      // Bar 1: Ciro (Yeşil)
-      ctx.fillStyle = '#22c55e';
-      ctx.fillRect(40, 110 - ciroHeight, barWidth, ciroHeight);
-      ctx.fillStyle = '#f8fafc';
-      ctx.font = 'bold 9px sans-serif';
-      ctx.fillText(`${ciro}₺`, 42, 105 - ciroHeight);
-      ctx.fillText('Ciro', 45, 125);
-
-      // Bar 2: Giderler (Kırmızı)
-      ctx.fillStyle = '#ef4444';
-      ctx.fillRect(120, 110 - giderHeight, barWidth, giderHeight);
-      ctx.fillStyle = '#f8fafc';
-      ctx.fillText(`${giderler}₺`, 122, 105 - giderHeight);
-      ctx.fillText('Gider', 125, 125);
-
-      // Bar 3: Net Bütçe (Sarı)
-      ctx.fillStyle = '#eab308';
-      ctx.fillRect(200, 110 - karHeight, barWidth, karHeight);
-      ctx.fillStyle = '#f8fafc';
-      ctx.fillText(`${netKar}₺`, 202, 105 - karHeight);
-      ctx.fillText('Kasa', 205, 125);
-    }
-
-    // --- KURYELER İÇİN CANLI KORİDOR HARİTASI (ÖZELLİK 4 Dağıtım Mini Haritası) ---
-    function initCourierMap() {
-      const canvas = document.getElementById('kurye-live-map');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Sınıf koridorlarını görselleştir
-      ctx.strokeStyle = '#1e293b';
-      ctx.lineWidth = 4;
-      ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
-
-      // Kurye Dağıtım Yol Tarifi
-      ctx.fillStyle = '#3b82f6';
-      ctx.beginPath();
-      ctx.arc(30, 48, 6, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '8px sans-serif';
-      ctx.fillText('Atölye', 22, 35);
-
-      ctx.fillStyle = '#22c55e';
-      ctx.beginPath();
-      ctx.arc(canvas.width - 40, 48, 6, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText('Sınıf / Ev', canvas.width - 60, 35);
-
-      // Yol çizgisini göster
-      ctx.strokeStyle = '#3b82f6';
-      ctx.setLineDash([4, 4]);
-      ctx.beginPath();
-      ctx.moveTo(36, 48);
-      ctx.lineTo(canvas.width - 46, 48);
-      ctx.stroke();
-      ctx.setLineDash([]);
-    }
-
-    // --- STREAMING_CHUNK: Müşteri oturum açma, şifre doğrulama ve sepet işlemleri... ---
-    // --- MÜŞTERİ KAYIT / GİRİŞ YÖNETİMİ ---
+    // --- STREAMING_CHUNK: User login and registration controls... ---
     function toggleCustAuth(mode) {
       state.currentAuthMode = mode;
       if (mode === 'login') {
@@ -891,12 +688,12 @@
         document.getElementById('cust-btn-login').className = "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-300 text-xs font-black";
         document.getElementById('cust-btn-register').className = "flex-1 py-2 rounded-lg bg-white text-black text-xs font-black";
         
-        // Avatar Seçim Seçeneklerini grid'e ekle
         const grid = document.getElementById('avatar-grid');
         grid.innerHTML = '';
         AVATARS.forEach(av => {
           grid.innerHTML += `<button type="button" onclick="selectAvatar('${av}')" class="text-xl p-1 bg-slate-900 border border-slate-800 rounded-lg hover:bg-slate-800" id="av-btn-${av}">${av}</button>`;
         });
+        selectAvatar('🦁');
       }
     }
 
@@ -913,18 +710,16 @@
 
     function registerCustomer() {
       const name = document.getElementById('reg-cust-name').value.trim();
-      const badge = document.getElementById('reg-cust-badge').value;
       const pass = document.getElementById('reg-cust-pass').value.trim();
       
       if (!name || !pass) {
-        openCustomAlert("Hata", "Adınızı ve şifrenizi doldurmanız gerekir kanka!");
+        openCustomAlert("Hata", "Ad ve şifre kısımları boş bırakılamaz kanka!");
         return;
       }
 
-      // Benzersiz ID ile yeni müşteri oluştur (Kalıcı bulut yapısı)
       const userObj = {
         name,
-        badge,
+        badge: "⭐ Sadık Müşteri",
         avatar: selectedAvatar,
         pass,
         type: 'customer',
@@ -940,7 +735,7 @@
       document.getElementById('customer-dashboard-block').classList.remove('hidden');
       document.getElementById('footer-logout-bar').classList.remove('hidden');
       
-      openCustomAlert("Hesap Açıldı", `Hoş geldin ${name}! Hesabın başarıyla buluta mühürlendi.`);
+      openCustomAlert("Hesap Açıldı", `Hoş geldin ${name}!`);
       saveState();
     }
 
@@ -958,11 +753,10 @@
         openCustomAlert("Giriş Başarılı", `Hoş geldin kanka ${name}!`);
         saveState();
       } else {
-        openCustomAlert("Hata", "Girdiğin şifre yanlış kanka, tekrar dene!");
+        openCustomAlert("Hata", "Şifre yanlış kanka, tekrar dene!");
       }
     }
 
-    // --- ELEMAN BAŞVURUSU & GİRİŞİ ---
     function toggleWorkAuth(mode) {
       if (mode === 'login') {
         document.getElementById('work-login-form').classList.remove('hidden');
@@ -987,17 +781,11 @@
         return;
       }
 
-      const isExist = state.staff.find(x => x.name === name);
-      if (isExist) {
-        openCustomAlert("Hata", "Bu isimde zaten bir kaydolmuş eleman veya müşteri var!");
-        return;
-      }
-
       const newRequest = {
         name,
         role,
         pass,
-        status: "pending", // Onay bekliyor
+        status: "pending", 
         salary: 0,
         totalJobsCompleted: 0,
         badge: role === 'weaver' ? '🧶 Örücü' : '🚴 Kurye',
@@ -1006,7 +794,7 @@
       };
 
       state.staff.push(newRequest);
-      openCustomAlert("Başvuru Gönderildi", `Tebrikler ${name}! Başvurun başarıyla alındı. Patron onayladığında cep telefonundan giriş yapabileceksin.`);
+      openCustomAlert("Başvuru Gönderildi", `Tebrikler ${name}! Patron onay verdiğinde sisteme giriş yapabileceksin.`);
       toggleWorkAuth('login');
       saveState();
     }
@@ -1018,7 +806,7 @@
       const matched = state.staff.find(x => x.name === name && x.type === 'worker');
       if (matched) {
         if (matched.status === 'pending') {
-          openCustomAlert("Onay Bekliyor", "Kanka henüz patron onay vermedi. Onaylanınca anında paneline girebileceksin.");
+          openCustomAlert("Onay Bekliyor", "Patron henüz onay vermedi kanka.");
           return;
         }
         if (matched.pass === pass) {
@@ -1026,8 +814,7 @@
           document.getElementById('worker-auth-block').classList.add('hidden');
           document.getElementById('worker-dashboard-block').classList.remove('hidden');
           document.getElementById('footer-logout-bar').classList.remove('hidden');
-          initCourierMap();
-          openCustomAlert("Bağlantı Kuruldu", `Kolay gelsin ${name}! Görevlerin panelinde listelendi.`);
+          openCustomAlert("Bağlantı Kuruldu", `Kolay gelsin ${name}!`);
           saveState();
         } else {
           openCustomAlert("Hata", "Giriş şifreniz yanlış kanka!");
@@ -1035,8 +822,7 @@
       }
     }
 
-    // --- STREAMING_CHUNK: Patron giriş koruması, kuponlar ve gider listesi... ---
-    // --- PATRON GİRİŞ VE YÖNETİM ---
+    // --- STREAMING_CHUNK: Patron actions, order flow and dynamic logs... ---
     function loginPatron() {
       const pass = document.getElementById('patron-password').value;
       if (pass === '1089') {
@@ -1044,40 +830,13 @@
         document.getElementById('patron-dashboard-block').classList.remove('hidden');
         document.getElementById('footer-logout-bar').classList.remove('hidden');
         state.currentUser = { name: "Patron", type: "patron" };
-        openCustomAlert("Kasa Yetkisi Açıldı", "Mühürler, kasa ve elemanlar yönetim için önünüzde!");
+        openCustomAlert("Kasa Yetkisi Açıldı", "Mühürler ve muhasebe tablonuz karşınızda!");
         saveState();
       } else {
-        openCustomAlert("Yetki Hatası", "Girdiğiniz şifre geçersiz kanka!");
+        openCustomAlert("Yetki Hatası", "Patron şifresi geçersiz!");
       }
     }
 
-    function switchCustTab(tab) {
-      state.customerTab = tab;
-      if (tab === 'order') {
-        document.getElementById('cust-view-order').classList.remove('hidden');
-        document.getElementById('cust-view-track').classList.add('hidden');
-        document.getElementById('cust-tab-order').className = "flex-1 py-2.5 rounded-xl bg-white text-black";
-        document.getElementById('cust-tab-track').className = "flex-1 py-2.5 rounded-xl text-slate-500";
-      } else {
-        document.getElementById('cust-view-order').classList.add('hidden');
-        document.getElementById('cust-view-track').classList.remove('hidden');
-        document.getElementById('cust-tab-order').className = "flex-1 py-2.5 rounded-xl text-slate-500";
-        document.getElementById('cust-tab-track').className = "flex-1 py-2.5 rounded-xl bg-white text-black";
-      }
-    }
-
-    function switchPatrTab(tab) {
-      state.patronTab = tab;
-      ['analytics', 'orders', 'staff'].forEach(x => {
-        document.getElementById(`patr-view-${x}`).classList.add('hidden');
-        document.getElementById(`patr-tab-${x}`).className = "flex-1 py-2 rounded-xl text-slate-500";
-      });
-      document.getElementById(`patr-view-${tab}`).classList.remove('hidden');
-      document.getElementById(`patr-tab-${tab}`).className = "flex-1 py-2 rounded-xl bg-white text-black";
-      if (tab === 'analytics') drawLiveChart();
-    }
-
-    // --- FORM DEĞİŞKENLERİNİ YÖNETME ---
     function setDeliveryType(type) {
       state.orderForm.deliveryType = type;
       if (type === 'school') {
@@ -1106,33 +865,10 @@
       calculateDinamikPrice();
     }
 
-    function toggleVip() {
-      state.orderForm.isVip = !state.orderForm.isVip;
-      const btn = document.getElementById('vip-toggle-btn');
-      if (state.orderForm.isVip) {
-        btn.className = "px-3 py-1.5 bg-red-600 rounded-lg text-[9px] font-black uppercase text-white animate-pulse";
-        btn.innerText = "EKLENDİ";
-      } else {
-        btn.className = "px-3 py-1.5 bg-slate-800 rounded-lg text-[9px] font-black uppercase text-slate-400";
-        btn.innerText = "EKLE (+15₺)";
-      }
-      calculateDinamikPrice();
-    }
-
-    function setTip(amount) {
-      state.orderForm.tipAmount = amount;
-      [0, 5, 10, 20].forEach(x => {
-        document.getElementById(`tip-${x}-btn`).className = "py-2 rounded-xl text-xs font-bold bg-slate-950 text-slate-400 border border-slate-800";
-      });
-      document.getElementById(`tip-${amount}-btn`).className = "py-2 rounded-xl text-xs font-bold bg-blue-600 text-white border border-blue-500";
-      calculateDinamikPrice();
-    }
-
-    // İNDİRİM KUPON SİSTEMİ (ÖZELLİK 5)
     function applyCoupon() {
       const code = document.getElementById('coupon-input').value.trim().toUpperCase();
       if (code === 'AKMA10') {
-        state.orderForm.appliedCoupon = { code: 'AKMA10', discount: 10 }; // %10 İndirim
+        state.orderForm.appliedCoupon = { code: 'AKMA10', discount: 10 }; 
         document.getElementById('coupon-msg').classList.remove('hidden');
         playSound(880, 1100, 0.3);
       } else {
@@ -1143,46 +879,28 @@
       calculateDinamikPrice();
     }
 
-    // --- STREAMING_CHUNK: Dinamik fiyat hesaplama ve sepete ekleme mantığı... ---
-    // --- DİNAMİK FİYATLANDIRMA HESAP MOTORU ---
     function calculateDinamikPrice() {
-      let base = 20; // Standart fiyat (karışık renk)
-      
-      // Kaç renk seçilmiş
+      let base = 20; 
       const checkboxes = document.querySelectorAll('.color-checkbox:checked');
-      const count = checkboxes.length;
-      
-      if (count === 1) {
-        base = 30; // Sadece tek renk seçildiğinde 30 TL
+      if (checkboxes.length === 1) {
+        base = 30; 
       }
 
       let envCost = state.orderForm.envelopeType === 'kara' ? 15 : 0;
       let deliveryCost = state.orderForm.deliveryType === 'home' ? 100 : 0;
-      let vipCost = state.orderForm.isVip ? 15 : 0;
-      let tipCost = state.orderForm.tipAmount;
 
-      let total = base + envCost + deliveryCost + vipCost + tipCost;
+      let total = base + envCost + deliveryCost;
 
-      // Sadakat / Kupon İndirimi
       let discount = 0;
       if (state.orderForm.appliedCoupon) {
         discount = Math.floor(total * (state.orderForm.appliedCoupon.discount / 100));
       }
 
-      // AKMA Para Puan İndirimi (Her siparişte biriken sadakat puanının %10 kullanımı)
-      if (state.currentUser && state.currentUser.loyaltyPoints > 10) {
-        const lpUsage = Math.min(20, Math.floor(state.currentUser.loyaltyPoints * 0.1));
-        discount += lpUsage;
-      }
-
       total = Math.max(10, total - discount);
 
-      // UI Güncellemeleri
       document.getElementById('price-base-display').innerText = `${base}₺`;
       document.getElementById('price-envelope-display').innerText = `${envCost}₺`;
       document.getElementById('price-delivery-display').innerText = `${deliveryCost}₺`;
-      document.getElementById('price-vip-display').innerText = `${vipCost}₺`;
-      document.getElementById('price-tip-display').innerText = `${tipCost}₺`;
       
       if (discount > 0) {
         document.getElementById('price-discount-row').classList.remove('hidden');
@@ -1192,13 +910,12 @@
       }
 
       document.getElementById('price-total-display').innerText = `${total}₺`;
-      return { total, base, envCost, deliveryCost, vipCost, tipCost, discount };
+      return { total, base, envCost, deliveryCost, discount };
     }
 
-    // --- SİPARİŞİ BULUTA GÖNDERME ---
     function submitOrder() {
       if (!state.currentUser) {
-        openCustomAlert("Hata", "Sipariş verebilmek için üye olman ve giriş yapman gerekir kanka!");
+        openCustomAlert("Hata", "Sipariş verebilmek için üye girişi yap kanka!");
         return;
       }
 
@@ -1206,7 +923,7 @@
       const selectedColors = Array.from(checkboxes).map(x => x.value);
       
       if (selectedColors.length === 0) {
-        openCustomAlert("Hata", "Lütfen en az 1 tane bileklik rengi seç kanka!");
+        openCustomAlert("Hata", "Lütfen en az 1 tane renk seç kanka!");
         return;
       }
 
@@ -1223,11 +940,11 @@
         const apt = document.getElementById('cust-home-apt').value.trim();
 
         if (!mah || !cad || !apt) {
-          openCustomAlert("Hata", "Lütfen tüm ev adres bilgilerini eksiksiz doldurun kanka!");
+          openCustomAlert("Hata", "Ev adresini eksiksiz doldur kanka!");
           return;
         }
-        classRoom = "Adrese Teslim";
-        deskRow = `${mah} Mah. ${cad} Cad. Apt: ${apt}`;
+        classRoom = "Eve Sipariş";
+        deskRow = `${mah} Mah. ${cad} Cd. No:${apt}`;
       }
 
       const calculations = calculateDinamikPrice();
@@ -1240,11 +957,8 @@
         deskRow,
         colors: selectedColors,
         envelope: state.orderForm.envelopeType,
-        isVip: state.orderForm.isVip,
-        tip: state.orderForm.tipAmount,
         total: calculations.total,
-        status: "Örülüyor", // Örülüyor -> Paketlendi -> Teslim Edildi
-        custBadge: state.currentUser.badge,
+        status: "Örülüyor", 
         createdAt: Date.now(),
         creatorId: state.currentUser.id,
         deliveryType: addressType
@@ -1252,15 +966,7 @@
 
       state.orders.push(newOrder);
 
-      // Sadakat Puanı Kazan (ÖZELLİK 6)
-      const earnedLoyalty = Math.floor(calculations.total * 0.1);
-      const userIdx = state.staff.findIndex(x => x.id === state.currentUser.id);
-      if (userIdx !== -1) {
-        state.staff[userIdx].loyaltyPoints += earnedLoyalty;
-        state.currentUser.loyaltyPoints += earnedLoyalty;
-      }
-
-      // Formu Resetle
+      // Reset
       document.querySelectorAll('.color-checkbox').forEach(x => x.checked = false);
       document.getElementById('cust-order-note').value = '';
       if (addressType === 'home') {
@@ -1270,7 +976,7 @@
       }
 
       document.getElementById('order-success-toast').classList.remove('hidden');
-      playSound(523.25, 659.25, 0.4); // Sipariş Onay Sesi
+      playSound(523.25, 659.25, 0.4); 
       saveState();
     }
 
@@ -1279,48 +985,52 @@
       switchCustTab('track');
     }
 
-    // --- STREAMING_CHUNK: Giderleri kaydetme, onay bekleyenleri işleme ve istifa mekanizmaları... ---
-    // --- GİDER EKLEME (STOK YERİNE MANUEL GİRİŞ) ---
+    // --- STREAMING_CHUNK: Managing calculations, payouts and income statement... ---
     function submitExpense() {
       const name = document.getElementById('patr-expense-name').value.trim();
       const amount = parseFloat(document.getElementById('patr-expense-amount').value);
 
       if (!name || isNaN(amount) || amount <= 0) {
-        openCustomAlert("Hata", "Lütfen geçerli bir gider açıklaması ve fiyatı girin kanka!");
+        openCustomAlert("Hata", "Lütfen geçerli bir gider adı ve fiyatı gir kanka!");
         return;
       }
 
       state.kasa -= amount;
-      state.expenses.push({ name, amount, date: `Gün ${day}` });
+      
+      // GİDER/GELİR TABLOSUNA EKLEME YAPILIYOR
+      state.ledger.push({
+        type: 'gider',
+        text: `Malzeme alımı: ${name}`,
+        amount: amount,
+        date: new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+      });
 
       document.getElementById('patr-expense-name').value = '';
       document.getElementById('patr-expense-amount').value = '';
 
-      openCustomAlert("Gider İşlendi", `${name} için kasadan ${amount}₺ düşüldü.`);
+      openCustomAlert("Satın Alım İşlendi", `${name} için kasadan ${amount}₺ düşüldü.`);
       saveState();
     }
 
-    // --- ELEMAN BAŞVURUSU ONAYLAMA (10₺ Prim ve Kadro Girişi) ---
     function approveStaff(id) {
       const idx = state.staff.findIndex(x => x.id === id);
       if (idx !== -1) {
         state.staff[idx].status = 'approved';
-        state.staff[idx].salary += 10; // 10₺ Hoşgeldin Primi / Hoşgeldin Kampanyası
-        addNotif(state.staff[idx].id, `Tebrikler kanka! Başvurun onaylandı. Kadroya katıldığın için 10₺ hoşgeldin primin doğrudan maaşına mühürlendi!`);
-        openCustomAlert("Eleman Onaylandı", `${state.staff[idx].name} kadroya dahil edildi ve 10₺ hoş geldin primi eklendi.`);
+        state.staff[idx].salary += 10; // Katılım Primi (+10₺)
+        addNotif(state.staff[idx].id, `Başvurun onaylandı! 10₺ katılım primi maaşına mühürlendi!`);
+        openCustomAlert("Eleman Onaylandı", `${state.staff[idx].name} kadroya dahil edildi ve 10₺ katılım primi mühürlendi.`);
         saveState();
       }
     }
 
     function rejectStaff(id) {
       state.staff = state.staff.filter(x => x.id !== id);
-      openCustomAlert("Başvuru Reddedildi", "Eleman başvurusu kalıcı olarak silindi.");
+      openCustomAlert("Başvuru Reddedildi", "İşlem yapıldı.");
       saveState();
     }
 
-    // --- ELEMAN İSTİFA SİSTEMİ ---
     function triggerResignation() {
-      if (!confirm("Kanka cidden istifa etmek ve AKMA ekibinden ayrılmak istiyor musun? Biriken maaşların yanabilir!")) return;
+      if (!confirm("AKMA ekibinden ayrılmak istiyor musun? Biriken maaşların yanabilir kanka!")) return;
       if (state.currentUser && state.currentUser.type === 'worker') {
         const id = state.currentUser.id;
         state.staff = state.staff.filter(x => x.id !== id);
@@ -1328,56 +1038,62 @@
         document.getElementById('worker-dashboard-block').classList.add('hidden');
         document.getElementById('footer-logout-bar').classList.add('hidden');
         switchRole('customer');
-        openCustomAlert("İstifa Onaylandı", "Başarıyla istifa ettiniz. Yolunuz açık olsun kanka!");
+        openCustomAlert("İstifa Edildi", "İstifa işleminiz gerçekleşti.");
         saveState();
       }
     }
 
-    // --- MAAŞ ÖDEME VE KASADAN DÜŞÜLME MEKANİZMASI ---
     function paySalary(id) {
       const idx = state.staff.findIndex(x => x.id === id);
       if (idx !== -1) {
         const amount = state.staff[idx].salary;
         if (amount <= 0) {
-          openCustomAlert("Bilgi", "Bu elemanın birikmiş bir maaşı veya primi yok kanka!");
+          openCustomAlert("Bilgi", "Bu elemanın birikmiş bir maaşı yok kanka!");
           return;
         }
         if (state.kasa < amount) {
-          openCustomAlert("Limit Hatası", `Kasada yeterli bütçe yok kanka! Elemana ${amount}₺ ödemek için kasaya para girişi (sipariş teslimatı) bekleniyor.`);
+          openCustomAlert("Kasa Yetersiz", `Kasada yeterli bütçe yok kanka! Elemana ${amount}₺ ödemek için kasaya para girişi gerekiyor.`);
           return;
         }
 
         state.kasa -= amount;
+
+        // GELİR/GİDER TABLOSUNA EKLEME YAPILIYOR
+        state.ledger.push({
+          type: 'gider',
+          text: `${state.staff[idx].name} maaş ödemesi`,
+          amount: amount,
+          date: new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+        });
+
         state.staff[idx].salary = 0;
-        openCustomAlert("Maaş Ödendi", `${state.staff[idx].name} kişisine ${amount}₺ ödemesi kasadan kuruşu kuruşuna yapıldı ve sıfırlandı.`);
+        openCustomAlert("Maaş Ödendi", `${state.staff[idx].name} kişisine ${amount}₺ ödemesi yapıldı ve maaşı sıfırlandı.`);
         saveState();
       }
     }
 
-    // --- STREAMING_CHUNK: Örücü ve kurye görev yönetimi, silinme akışları... ---
-    // --- ELEMAN GÖREV YÖNETİMİ (ÖRÜCÜ-KURYE ZİNCİRİ) ---
     function assignOrder(orderId, staffId) {
       const oIdx = state.orders.findIndex(x => x.id === orderId);
       const sObj = state.staff.find(x => x.id === staffId);
       if (oIdx !== -1 && sObj) {
         if (sObj.role === 'weaver') {
           state.orders[oIdx].assignedWeaver = sObj.name;
-          addNotif(sObj.id, `Patron sana ${orderId} siparişini örgü görevi olarak atadı kanka!`);
+          addNotif(sObj.id, `Patron sana ${orderId} siparişini örücü olarak atadı kanka!`);
         } else {
           state.orders[oIdx].assignedCourier = sObj.name;
-          addNotif(sObj.id, `Patron sana ${orderId} siparişini kurye/dağıtım görevi olarak atadı kanka!`);
+          addNotif(sObj.id, `Patron sana ${orderId} siparişini kurye olarak atadı kanka!`);
         }
         saveState();
       }
     }
 
-    // Örücü Örgüyü Bitirdiğinde
+    // --- STREAMING_CHUNK: Handling weave and delivery calculations... ---
     function finishWeave(id) {
       const idx = state.orders.findIndex(x => x.id === id);
       if (idx !== -1) {
         state.orders[idx].status = 'Paketlendi';
         
-        // Örücü Prim Hesabı (ÖZELLİK: Kara zarf ise 7 + 5 = 12 TL, değilse 7 TL)
+        // Örücü Prim Hesabı (Kara Zarf: +12₺, Standart: +7₺)
         const isKaraZarf = state.orders[idx].envelope === 'kara';
         const prim = isKaraZarf ? 12 : 7;
 
@@ -1391,29 +1107,34 @@
           }
         }
 
-        // Kuryelere Haber Ver
         state.staff.filter(x => x.role === 'courier').forEach(k => {
-          addNotif(k.id, `Dikkat! ${state.currentUser.name} örücüsü ${id} siparişinin örgüsünü bitirdi ve paketledi. Sırada bekleyen teslimat noktasına ulaştırmak için kurye paneline eklenmiştir!`);
+          addNotif(k.id, `${state.currentUser.name} örücüsü ${id} siparişini paketledi. Teslimat için kurye paneline eklendi!`);
         });
 
-        openCustomAlert("Örgü Tamamlandı", `Sipariş başarıyla paketlendi kanka! Kazandığınız prim: ${prim}₺. Bu sipariş örücü görev ekranınızdan otomatik olarak silinmiştir.`);
+        openCustomAlert("Örgü Tamamlandı", `Sipariş başarıyla paketlendi kanka! Kazandığınız prim: ${prim}₺.`);
         saveState();
       }
     }
 
-    // Kurye Teslimatı Bitirdiğinde (Maaşa Prim Eklenir & Kasa Artar & Sistemden Tamamen Silinir)
     function deliverOrder(id) {
       const idx = state.orders.findIndex(x => x.id === id);
       if (idx !== -1) {
         const order = state.orders[idx];
         order.status = 'Teslim Edildi';
 
-        // Kurye Prim Hesabı (ÖZELLİK: Eve teslimat ise +50 TL, okul içi ise +7 TL)
+        // Kurye Prim Hesabı (Eve Teslimat: +50₺, Sınıf: +7₺)
         const isEveTeslim = order.deliveryType === 'home';
         const prim = isEveTeslim ? 50 : 7;
 
-        // Sipariş parası doğrudan kasaya eklenir
         state.kasa += order.total;
+
+        // GELİR/GİDER TABLOSUNA GELİR OLARAK İŞLENİYOR
+        state.ledger.push({
+          type: 'gelir',
+          text: `${order.id} teslimatı (${order.customer})`,
+          amount: order.total,
+          date: new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+        });
 
         if (state.currentUser && state.currentUser.type === 'worker') {
           const sIdx = state.staff.findIndex(x => x.id === state.currentUser.id);
@@ -1425,18 +1146,17 @@
           }
         }
 
-        // Müşteriye bildirim gönder (ÖZELLİK 18 Müşteri Bildirimi)
-        addNotif(order.creatorId, `Bilekliğin sırasına mühürlü paketle ulaştı kanka! Keyifli günlerde kullan.`);
+        // Müşteriye bildirim
+        addNotif(order.creatorId, `Bilekliğin sırasına mühürlü paketle ulaştı kanka!`);
 
-        // Siparişi kalıcı kurye teslimatından sonra sil
+        // Görev tamamlandı, sipariş kurye ekranından (ve sistemden) kalıcı olarak kaldırılıyor
         state.orders = state.orders.filter(x => x.id !== id);
 
-        openCustomAlert("Teslimat Başarılı", `Bileklik sırasına başarıyla bırakıldı! Kazandığın kurye primi: ${prim}₺. Siparişin toplam tutarı (${order.total}₺) doğrudan patronun kasasına eklendi ve sistemden silindi.`);
+        openCustomAlert("Teslimat Başarılı", `Bileklik sırasına teslim edildi! Kurye primi: ${prim}₺. ${order.total}₺ patron kasasına mühürlendi!`);
         saveState();
       }
     }
 
-    // --- BİLDİRİM VE ÇAN MERKEZİ ---
     function addNotif(userId, text) {
       const id = 'notif-' + Date.now() + Math.floor(Math.random() * 100);
       state.acknowledgedNotifications.push({ id, userId, text, ack: false });
@@ -1464,7 +1184,6 @@
       lucide.createIcons();
     }
 
-    // --- HIZLI KOPYALAMA ---
     function copyAppUrl() {
       const el = document.createElement('textarea');
       el.value = window.location.href;
@@ -1472,26 +1191,22 @@
       el.select();
       document.execCommand('copy');
       document.body.removeChild(el);
-      openCustomAlert("Bağlantı Kopyalandı", "Sınıfının WhatsApp veya Instagram grubuna gönder kanka, herkes profilini oluşturup sipariş mühürlesin!");
+      openCustomAlert("Bağlantı Kopyalandı", "Sınıfının grubuna gönder kanka!");
     }
 
-    // --- TELSİZ SOHBET (ÖZELLİK 10) ---
     let simChat = [
-      { sender: "Patron", text: "Kuryeler dersteyken koridorda sessiz adımlarla dağıtsın kanka!", date: "12:30" },
-      { sender: "Yusuf", text: "Cobra örgülerini tamamlıyorum, mühürler bende.", date: "12:35" }
+      { sender: "Patron", text: "Kuryeler dersteyken koridorda sessiz adımlarla dağıtsın kanka!", date: "12:30" }
     ];
 
     function sendChatMessage() {
       const input = document.getElementById('worker-chat-input');
       const text = input.value.trim();
       if (!text || !state.currentUser) return;
-      simChat.push({ sender: state.currentUser.name, text, date: `${time}:00` });
+      simChat.push({ sender: state.currentUser.name, text, date: 'Şimdi' });
       input.value = '';
       renderWorkerChat();
     }
 
-    // --- STREAMING_CHUNK: Tüm sayfaların, dinamik listelerin ve tabloların render akışı... ---
-    // --- DETAYLI DİJİTAL FATURA (ÖZELLİK 13) ---
     let selectedInvoiceData = null;
     function openInvoice(id) {
       const ord = state.orders.find(x => x.id === id);
@@ -1503,10 +1218,7 @@
           <p>FATURA ID: ${ord.id}</p>
           <p>MÜŞTERİ: ${ord.customer} (${ord.classRoom})</p>
           <p>SIRA KONUMU: ${ord.deskRow}</p>
-          <p>RENKLER: ${ord.colors.join(', ').toUpperCase()}</p>
           <p>ZARF: ${ord.envelope === 'kara' ? 'O ELENDİN Kara Zarf (+15₺)' : 'Şeffaf Paket (+0₺)'}</p>
-          <p>VIP SÜRAT: ${ord.isVip ? 'EVET (+15₺)' : 'HAYIR'}</p>
-          <p>BAHŞİŞ: ${ord.tip}₺</p>
           <p class="text-green-400 font-bold border-t border-slate-800 pt-1 text-center">TOPLAM TUTAR: ${ord.total}₺</p>
         `;
         document.getElementById('invoice-modal').classList.remove('hidden');
@@ -1525,10 +1237,9 @@ AKMA KOLEKTIF DIGITAL INVOICE
 Fatura No: ${selectedInvoiceData.id}
 Müşteri: ${selectedInvoiceData.customer} (${selectedInvoiceData.classRoom})
 Sıra Konumu: ${selectedInvoiceData.deskRow}
-Bileklik Renkleri: ${selectedInvoiceData.colors.join(', ').toUpperCase()}
 Toplam Tutar: ${selectedInvoiceData.total}TL
 -----------------------------
-Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
+Teşekkürler kanka!
       `.trim();
 
       const el = document.createElement('textarea');
@@ -1537,17 +1248,16 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
       el.select();
       document.execCommand('copy');
       document.body.removeChild(el);
-      openCustomAlert("Kopyalandı", "Fatura metni panoya kopyalandı!");
+      openCustomAlert("Kopyalandı", "Fatura metni kopyalandı!");
     }
 
-    // --- EN TEPEDEKİ TEK ONAY BİLDİRİMİ ---
     function acknowledgeTopNotification() {
       document.getElementById('top-acknowledged-notification').classList.add('hidden');
     }
 
     // --- RENDER MOTORU ---
+    // --- STREAMING_CHUNK: Rendering elements dynamically... ---
     function render() {
-      // Gece/Gündüz Modu Sınıfları
       if (state.theme === 'light') {
         document.body.className = "bg-slate-100 text-slate-900 min-h-screen font-sans overflow-x-hidden selection:bg-blue-600/30 light-theme";
         document.getElementById('header-bar').className = "bg-white border border-slate-200 p-4 rounded-3xl mb-4 flex justify-between items-center sticky top-2 z-40 backdrop-blur-md text-slate-900 shadow-md";
@@ -1560,7 +1270,6 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
         document.getElementById('theme-toggle-btn').innerHTML = `<i data-lucide="sun" class="w-5 h-5"></i>`;
       }
 
-      // Kasa Alarm Kontrolü (ÖZELLİK 20 Kasa Alarmı)
       const alarmBar = document.getElementById('kasa-alarm-bar');
       if (state.kasa < 100) {
         alarmBar.classList.remove('hidden');
@@ -1568,39 +1277,34 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
         alarmBar.classList.add('hidden');
       }
 
-      // Üst Onaylı Bildirimler Kartı Kontrolü
       if (state.currentUser) {
         const topNotif = state.acknowledgedNotifications.find(n => n.userId === state.currentUser.id && !n.ack);
         if (topNotif) {
           document.getElementById('top-acknowledged-notification').classList.remove('hidden');
           document.getElementById('top-notif-text').innerText = topNotif.text;
-          topNotif.ack = true; // Gösterildi olarak mühürle
+          topNotif.ack = true; 
         }
       }
 
-      // Başlık & Profil Göstergeleri
       if (state.currentUser && state.currentUser.type === 'customer') {
         document.getElementById('cust-avatar-display').innerText = state.currentUser.avatar;
         document.getElementById('cust-name-display').innerText = state.currentUser.name;
-        document.getElementById('cust-badge-display').innerText = state.currentUser.badge;
-        document.getElementById('cust-loyalty-display').innerText = `${state.currentUser.loyaltyPoints}₺`;
+        document.getElementById('cust-loyalty-display').innerText = `${state.currentUser.loyaltyPoints || 0}₺`;
       }
 
-      // Giriş yapılmışsa oturum sonlandırıcıyı göster
       if (state.currentUser) {
         document.getElementById('footer-logout-bar').classList.remove('hidden');
       } else {
         document.getElementById('footer-logout-bar').classList.add('hidden');
       }
 
-      // Seçim Listeleri Güncellemesi (Kayıtlı eleman & müşterileri giriş listelerine mühürle)
       const custSelect = document.getElementById('login-cust-select');
       const workSelect = document.getElementById('login-work-select');
       
       if (custSelect) {
         custSelect.innerHTML = '';
         state.staff.filter(x => x.type === 'customer').forEach(c => {
-          custSelect.innerHTML += `<option value="${c.name}">${c.name} (${c.badge})</option>`;
+          custSelect.innerHTML += `<option value="${c.name}">${c.name}</option>`;
         });
       }
       if (workSelect) {
@@ -1610,12 +1314,10 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
         });
       }
 
-      // Menü Aktifliği
       document.getElementById('role-cust-btn').className = state.currentRole === 'customer' ? "px-3 py-1.5 rounded-xl text-[10px] font-black transition-all bg-blue-600 text-white" : "px-3 py-1.5 rounded-xl text-[10px] font-black transition-all text-slate-500";
       document.getElementById('role-work-btn').className = state.currentRole === 'worker' ? "px-3 py-1.5 rounded-xl text-[10px] font-black transition-all bg-blue-600 text-white" : "px-3 py-1.5 rounded-xl text-[10px] font-black transition-all text-slate-500";
       document.getElementById('role-patr-btn').className = state.currentRole === 'patron' ? "px-3 py-1.5 rounded-xl text-[10px] font-black transition-all bg-blue-600 text-white" : "px-3 py-1.5 rounded-xl text-[10px] font-black transition-all text-slate-500";
 
-      // Bildirim Çanı Adeti
       if (state.currentUser) {
         const unreadCount = state.acknowledgedNotifications.filter(n => n.userId === state.currentUser.id).length;
         const badge = document.getElementById('notif-badge');
@@ -1627,7 +1329,6 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
         }
       }
 
-      // Diğer Alt Render Yapılarını Çağır
       renderColorsCheckbox();
       renderCustomerOrders();
       renderWorkerTasks();
@@ -1639,13 +1340,11 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
       lucide.createIcons();
     }
 
-    // --- RENK SEÇENEKLERİ CHECKBOX YERLEŞTİRME ---
     function renderColorsCheckbox() {
       const grid = document.getElementById('color-checkbox-grid');
       if (!grid) return;
       grid.innerHTML = '';
       COLOR_OPTIONS.forEach(opt => {
-        const isSelected = state.orderForm.selectedColors.includes(opt.id);
         grid.innerHTML += `
           <label class="relative flex flex-col items-center justify-center p-3 rounded-2xl border border-slate-800 bg-slate-900 cursor-pointer hover:bg-slate-800 transition-all select-none">
             <input type="checkbox" value="${opt.id}" class="color-checkbox hidden" onchange="toggleColorSelection(this)">
@@ -1657,16 +1356,9 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
     }
 
     function toggleColorSelection(el) {
-      const val = el.value;
-      if (el.checked) {
-        if (!state.orderForm.selectedColors.includes(val)) state.orderForm.selectedColors.push(val);
-      } else {
-        state.orderForm.selectedColors = state.orderForm.selectedColors.filter(x => x !== val);
-      }
       calculateDinamikPrice();
     }
 
-    // --- MÜŞTERİ SİPARİŞ TAKİBİ LİSTELEME ---
     function renderCustomerOrders() {
       const list = document.getElementById('customer-orders-list');
       if (!list) return;
@@ -1683,7 +1375,6 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
       myOrders.forEach(ord => {
         list.innerHTML += `
           <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-3 relative overflow-hidden">
-            ${ord.isVip ? '<span class="absolute top-0 right-0 bg-red-600 text-white text-[8px] font-black px-2 py-0.5 rounded-bl-xl animate-pulse">VIP ÖNCELİK</span>' : ''}
             <div class="flex justify-between items-start">
               <div>
                 <span class="text-[8px] font-mono font-black text-blue-400">${ord.id}</span>
@@ -1698,7 +1389,6 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
                <p><span class="font-bold text-white">Zarf:</span> ${ord.envelope === 'kara' ? 'O ELENDİN Kara Zarf' : 'Standart'}</p>
             </div>
 
-            <!-- Fatura Butonu -->
             <div class="flex gap-2">
               <button onclick="openInvoice('${ord.id}')" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-[10px] font-black rounded-xl uppercase flex items-center justify-center gap-1.5"><i data-lucide="award" class="w-3.5 h-3.5"></i> Fatura Çıkar</button>
               <button class="px-4 py-2 bg-slate-950 border border-slate-850 rounded-xl text-[10px] font-black text-slate-500 uppercase">${ord.status}</button>
@@ -1709,7 +1399,7 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
       lucide.createIcons();
     }
 
-    // --- ELEMAN GÖREV YÖNETİM RENDERİ ---
+    // --- STREAMING_CHUNK: Rendering tasks and accounting statements... ---
     function renderWorkerTasks() {
       const list = document.getElementById('worker-tasks-list');
       if (!list) return;
@@ -1717,18 +1407,15 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
 
       if (!state.currentUser) return;
 
-      // Örücü veya Kurye Filtreleme
       let myTasks = [];
       if (state.currentUser.role === 'weaver') {
-        // Örücü: Atanmış ve sadece "Örülüyor" olanları görür. Yapınca listeden silinir.
         myTasks = state.orders.filter(o => o.assignedWeaver === state.currentUser.name && o.status === 'Örülüyor');
       } else {
-        // Kurye: Atanmış ve sadece "Paketlendi" olanları görür. Yapınca listeden silinir.
-        myTasks = state.orders.filter(o => o.status === 'Paketlendi');
+        myTasks = state.orders.filter(o => o.assignedCourier === state.currentUser.name && o.status === 'Paketlendi');
       }
 
       if (myTasks.length === 0) {
-        list.innerHTML = `<div class="text-center py-8 text-slate-500 text-xs italic">Şu an atanmış aktif bir göreviniz yok kanka!</div>`;
+        list.innerHTML = `<div class="text-center py-8 text-slate-500 text-xs italic">Şu an aktif bir göreviniz yok kanka!</div>`;
         return;
       }
 
@@ -1737,7 +1424,7 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
         if (state.currentUser.role === 'weaver') {
           actionBtn = `<button onclick="finishWeave('${ord.id}')" class="w-full py-3 bg-orange-600 hover:bg-orange-500 text-white rounded-xl text-xs font-black uppercase">ÖRGÜYÜ BİTİR VE PAKETLE</button>`;
         } else {
-          actionBtn = `<button onclick="deliverOrder('${ord.id}')" class="w-full py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl text-xs font-black uppercase">SIRAYA TESLİM ET</button>`;
+          actionBtn = `<button onclick="deliverOrder('${ord.id}')" class="w-full py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl text-xs font-black uppercase">MÜŞTERİYE TESLİM ET</button>`;
         }
 
         list.innerHTML += `
@@ -1751,7 +1438,6 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
               <span class="text-xs font-black text-slate-400 font-mono">${ord.total}₺</span>
             </div>
 
-            <!-- Görevin Özel Detayları (Örücü Renk Görür, Kurye Örücü İsmini Görür) -->
             <div class="space-y-1 bg-black/40 p-3 rounded-xl border border-slate-850 text-[10px] leading-tight text-slate-400">
                ${state.currentUser.role === 'weaver' ? `
                  <p class="text-white"><span class="font-black text-blue-400">DOKUMA RENKLERİ:</span> ${ord.colors.map(c => COLOR_OPTIONS.find(x => x.id === c)?.name).join(', ').toUpperCase()}</p>
@@ -1766,7 +1452,6 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
       });
     }
 
-    // --- TELSİZ SOHBET ODASI RENDERİ ---
     function renderWorkerChat() {
       const box = document.getElementById('worker-chat-box');
       if (!box) return;
@@ -1776,14 +1461,13 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
           <div>
             <span class="font-black text-blue-400">[${msg.sender}]:</span>
             <span class="text-slate-300">${msg.text}</span>
-            <span class="text-slate-600 text-[8px] ml-1">(${msg.date})</span>
           </div>
         `;
       });
       box.scrollTop = box.scrollHeight;
     }
 
-    // --- PATRON ANALİTİKLER RENDERİ ---
+    // --- DETAYLI GELİR VE GİDER KAYIT TABLOSU (RESMİ MUHASEBE) ---
     function renderPatronAnalytics() {
       document.getElementById('patron-kasa-display').innerText = `${state.kasa}₺`;
       
@@ -1791,22 +1475,27 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
       if (!list) return;
       list.innerHTML = '';
 
-      if (state.expenses.length === 0) {
-        list.innerHTML = `<div class="text-slate-500 italic text-[10px]">Henüz gider hareketi yok.</div>`;
+      if (!state.ledger || state.ledger.length === 0) {
+        list.innerHTML = `<div class="text-slate-500 italic text-[10px]">Henüz finansal gelir/gider hareketi gerçekleşmedi.</div>`;
         return;
       }
 
-      state.expenses.forEach(e => {
+      state.ledger.forEach(entry => {
+        const isGelir = entry.type === 'gelir';
         list.innerHTML += `
-          <div class="flex justify-between items-center bg-black/40 p-2.5 rounded-xl border border-slate-850">
-            <span class="font-bold text-slate-400">${e.name}</span>
-            <span class="font-mono text-red-400 font-bold">-${e.amount}₺</span>
+          <div class="flex justify-between items-center bg-black/40 p-3 rounded-2xl border ${isGelir ? 'border-green-500/20' : 'border-red-500/20'}">
+            <div>
+              <span class="font-black text-white text-[11px]">${entry.text}</span>
+              <p class="text-[8px] text-slate-600 mt-0.5">${entry.date}</p>
+            </div>
+            <span class="font-mono font-black text-xs ${isGelir ? 'text-green-400' : 'text-red-400'}">
+              ${isGelir ? '+' : '-'}${entry.amount}₺
+            </span>
           </div>
         `;
       });
     }
 
-    // --- PATRON SİPARİŞ ATAMA RENDERİ ---
     let patrOrderFilter = 'all';
     function filterPatrOrders(type) {
       patrOrderFilter = type;
@@ -1829,11 +1518,10 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
       }
 
       filtered.forEach(ord => {
-        // Atanabilecek Örücü ve Kuryeler
         let weaverOptions = '<option value="">Örücü Seç...</option>';
         let courierOptions = '<option value="">Kurye Seç...</option>';
 
-        state.staff.filter(x => x.status === 'approved').forEach(s => {
+        state.staff.filter(x => x.status === 'approved' && x.type === 'worker').forEach(s => {
           if (s.role === 'weaver') {
             weaverOptions += `<option value="${s.id}" ${ord.assignedWeaver === s.name ? 'selected' : ''}>${s.name}</option>`;
           } else {
@@ -1857,7 +1545,6 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
                <p><span class="font-bold text-white">Zarf:</span> ${ord.envelope === 'kara' ? 'O ELENDİN Kara Zarf' : 'Standart'}</p>
             </div>
 
-            <!-- Atama Form Elemanları -->
             <div class="grid grid-cols-2 gap-2">
               <select onchange="assignOrder('${ord.id}', this.value)" class="bg-slate-950 border border-slate-850 p-2 rounded-xl text-[10px] font-bold text-white outline-none">
                 ${weaverOptions}
@@ -1871,7 +1558,6 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
       });
     }
 
-    // --- PATRON ELEMANLAR RENDERİ ---
     function renderPatronStaff() {
       const requests = document.getElementById('patron-staff-requests');
       const active = document.getElementById('patron-staff-active');
@@ -1905,7 +1591,7 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
       }
 
       if (approved.length === 0) {
-        active.innerHTML = `<div class="text-[10px] text-slate-500 italic">Kadroda henüz kayıtlı eleman yok kanka.</div>`;
+        active.innerHTML = `<div class="text-[10px] text-slate-500 italic">Kadroda kayıtlı çalışan yok.</div>`;
       } else {
         approved.forEach(a => {
           active.innerHTML += `
@@ -1916,7 +1602,7 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
                   <p class="text-[9px] text-slate-500 font-bold uppercase">${a.role === 'weaver' ? '🧶 Örücü' : '🚴 Kurye'}</p>
                 </div>
                 <div class="text-right">
-                  <span class="text-[9px] text-slate-500 font-bold">Kalıcı İş Sayacı:</span>
+                  <span class="text-[9px] text-slate-500 font-bold">Kalıcı Görev Sayacı:</span>
                   <p class="font-black text-blue-400">${a.totalJobsCompleted || 0} Tamamlanan</p>
                 </div>
               </div>
@@ -1930,7 +1616,6 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
       }
     }
 
-    // --- BİLDİRİM LİSTESİ RENDERİ ---
     function renderNotifications() {
       const list = document.getElementById('notification-modal-list');
       if (!list) return;
@@ -1953,7 +1638,6 @@ Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
       });
     }
 
-    // --- UYGULAMA İLK YÜKLEME ---
     window.onload = function() {
       loadState();
       switchRole('customer');
