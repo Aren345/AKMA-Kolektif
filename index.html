@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AKMA Kolektif - Sipariş & Eleman Ağı</title>
+  <title>AKMA Kolektif - Sipariş & Eleman Ağı V7</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons CDN -->
@@ -14,20 +14,34 @@
     html, body {
       overscroll-behavior-y: contain;
       -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.3s, color 0.3s;
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans overflow-x-hidden selection:bg-blue-600/30">
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans overflow-x-hidden selection:bg-blue-600/30 dark-theme">
 
-  <div class="max-w-md mx-auto min-h-screen flex flex-col justify-between p-4 animate-in fade-in duration-300" id="app-container">
+  <div class="max-w-md mx-auto min-h-screen flex flex-col justify-between p-4" id="app-container">
     
-    <!-- --- ÜST BAR (BİLDİRİM VE ROL DEĞİŞTİRİCİ) --- -->
-    <header class="bg-slate-900 border border-slate-800 p-4 rounded-3xl mb-4 flex justify-between items-center sticky top-2 z-40 backdrop-blur-md">
-      <!-- Sol Üst: Bildirim Çanı -->
-      <button onclick="openNotificationModal()" class="relative p-2.5 bg-slate-950 border border-slate-800 rounded-2xl hover:bg-slate-800 transition-all flex items-center justify-center">
-        <i data-lucide="bell" class="text-blue-400 w-5 h-5"></i>
-        <span id="notif-badge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[8px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-black animate-pulse">0</span>
-      </button>
+    <!-- PATRON DUYURU KÜRSÜSÜ (ÖZELLİK 7) -->
+    <div class="bg-blue-600/10 border border-blue-500/20 text-blue-400 py-1.5 px-3 rounded-full text-[9px] font-black uppercase tracking-wider mb-2 overflow-hidden relative">
+      <div class="animate-marquee whitespace-nowrap inline-block" id="marquee-text">
+        AKMA Kolektif Sezon 3 Canlı Sipariş ve Eleman Ağına Hoş Geldiniz kanka!
+      </div>
+    </div>
+
+    <!-- --- ÜST BAR --- -->
+    <header class="bg-slate-900 border border-slate-800 p-4 rounded-3xl mb-4 flex justify-between items-center sticky top-2 z-40 backdrop-blur-md" id="header-bar">
+      <!-- Sol Üst: Bildirim Çanı (ÖZELLİK 15 Ses Kontrolü ve 15 Bildirim Çanı) -->
+      <div class="flex items-center gap-2">
+        <button onclick="openNotificationModal()" class="relative p-2.5 bg-slate-950 border border-slate-800 rounded-2xl hover:bg-slate-800 transition-all flex items-center justify-center">
+          <i data-lucide="bell" class="text-blue-400 w-5 h-5"></i>
+          <span id="notif-badge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[8px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-black animate-pulse">0</span>
+        </button>
+        <!-- Gece/Gündüz Modu (ÖZELLİK 2) -->
+        <button onclick="toggleTheme()" class="p-2.5 bg-slate-950 border border-slate-800 rounded-2xl hover:bg-slate-800 transition-all text-yellow-500" id="theme-toggle-btn">
+          <i data-lucide="sun" class="w-5 h-5"></i>
+        </button>
+      </div>
 
       <!-- Sağ Üst: Rol Değiştirici -->
       <div class="flex gap-1 bg-slate-950 p-1 rounded-2xl border border-slate-800">
@@ -36,6 +50,12 @@
         <button id="role-patr-btn" onclick="switchRole('patron')" class="px-3 py-1.5 rounded-xl text-[10px] font-black transition-all text-slate-500">PATRON</button>
       </div>
     </header>
+
+    <!-- KASA ALARM SİSTEMİ (ÖZELLİK 20) -->
+    <div id="kasa-alarm-bar" class="hidden bg-red-600 border border-red-500 text-white p-3 rounded-2xl mb-4 text-center text-xs font-black animate-pulse flex items-center justify-center gap-2">
+      <i data-lucide="alert-triangle" class="w-4 h-4 animate-bounce"></i>
+      <span>KASA LIMIT ALARMI! BÜTÇE 100₺ ALTINA DÜŞTÜ kanka!</span>
+    </div>
 
     <!-- PANEL ÜSTÜ ANLIK ONAYLI BİLDİRİM KARTI -->
     <div id="top-acknowledged-notification" class="hidden bg-gradient-to-r from-blue-600 to-indigo-600 border border-blue-500 p-4 rounded-3xl mb-4 shadow-xl flex justify-between items-center gap-3 animate-bounce">
@@ -65,7 +85,7 @@
         <!-- Müşteri Giriş Formu -->
         <div id="cust-login-form" class="space-y-3">
           <div class="space-y-2">
-            <label class="text-[9px] font-black text-slate-500 uppercase">Adın / Takma Adın</label>
+            <label class="text-[9px] font-black text-slate-500 uppercase">Hesabın</label>
             <select id="login-cust-select" class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs font-bold text-slate-200 outline-none"></select>
           </div>
           <div class="space-y-2">
@@ -86,7 +106,16 @@
             <input type="text" id="reg-cust-name" placeholder="Örn: Yusuf..." class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs font-bold text-slate-200 outline-none">
           </div>
           <div class="space-y-2">
-            <label class="text-[9px] font-black text-slate-500 uppercase">Giriş Şifreni Belirle</label>
+            <label class="text-[9px] font-black text-slate-500 uppercase">Profil Rütben (ÖZELLİK 11)</label>
+            <select id="reg-cust-badge" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs text-white">
+              <option value="👑 Kaptan">👑 Kaptan</option>
+              <option value="⭐ Sadık Müşteri">⭐ Sadık Müşteri</option>
+              <option value="⚡ Bileklik Sever">⚡ Bileklik Sever</option>
+              <option value="💎 Gurme Koleksiyoncu">💎 Gurme Koleksiyoncu</option>
+            </select>
+          </div>
+          <div class="space-y-2">
+            <label class="text-[9px] font-black text-slate-500 uppercase">Özel Şifren</label>
             <input type="password" id="reg-cust-pass" placeholder="Özel şifreniz..." class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs font-bold text-slate-200 outline-none">
           </div>
           <button onclick="registerCustomer()" class="w-full py-3.5 bg-green-600 hover:bg-green-500 rounded-xl text-xs font-black uppercase transition-all">HESAP OLUŞTUR</button>
@@ -103,7 +132,23 @@
 
         <!-- MÜŞTERİ TAB: BİLEKLİK TASARLA -->
         <div id="cust-view-order" class="space-y-6 animate-in fade-in duration-200">
-          <!-- Adres Bilgileri Formu -->
+          
+          <!-- Müşteri Bilgi Paneli (ÖZELLİK 6 Sadakat Puanı) -->
+          <div class="bg-slate-900 border border-slate-800 p-4 rounded-3xl flex justify-between items-center text-xs">
+            <div class="flex items-center gap-2">
+              <span id="cust-avatar-display" class="text-xl">🦁</span>
+              <div>
+                <p id="cust-name-display" class="font-black text-white">Yusuf</p>
+                <p id="cust-badge-display" class="text-[9px] text-blue-400 font-bold uppercase">👑 KAPTAN</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="text-[8px] text-slate-500 font-black">AKMA SADAKAT PUANIN (AKMA PARA)</p>
+              <p id="cust-loyalty-display" class="text-green-400 font-black font-mono">0₺</p>
+            </div>
+          </div>
+
+          <!-- Adres Bilgileri Formu (ÖZELLİK 1 Sınıf Sınırlaması: Sadece 8. ve 10. sınıflar) -->
           <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-4">
             <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
               <i data-lucide="map-pin" class="text-blue-500 w-4 h-4"></i> TESLİMAT ADRESİ SEÇİMİ
@@ -113,15 +158,22 @@
             <div class="space-y-2">
               <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-850 text-[10px] font-black">
                 <button type="button" onclick="setDeliveryType('school')" id="delivery-school-btn" class="flex-1 py-2 rounded-lg bg-blue-600 text-white transition-all">Okul Sınıfı (Sıra)</button>
-                <button type="button" onclick="setDeliveryType('home')" id="delivery-home-btn" class="flex-1 py-2 rounded-lg text-slate-500 transition-all">Eve Teslim (+50₺ Kurye)</button>
+                <button type="button" onclick="setDeliveryType('home')" id="delivery-home-btn" class="flex-1 py-2 rounded-lg text-slate-500 transition-all">Eve Teslim (+100₺ Kurye)</button>
               </div>
             </div>
 
             <!-- Okul İçi Teslimat Alanları -->
             <div id="school-delivery-fields" class="grid grid-cols-2 gap-3">
               <div class="space-y-2">
-                <label class="text-[9px] font-black text-slate-500 uppercase">Sınıfın (Kendi Sınıfını Yaz)</label>
-                <input type="text" id="cust-class-input" placeholder="Örn: 10-A, HZ-C..." class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs font-bold text-slate-200 outline-none focus:border-blue-500 transition-all">
+                <label class="text-[9px] font-black text-slate-500 uppercase">Sınıfın (Sadece 8. ve 10. Sınıflar)</label>
+                <select id="cust-class-select" class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs font-bold text-slate-200 outline-none">
+                  <option value="8-A">8-A</option>
+                  <option value="8-B">8-B</option>
+                  <option value="8-C">8-C</option>
+                  <option value="10-A" selected>10-A</option>
+                  <option value="10-B">10-B</option>
+                  <option value="10-C">10-C</option>
+                </select>
               </div>
               <div class="space-y-2">
                 <label class="text-[9px] font-black text-slate-500 uppercase">Sıra Konumun</label>
@@ -139,1172 +191,1738 @@
             <div id="home-delivery-fields" class="space-y-3 hidden">
               <div class="grid grid-cols-3 gap-2">
                 <div class="space-y-1">
-                  <label class="text-[9px] font-black text-slate-500 uppercase">Mahalle</label>
-                  <input type="text" id="cust-mah-input" placeholder="Atatürk Mah." class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-[10px] font-bold text-slate-200 outline-none">
+                  <label class="text-[8px] font-black text-slate-500 uppercase">Mahalle</label>
+                  <input type="text" id="cust-home-mah" placeholder="Örn: Güvenevler..." class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs text-white outline-none">
                 </div>
                 <div class="space-y-1">
-                  <label class="text-[9px] font-black text-slate-500 uppercase">Cadde/Sokak</label>
-                  <input type="text" id="cust-cd-input" placeholder="Vatan Cd." class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-[10px] font-bold text-slate-200 outline-none">
+                  <label class="text-[8px] font-black text-slate-500 uppercase">Cadde</label>
+                  <input type="text" id="cust-home-cad" placeholder="Örn: Hürriyet..." class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs text-white outline-none">
                 </div>
                 <div class="space-y-1">
-                  <label class="text-[9px] font-black text-slate-500 uppercase">Apartman/No</label>
-                  <input type="text" id="cust-apt-input" placeholder="Yıldız Apt. No:4" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-[10px] font-bold text-slate-200 outline-none">
+                  <label class="text-[8px] font-black text-slate-500 uppercase">Apartman/No</label>
+                  <input type="text" id="cust-home-apt" placeholder="Örn: Doğan Apt No:5..." class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs text-white outline-none">
                 </div>
               </div>
             </div>
-
           </div>
 
-          <!-- Tasarım ve Renk Seçimi -->
-          <div id="design-block" class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-4">
+          <!-- Renk Seçim Paneli -->
+          <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-4">
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center justify-between">
+              <span>BİLEKLİK RENKLERİ</span>
+              <span class="text-[9px] text-blue-400 normal-case font-bold">Tek Renk: 30₺ / Karışık: 20₺</span>
+            </h3>
+            <div class="grid grid-cols-4 gap-2" id="color-checkbox-grid"></div>
+          </div>
+
+          <!-- Mühür Zarf ve Diğer Seçenekler -->
+          <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-4">
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+              <i data-lucide="package" class="text-blue-500 w-4 h-4"></i> PAKETLEME VE EKSTRALAR
+            </h3>
+            
+            <div class="space-y-3">
+              <!-- Zarf Tasarımı -->
+              <div class="space-y-1.5">
+                <label class="text-[9px] font-black text-slate-500 uppercase">Mühürlü Paket Zarfı</label>
+                <div class="grid grid-cols-2 gap-2">
+                  <button type="button" onclick="setEnvelope('standard')" id="env-standard-btn" class="py-2.5 rounded-xl text-xs font-bold border border-blue-600 bg-blue-600 text-white transition-all flex flex-col items-center">
+                    <span>Şeffaf Standart</span>
+                    <span class="text-[8px] opacity-60">+0₺</span>
+                  </button>
+                  <button type="button" onclick="setEnvelope('kara')" id="env-kara-btn" class="py-2.5 rounded-xl text-xs font-bold border border-slate-800 text-slate-400 transition-all flex flex-col items-center">
+                    <span>O ELENDİN Kara Zarf</span>
+                    <span class="text-[8px] opacity-60">+15₺</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- VIP / Öncelikli (ÖZELLİK 9) -->
+              <div class="flex justify-between items-center bg-slate-950 p-3 rounded-xl border border-slate-850">
+                <div>
+                  <p class="text-xs font-bold text-red-400 flex items-center gap-1.5">
+                    <i data-lucide="zap" class="w-3.5 h-3.5 animate-pulse"></i> VIP Öncelikli Sipariş
+                  </p>
+                  <p class="text-[8px] text-slate-500 leading-tight mt-0.5">Siparişinizi en tepeye taşır ve kırmızı flaşörle gösterir.</p>
+                </div>
+                <button type="button" onclick="toggleVip()" id="vip-toggle-btn" class="px-3 py-1.5 bg-slate-800 rounded-lg text-[9px] font-black uppercase text-slate-400">EKLE (+15₺)</button>
+              </div>
+
+              <!-- Dinamik Bahşiş Sistemi (ÖZELLİK 8) -->
+              <div class="space-y-1.5">
+                <label class="text-[9px] font-black text-slate-500 uppercase">Ekibimize Bahşiş (Doğan Maaşa Eklenir)</label>
+                <div class="grid grid-cols-4 gap-2">
+                  <button type="button" onclick="setTip(0)" id="tip-0-btn" class="py-2 rounded-xl text-xs font-bold bg-blue-600 text-white border border-blue-500">Yok</button>
+                  <button type="button" onclick="setTip(5)" id="tip-5-btn" class="py-2 rounded-xl text-xs font-bold bg-slate-950 text-slate-400 border border-slate-800">+5₺</button>
+                  <button type="button" onclick="setTip(10)" id="tip-10-btn" class="py-2 rounded-xl text-xs font-bold bg-slate-950 text-slate-400 border border-slate-800">+10₺</button>
+                  <button type="button" onclick="setTip(20)" id="tip-20-btn" class="py-2 rounded-xl text-xs font-bold bg-slate-950 text-slate-400 border border-slate-800">+20₺</button>
+                </div>
+              </div>
+
+              <!-- İndirim Kuponu (ÖZELLİK 5) -->
+              <div class="space-y-1">
+                <label class="text-[9px] font-black text-slate-500 uppercase">İndirim Kuponu Gir</label>
+                <div class="flex gap-2">
+                  <input type="text" id="coupon-input" placeholder="Örn: AKMA10..." class="flex-1 bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs text-white outline-none">
+                  <button type="button" onclick="applyCoupon()" class="px-4 bg-blue-600 hover:bg-blue-500 rounded-xl text-xs font-black uppercase">UYGULA</button>
+                </div>
+                <p id="coupon-msg" class="text-[8px] font-bold text-green-400 mt-1 hidden">Kupon başarıyla uygulandı kanka!</p>
+              </div>
+
+              <!-- Özel Sipariş Notu -->
+              <div class="space-y-1">
+                <label class="text-[9px] font-black text-slate-500 uppercase">Ekip Arkadaşlarına Özel Not</label>
+                <input type="text" id="cust-order-note" placeholder="Örn: 'Kurye teneffüste sıraya bıraksın kanka'..." class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs text-white outline-none">
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Hesap Özeti ve Sipariş Gönderimi -->
+          <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-4">
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">ÖDEME ÖZETİ</h3>
+            <div class="space-y-2 border-b border-slate-800 pb-3 text-xs">
+              <div class="flex justify-between">
+                <span class="text-slate-500">Bileklik Dokuması:</span>
+                <span id="price-base-display">20₺</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">Zarf Eki:</span>
+                <span id="price-envelope-display">0₺</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">Kurye / Teslimat Bedeli:</span>
+                <span id="price-delivery-display">0₺</span>
+              </div>
+              <div class="flex justify-between" id="price-vip-row">
+                <span class="text-slate-500">VIP / Acil Sürat:</span>
+                <span id="price-vip-display">0₺</span>
+              </div>
+              <div class="flex justify-between" id="price-tip-row">
+                <span class="text-slate-500">Bahşiş:</span>
+                <span id="price-tip-display">0₺</span>
+              </div>
+              <div class="flex justify-between text-green-400 hidden" id="price-discount-row">
+                <span>Sadakat / Kupon İndirimi:</span>
+                <span id="price-discount-display">-0₺</span>
+              </div>
+            </div>
+
             <div class="flex justify-between items-center">
-              <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                <i data-lucide="scissors" class="text-blue-500 w-4 h-4"></i> DÜZ BİLEKLİK TASARLA
-              </h3>
-              <span class="text-[9px] text-blue-400 font-black uppercase">Tek Renk: 30₺ | Çoklu Renk: 20₺</span>
-            </div>
-
-            <!-- Renk Seçenekleri -->
-            <div class="space-y-2">
-              <label class="text-[9px] font-black text-slate-500 uppercase">Renk Seçimi (Çoklu Seçebilirsin)</label>
-              <div class="grid grid-cols-4 gap-2" id="color-grid">
-                <!-- Renkler Dinamik Yüklenir -->
-              </div>
-            </div>
-
-            <!-- Zarf Tipi -->
-            <div class="space-y-2">
-              <label class="text-[9px] font-black text-slate-500 uppercase">Zarf ve Paket Tasarımı</label>
-              <div class="grid grid-cols-2 gap-2">
-                <button onclick="selectEnvelope('standard')" id="env-standard" class="p-3 bg-blue-600 text-white border border-blue-500 rounded-xl text-xs font-bold transition-all flex flex-col items-center">
-                  <span>Standart Şeffaf</span>
-                  <span class="text-[8px] font-bold opacity-60 mt-0.5">+0₺</span>
-                </button>
-                <button onclick="selectEnvelope('black')" id="env-black" class="p-3 bg-slate-950 text-slate-400 border border-slate-800 rounded-xl text-xs font-bold transition-all flex flex-col items-center">
-                  <span>O ELENDİN Kara Zarf</span>
-                  <span class="text-[8px] font-bold opacity-60 mt-0.5">+15₺</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Sipariş Toplamı ve Sipariş Ver Butonu -->
-            <div class="pt-4 border-t border-slate-800 flex justify-between items-center">
               <div>
-                <p class="text-[8px] text-slate-500 font-black uppercase">Ödenecek Tutar</p>
-                <p class="text-2xl font-black text-green-400 font-mono" id="order-price-display">20₺</p>
+                <p class="text-[8px] text-slate-500 font-black uppercase">TOPLAM TUTAR</p>
+                <p class="text-3xl font-black text-green-400 font-mono" id="price-total-display">20₺</p>
               </div>
-              <button onclick="submitOrder()" class="bg-green-600 hover:bg-green-500 px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center gap-2 active:scale-95 transition-all shadow-lg">
-                <i data-lucide="send" class="w-4 h-4"></i> SİPARİŞİ GÖNDER
+              <button onclick="submitOrder()" class="bg-green-600 hover:bg-green-500 text-white px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center gap-2 active:scale-95 transition-all shadow-lg shadow-green-950/20">
+                <i data-lucide="send" class="w-4 h-4"></i> BULUTA GÖNDER
               </button>
             </div>
           </div>
 
-          <div class="text-center pt-2">
-             <button onclick="logoutCustomer()" class="text-[9px] bg-red-600/10 text-red-500 px-3 py-1.5 rounded-full font-black uppercase">MÜŞTERİ ÇIKIŞI YAP</button>
-             <p class="text-[8px] text-slate-600 mt-2">Güvenliğiniz için işiniz bittiğinde çıkış yapmayı unutmayın kanka!</p>
-          </div>
         </div>
 
-        <!-- MÜŞTERI TAB: SİPARİŞLERİM -->
+        <!-- MÜŞTERİ TAB: SİPARİŞLERİM (TAKİP) -->
         <div id="cust-view-track" class="space-y-4 hidden animate-in fade-in duration-200">
-          <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest px-1">Verdiğim Siparişler</h3>
-          <div id="my-orders-list" class="space-y-3">
-            <!-- Dinamik Sipariş Kartları -->
+          <div class="flex justify-between items-center px-1">
+            <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest">Canlı Sipariş Takibi</h3>
+            <button onclick="copyAppUrl()" class="text-[9px] bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1">
+              <i data-lucide="copy" class="w-3 h-3 text-blue-400"></i> Sınıfla Paylaş
+            </button>
           </div>
+          <div id="customer-orders-list" class="space-y-4"></div>
         </div>
+
       </div>
+
     </div>
 
     <!-- ========================================== -->
     <!-- ELEMAN PANELİ                              -->
     <!-- ========================================== -->
     <div id="worker-panel" class="space-y-6 flex-1 hidden">
-      <!-- Eleman Giriş ve Kayıt Ekranı -->
+      
+      <!-- Eleman Başvuru ve Kayıt Ekranı -->
       <div id="worker-auth-block" class="bg-slate-900 border border-slate-800 p-6 rounded-[2.5rem] space-y-4">
         <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest text-center flex items-center justify-center gap-2">
-          <i data-lucide="users" class="text-blue-500 w-4 h-4"></i> ELEMAN KAPISI
+          <i data-lucide="user-check" class="text-blue-500 w-4 h-4"></i> ELEMAN BAŞVURU KAPISI
         </h3>
         
         <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800">
-          <button id="worker-btn-login" onclick="toggleWorkerAuth('login')" class="flex-1 py-2 rounded-lg bg-white text-black text-xs font-black">GİRİŞ YAP</button>
-          <button id="worker-btn-register" onclick="toggleWorkerAuth('register')" class="flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-300 text-xs font-black">KAYDOL</button>
+          <button id="work-btn-login" onclick="toggleWorkAuth('login')" class="flex-1 py-2 rounded-lg bg-white text-black text-xs font-black">GİRİŞ YAP</button>
+          <button id="work-btn-register" onclick="toggleWorkAuth('register')" class="flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-300 text-xs font-black">YENİ BAŞVURU</button>
         </div>
 
-        <!-- Giriş Formu -->
-        <div id="worker-login-form" class="space-y-3">
+        <!-- Eleman Giriş Formu -->
+        <div id="work-login-form" class="space-y-3">
           <div class="space-y-2">
-            <label class="text-[9px] font-black text-slate-500 uppercase">Eleman Seç</label>
-            <select id="login-worker-select" class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs font-bold text-slate-200 outline-none">
-              <!-- Onaylı Elemanlar buraya dolar -->
-            </select>
+            <label class="text-[9px] font-black text-slate-500 uppercase">Ekip Hesabın</label>
+            <select id="login-work-select" class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs font-bold text-slate-200 outline-none"></select>
           </div>
           <div class="space-y-2">
             <label class="text-[9px] font-black text-slate-500 uppercase">Özel Şifren</label>
-            <input type="password" id="login-worker-pass" placeholder="Kayıtta belirlediğin şifre..." class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs font-bold text-slate-200 outline-none">
+            <input type="password" id="login-work-pass" placeholder="Şifreniz..." class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs font-bold text-slate-200 outline-none">
           </div>
           <button onclick="loginWorker()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 rounded-xl text-xs font-black uppercase transition-all">PANELİME GİR</button>
         </div>
 
-        <!-- Kayıt Formu -->
-        <div id="worker-register-form" class="space-y-3 hidden">
+        <!-- Eleman Kayıt Formu -->
+        <div id="work-register-form" class="space-y-3 hidden">
           <div class="space-y-2">
-            <label class="text-[9px] font-black text-slate-500 uppercase">Adın / Takma Adın</label>
-            <input type="text" id="reg-worker-name" placeholder="Örn: Yusuf..." class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs font-bold text-slate-200 outline-none">
+            <label class="text-[9px] font-black text-slate-500 uppercase">Ekipteki Adın</label>
+            <input type="text" id="reg-work-name" placeholder="Örn: Mehmet..." class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs font-bold text-slate-200 outline-none">
           </div>
           <div class="space-y-2">
-            <label class="text-[9px] font-black text-slate-500 uppercase">Görevin</label>
-            <select id="reg-worker-role" class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs font-bold text-slate-200 outline-none">
-              <option value="oruco">Örücü (Bileklik Ören)</option>
-              <option value="kurye">Kurye (Sıraya/Adrese Teslim Eden)</option>
+            <label class="text-[9px] font-black text-slate-500 uppercase">Görevin / Rolün</label>
+            <select id="reg-work-role" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs text-white">
+              <option value="weaver">🧶 Örücü (Bileklik Dokur)</option>
+              <option value="courier">🚴 Kurye (Teslimat Yapar)</option>
             </select>
           </div>
           <div class="space-y-2">
-            <label class="text-[9px] font-black text-slate-500 uppercase">Kendi Özel Şifreni Belirle</label>
-            <input type="password" id="reg-worker-pass" placeholder="Girişte kullanacağın şifre..." class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs font-bold text-slate-200 outline-none">
+            <label class="text-[9px] font-black text-slate-500 uppercase">Giriş Şifreniz</label>
+            <input type="password" id="reg-work-pass" placeholder="Örn: 4 haneli şifreniz..." class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs font-bold text-slate-200 outline-none">
           </div>
-          <button onclick="registerWorker()" class="w-full py-3.5 bg-green-600 hover:bg-green-500 rounded-xl text-xs font-black uppercase transition-all">PATRONA BAŞVURU GÖNDER</button>
+          <button onclick="registerWorker()" class="w-full py-3.5 bg-green-600 hover:bg-green-500 rounded-xl text-xs font-black uppercase transition-all">KAYDOL VE ONAY İSTE</button>
         </div>
       </div>
 
-      <!-- Eleman Çalışma Görev Paneli -->
-      <div id="worker-dashboard-block" class="space-y-4 hidden animate-in fade-in duration-200">
-        <div class="bg-slate-900 border border-slate-800 p-4 rounded-3xl flex justify-between items-center">
+      <!-- Eleman İşlem Paneli (Sadece Giriş Yapıldığında Görünür) -->
+      <div id="worker-dashboard-block" class="space-y-6 hidden animate-in fade-in duration-300">
+        
+        <!-- Eleman İstatistik Kartı -->
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-3xl flex justify-between items-center text-xs">
           <div>
-            <span class="text-[9px] bg-blue-600/10 text-blue-400 px-2 py-0.5 rounded-full font-black uppercase" id="worker-dashboard-role">Örücü</span>
-            <h4 class="font-black text-lg text-white mt-1" id="worker-dashboard-name">Yusuf</h4>
+            <p id="worker-name-display" class="font-black text-white">Mehmet</p>
+            <p id="worker-role-display" class="text-[9px] text-blue-400 font-bold uppercase">🧶 ÖRÜCÜ</p>
           </div>
           <div class="text-right">
-            <p class="text-[8px] text-slate-500 font-black uppercase">BİRİKEN MAAŞIN</p>
-            <p class="text-xl font-black text-green-400 font-mono" id="worker-dashboard-salary">0₺</p>
+            <p class="text-[8px] text-slate-500 font-black">BİRİKEN MAAŞ / PRİMİN</p>
+            <p id="worker-salary-display" class="text-yellow-400 font-black font-mono">10₺</p>
           </div>
         </div>
 
-        <div class="flex justify-between items-center px-1">
-           <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest">Sana Atanan Görevler</h3>
-           <button onclick="logoutWorker()" class="text-[9px] bg-red-600/10 text-red-500 px-2.5 py-1 rounded-xl font-black uppercase">Oturumu Kapat</button>
+        <!-- Kurye İçin Canlı Dağıtım Haritası Simülatörü (ÖZELLİK 4) -->
+        <div id="kurye-map-block" class="bg-slate-900 border border-slate-800 p-4 rounded-3xl space-y-3 hidden">
+          <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+            <i data-lucide="activity" class="text-green-500 w-4 h-4 animate-pulse"></i> Canlı Dağıtım Haritası
+          </h4>
+          <canvas id="kurye-live-map" class="w-full bg-slate-950 rounded-2xl border border-slate-800 h-24"></canvas>
         </div>
 
-        <div id="worker-task-list" class="space-y-3">
-          <!-- Sadece çalışana ait ve durumuna uygun siparişler listelenir -->
+        <!-- Bana Atanan Siparişler -->
+        <div class="space-y-3">
+          <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest px-1">GÖREV LİSTEM</h3>
+          <div id="worker-tasks-list" class="space-y-4"></div>
         </div>
 
-        <p class="text-[8px] text-slate-600 text-center mt-4">Güvenliğiniz için işiniz bittiğinde oturumu kapatmayı unutmayın kanka!</p>
+        <!-- Eleman Canlı Telsiz Sohbeti (ÖZELLİK 10) -->
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-3xl space-y-3">
+          <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+            <i data-lucide="message-square" class="text-blue-500 w-4 h-4 animate-bounce"></i> Eleman Telsizi / Sohbet Odası
+          </h4>
+          <div id="worker-chat-box" class="bg-slate-950 border border-slate-850 p-3 rounded-2xl h-24 overflow-y-auto space-y-1.5 scrollbar-hide text-[10px]"></div>
+          <div class="flex gap-2">
+            <input type="text" id="worker-chat-input" placeholder="Telsiz mesajı..." class="flex-1 bg-slate-950 border border-slate-800 p-2.5 rounded-xl text-xs text-white outline-none">
+            <button onclick="sendChatMessage()" class="px-4 bg-blue-600 rounded-xl text-xs font-black">GÖNDER</button>
+          </div>
+        </div>
+
+        <!-- İstifa Et Butonu -->
+        <button onclick="triggerResignation()" class="w-full py-3 bg-red-950/20 border border-red-900/30 text-red-500 font-black text-xs rounded-2xl hover:bg-red-600 hover:text-white transition-all uppercase">İstifa Et</button>
+
       </div>
+
     </div>
 
     <!-- ========================================== -->
     <!-- PATRON PANELİ                              -->
     <!-- ========================================== -->
     <div id="patron-panel" class="space-y-6 flex-1 hidden">
-      <!-- Patron Şifre Doğrulama Kapısı -->
-      <div id="patron-auth-block" class="bg-slate-900 border border-slate-800 p-6 rounded-[2.5rem] space-y-4 text-center">
-        <div class="w-14 h-14 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto border border-yellow-500/20">
-          <i data-lucide="shield-alert" class="text-yellow-500 w-6 h-6 animate-pulse"></i>
-        </div>
-        <h3 class="font-black text-lg text-white">PATRON GİRİŞİ</h3>
-        <p class="text-xs text-slate-500">Bu alan sadece AKMA kurucularına özeldir. Şifreyi gir kanka.</p>
+      
+      <!-- Şifreli Patron Kapısı -->
+      <div id="patron-auth-block" class="bg-slate-900 border border-slate-800 p-6 rounded-[2.5rem] space-y-4">
+        <h3 class="text-xs font-black text-yellow-500 uppercase tracking-widest text-center flex items-center justify-center gap-2 animate-pulse">
+          <i data-lucide="shield-alert" class="w-4 h-4"></i> PATRON GİRİŞ KAPISI
+        </h3>
+        <p class="text-[10px] text-slate-500 text-center">Giriş yapabilmek için özel 4 haneli patron şifrenizi girmeniz gerekir kanka!</p>
         <div class="space-y-2">
-          <input type="password" id="patron-pass-input" placeholder="Masa Şifresi..." class="w-full text-center bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-sm font-bold text-slate-200 outline-none">
+          <label class="text-[9px] font-black text-slate-500 uppercase">Patron Şifresi</label>
+          <input type="password" id="patron-password" placeholder="Örn: 1089..." class="w-full bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-xs text-slate-200 outline-none text-center tracking-widest">
         </div>
-        <button onclick="loginPatron()" class="w-full py-3.5 bg-yellow-500 hover:bg-yellow-400 text-slate-950 rounded-xl text-xs font-black uppercase tracking-wider transition-all">DOĞRULA VE GİR</button>
+        <button onclick="loginPatron()" class="w-full py-3.5 bg-yellow-600 hover:bg-yellow-500 text-black font-black uppercase rounded-xl text-xs transition-all">GİRİŞ YETKİSİ AL</button>
       </div>
 
-      <!-- Patron Kontrol Merkezi -->
-      <div id="patron-control-block" class="space-y-6 hidden animate-in fade-in duration-200">
-        <!-- Kasa ve Stok Göstergesi -->
-        <div class="grid grid-cols-2 gap-3">
-          <div class="bg-slate-900 border border-slate-800 p-4 rounded-3xl">
-            <p class="text-[8px] text-slate-500 font-black uppercase">ŞİRKET KASASI</p>
-            <p class="text-2xl font-black font-mono text-yellow-400" id="patron-kasa-display">980₺</p>
+      <!-- Patron Yönetim Alanı -->
+      <div id="patron-dashboard-block" class="space-y-6 hidden animate-in fade-in duration-300">
+        
+        <!-- Patron Yönetim Alt Tabları -->
+        <div class="flex bg-slate-900 p-1 rounded-2xl border border-slate-800 text-[10px] font-black">
+          <button id="patr-tab-analytics" onclick="switchPatrTab('analytics')" class="flex-1 py-2 rounded-xl bg-white text-black">ANALİTİKLER</button>
+          <button id="patr-tab-orders" onclick="switchPatrTab('orders')" class="flex-1 py-2 rounded-xl text-slate-500">SİPARİŞ ATAMA</button>
+          <button id="patr-tab-staff" onclick="switchPatrTab('staff')" class="flex-1 py-2 rounded-xl text-slate-500">ELEMANLAR</button>
+        </div>
+
+        <!-- PATRON TAB: ANALİTİKLER -->
+        <div id="patr-view-analytics" class="space-y-6 animate-in fade-in duration-200">
+          <!-- Kasa ve Bütçe Durumu -->
+          <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] flex justify-between items-center">
+            <div>
+              <p class="text-[9px] text-slate-500 font-black uppercase">PATRON KASASI (NET BÜTÇE)</p>
+              <p class="text-3xl font-black text-yellow-400 font-mono" id="patron-kasa-display">980₺</p>
+            </div>
+            <i data-lucide="coins" class="text-yellow-500 w-10 h-10 animate-bounce"></i>
           </div>
-          <div class="bg-slate-900 border border-slate-800 p-4 rounded-3xl">
-            <p class="text-[8px] text-slate-500 font-black uppercase">DEPO STOK</p>
-            <p class="text-2xl font-black font-mono text-blue-400" id="patron-stok-display">400 adet</p>
+
+          <!-- Canlı Gelir/Gider Grafik Paneli (ÖZELLİK 1) -->
+          <div class="bg-slate-900 border border-slate-800 p-4 rounded-3xl space-y-2">
+            <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
+              <i data-lucide="bar-chart-3" class="text-blue-500 w-4 h-4"></i> Finansal Analiz Grafiği
+            </h4>
+            <canvas id="live-financial-chart" class="w-full bg-slate-950 border border-slate-850 rounded-2xl h-32"></canvas>
+          </div>
+
+          <!-- Malzeme ve Gider Girişi (Stok Kelimesi Tamamen Kaldırıldı!) -->
+          <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-4">
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+              <i data-lucide="dollar-sign" class="text-red-500 w-4 h-4"></i> MALZEME & GİDER GİRİŞİ
+            </h3>
+            <div class="space-y-3">
+              <div class="grid grid-cols-2 gap-2">
+                <div class="space-y-1">
+                  <label class="text-[8px] font-black text-slate-500 uppercase">Gider Adı/Açıklaması</label>
+                  <input type="text" id="patr-expense-name" placeholder="Örn: 200 adet lastik..." class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs text-white outline-none">
+                </div>
+                <div class="space-y-1">
+                  <label class="text-[8px] font-black text-slate-500 uppercase">Miktar/Fiyat (₺)</label>
+                  <input type="number" id="patr-expense-amount" placeholder="Örn: 100..." class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs text-white outline-none">
+                </div>
+              </div>
+              <button onclick="submitExpense()" class="w-full py-3 bg-red-600 hover:bg-red-500 rounded-xl text-xs font-black uppercase transition-all">GİDERİ KASADAN DÜŞ</button>
+            </div>
+          </div>
+
+          <!-- Gider ve Malzeme Geçmiş Listesi -->
+          <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-3">
+            <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Son Gider Hareketleri</h4>
+            <div id="patron-expenses-list" class="space-y-2 max-h-32 overflow-y-auto scrollbar-hide text-xs"></div>
           </div>
         </div>
 
-        <!-- Stok Alım ve Gider Girdisi -->
-        <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-4">
-           <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-             <i data-lucide="shopping-cart" class="text-blue-500 w-4 h-4"></i> HAMMADDE SATIN ALIMI
-           </h3>
-           <div class="grid grid-cols-2 gap-3">
-             <div class="space-y-1">
-               <label class="text-[8px] text-slate-500 font-black uppercase">Alınacak Adet</label>
-               <input type="number" id="buy-stok-amount" value="100" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-xl text-xs font-black text-white">
-             </div>
-             <div class="space-y-1">
-               <label class="text-[8px] text-slate-500 font-black uppercase">Ödenecek Tutar (TL)</label>
-               <input type="number" id="buy-stok-cost" value="50" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-xl text-xs font-black text-white">
-             </div>
-           </div>
-           <button onclick="buyHammadde()" class="w-full py-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-[10px] font-black uppercase">STOK SATIN AL VE KASADAN DÜŞ</button>
+        <!-- PATRON TAB: SİPARİŞ ATAMA -->
+        <div id="patr-view-orders" class="space-y-4 hidden animate-in fade-in duration-200">
+          <div class="flex justify-between items-center px-1">
+            <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest">Gelen Siparişler</h3>
+            <div class="flex bg-slate-950 p-0.5 rounded-xl border border-slate-800">
+              <button onclick="filterPatrOrders('all')" id="filter-all-btn" class="px-3 py-1 text-[8px] font-black rounded-lg bg-blue-600 text-white">Hepsi</button>
+              <button onclick="filterPatrOrders('unassigned')" id="filter-unassigned-btn" class="px-3 py-1 text-[8px] font-black rounded-lg text-slate-500">Atanmamış</button>
+            </div>
+          </div>
+          <div id="patron-orders-list" class="space-y-4"></div>
         </div>
 
-        <!-- Patron Bölüm Tabları -->
-        <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800 text-[10px] font-black">
-          <button id="patron-tab-orders" onclick="switchPatronTab('orders')" class="flex-1 py-2 rounded-lg bg-white text-black">SİPARİŞ ATAMA</button>
-          <button id="patron-tab-workers" onclick="switchPatronTab('workers')" class="flex-1 py-2 rounded-lg text-slate-500">ELEMAN YÖNETİMİ</button>
+        <!-- PATRON TAB: ELEMANLAR -->
+        <div id="patr-view-staff" class="space-y-6 hidden animate-in fade-in duration-200">
+          <!-- Eleman Onaylama Listesi -->
+          <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-4">
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center justify-between">
+              <span>YENİ ELEMAN BAŞVURULARI</span>
+              <span id="onay-bekleyen-count" class="text-[9px] bg-red-600/20 text-red-500 px-2 py-0.5 rounded-full font-mono">0 Onay</span>
+            </h3>
+            <div id="patron-staff-requests" class="space-y-3"></div>
+          </div>
+
+          <!-- Mevcut Eleman Listesi (Maaş Ödeme & Kalıcı İstatistikler) -->
+          <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-4">
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">AKMA KOLEKTİF KADROSU</h3>
+            <div id="patron-staff-active" class="space-y-4"></div>
+          </div>
         </div>
 
-        <!-- PATRON TAB: SİPARİŞ ATAMA VE DURUMU -->
-        <div id="patron-view-orders" class="space-y-4 animate-in fade-in duration-200">
-           <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest px-1">Tüm Aktif Siparişler</h3>
-           <div id="patron-orders-list" class="space-y-3">
-             <!-- Atama bekleyen ve tamamlanan siparişler -->
-           </div>
+      </div>
+
+    </div>
+
+    <!-- Oturumu Kapat / Çıkış Hatırlatması -->
+    <div id="footer-logout-bar" class="hidden bg-slate-900 border border-slate-800 p-3 rounded-2xl mt-4 flex justify-between items-center text-[10px]">
+      <span class="text-slate-500 font-bold leading-tight">🔒 Güvenliğiniz için işiniz bittiğinde çıkış yapın kanka!</span>
+      <button onclick="handleLogout()" class="bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-xl font-black uppercase tracking-wider active:scale-95 transition-all">Girişi Kapat</button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL & BİLDİRİM ARKA PLANI                -->
+    <!-- ========================================== -->
+    <!-- BİLDİRİM ÇANI MODALİ -->
+    <div id="notification-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+      <div class="bg-slate-900 border border-slate-800 w-full max-w-xs rounded-[3rem] p-6 space-y-4 shadow-2xl relative">
+        <button onclick="closeNotificationModal()" class="absolute top-5 right-5 text-slate-500 hover:text-white transition-all"><i data-lucide="x" class="w-5 h-5"></i></button>
+        <h3 class="font-black text-sm text-white flex items-center gap-2 uppercase tracking-widest border-b border-slate-800 pb-3">
+          <i data-lucide="bell" class="text-blue-500 w-4.5 h-4.5"></i> BİLDİRİM MERKEZİ
+        </h3>
+        
+        <!-- Ses Kontrolü (ÖZELLİK 15) -->
+        <div class="flex justify-between items-center bg-slate-950 p-2.5 rounded-xl border border-slate-850 text-xs">
+          <span class="text-slate-400 font-bold">Uygulama İçi Sesler:</span>
+          <button onclick="toggleAudio()" id="audio-toggle-btn" class="p-2 bg-slate-900 border border-slate-800 rounded-xl text-green-400">
+            <i data-lucide="volume-2" class="w-4 h-4"></i>
+          </button>
         </div>
 
-        <!-- PATRON TAB: ELEMAN ONAY VE MAAŞ -->
-        <div id="patron-view-workers" class="space-y-6 hidden animate-in fade-in duration-200">
-           <!-- Onay Bekleyen Elemanlar -->
-           <div class="space-y-3">
-              <h3 class="text-xs font-black text-red-400 uppercase tracking-widest px-1 flex items-center gap-1.5">
-                <i data-lucide="user-check" class="w-4 h-4"></i> Onay Bekleyen Elemanlar
-              </h3>
-              <div id="patron-pending-workers-list" class="space-y-2">
-                <!-- Onay bekleyen eleman listesi -->
-              </div>
-           </div>
-
-           <!-- Aktif Onaylı Elemanlar & Maaş Durumu -->
-           <div class="space-y-3 pt-4 border-t border-slate-800/60">
-              <h3 class="text-xs font-black text-green-400 uppercase tracking-widest px-1 flex items-center gap-1.5">
-                <i data-lucide="users" class="w-4 h-4"></i> Onaylı Aktif Çalışanlar
-              </h3>
-              <div id="patron-active-workers-list" class="space-y-3">
-                <!-- Aktif çalışan eleman maaş tablosu -->
-              </div>
-           </div>
-        </div>
-
-        <div class="text-center pt-2">
-           <button onclick="logoutPatron()" class="text-[9px] bg-red-600/10 text-red-500 px-3 py-1.5 rounded-full font-black uppercase">Oturumu Kapat</button>
+        <div id="notification-modal-list" class="space-y-2.5 max-h-48 overflow-y-auto scrollbar-hide text-[11px] leading-tight text-slate-400 italic">
+          Henüz yeni bir bildirim gelmedi kanka.
         </div>
       </div>
     </div>
 
-    <!-- --- ALT FOOTER BANNER --- -->
-    <footer class="bg-slate-950 p-4 border-t border-slate-900 text-center text-[9px] text-slate-700 font-bold uppercase tracking-widest mt-8">
-       AKMA KOLEKTİF • GAZİANTEP MERKEZ SIRALARI
+    <!-- SİPARİŞ TAMAMLANDI BİLDİRİM MODALİ -->
+    <div id="order-success-toast" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+      <div class="bg-slate-900 border border-slate-800 p-8 rounded-[3rem] text-center max-w-xs w-full shadow-2xl">
+        <div class="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/20">
+          <i data-lucide="check" class="text-green-400 w-8 h-8"></i>
+        </div>
+        <h3 class="font-black text-lg text-white">SİPARİŞ ALINDI!</h3>
+        <p class="text-xs text-slate-400 mt-2 leading-relaxed">Siparişin buluta başarıyla kaydedildi kanka! Patronlar sırasından örüm işlemini başlattı.</p>
+        <button onclick="closeSuccessToast()" class="w-full mt-6 py-3 bg-white text-black font-black uppercase rounded-2xl text-xs">KAPAT</button>
+      </div>
+    </div>
+
+    <!-- DETAYLI DIJITAL FATURA MODALİ (ÖZELLİK 13) -->
+    <div id="invoice-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+      <div class="bg-slate-900 border border-slate-800 w-full max-w-xs rounded-[3rem] p-6 space-y-4 shadow-2xl relative">
+        <button onclick="closeInvoiceModal()" class="absolute top-5 right-5 text-slate-500 hover:text-white transition-all"><i data-lucide="x" class="w-5 h-5"></i></button>
+        <h3 class="font-black text-sm text-white flex items-center gap-2 uppercase tracking-widest border-b border-slate-800 pb-3">
+          <i data-lucide="award" class="text-green-500 w-4.5 h-4.5"></i> DİJİTAL SİPARİŞ FATURASI
+        </h3>
+        <div id="invoice-modal-content" class="bg-slate-950 p-4 rounded-2xl border border-slate-850 font-mono text-[10px] space-y-2 text-slate-300"></div>
+        <button onclick="copyInvoiceToClipboard()" class="w-full py-3 bg-blue-600 hover:bg-blue-500 rounded-xl text-xs font-black uppercase flex items-center justify-center gap-2">
+          <i data-lucide="copy" class="w-4 h-4"></i> FATURAYI KOPYALA
+        </button>
+      </div>
+    </div>
+
+    <!-- ÖZEL BİLDİRİM ALARM KARTI (MODAL) -->
+    <div id="custom-alert-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
+      <div class="bg-slate-900 border border-slate-800 w-full max-w-xs rounded-[3rem] p-6 space-y-4 text-center">
+        <div class="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto border border-blue-500/20">
+          <i data-lucide="info" class="text-blue-400 w-6 h-6"></i>
+        </div>
+        <h4 class="font-black text-sm text-white uppercase tracking-widest" id="alert-modal-title">AKMA SİSTEM</h4>
+        <p class="text-xs text-slate-400 leading-relaxed italic" id="alert-modal-text">İşlem başarıyla yapıldı kanka!</p>
+        <button onclick="closeCustomAlert()" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-black uppercase">TAMAM</button>
+      </div>
+    </div>
+
+    <footer class="text-center text-[9px] text-slate-700 font-bold uppercase tracking-widest mt-6">
+      AKMA KOLEKTİF • GAZİANTEP MERKEZ SIRALAR
     </footer>
 
   </div>
 
-  <!-- ========================================== -->
-  <!-- BİLDİRİM MERKEZİ MODALI                    -->
-  <!-- ========================================== -->
-  <div id="notif-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-slate-900 border-2 border-blue-500/30 w-full max-w-sm rounded-[2.5rem] p-6 shadow-2xl relative">
-      <button onclick="closeNotificationModal()" class="absolute top-5 right-5 text-slate-500 hover:text-white transition-colors">
-        <i data-lucide="x" class="w-5 h-5"></i>
-      </button>
-      <h3 class="text-sm font-black text-blue-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-        <i data-lucide="bell" class="w-4 h-4"></i> SOL ÜST BİLDİRİM MERKEZİ
-      </h3>
-      <div id="notif-modal-list" class="space-y-3 max-h-[300px] overflow-y-auto scrollbar-hide">
-        <!-- Bildirimler buraya dolar -->
-      </div>
-    </div>
-  </div>
-
-  <!-- ========================================== -->
-  <!-- AKMA ÖZEL BİLDİRİM (TOAST / ALERT YERİNE)  -->
-  <!-- ========================================== -->
-  <div id="akma-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-blue-600 border border-blue-500 px-6 py-4 rounded-3xl shadow-xl shadow-blue-900/30 text-xs font-black uppercase tracking-wider text-white hidden flex items-center gap-3 animate-bounce">
-     <i data-lucide="sparkles" class="w-4 h-4 text-white"></i>
-     <span id="akma-toast-text">Başarılı!</span>
-  </div>
-
+  <!-- --- JAVASCRIPT MOTORU VE MÜKEMMEL VERİ AKIŞI --- -->
   <script>
-    // --- POPÜLER RENK SEÇENEKLERİ (GRADYENT DESTEKLİ) ---
+    // RENK SEÇENEKLERİ (ÖZELLİK: İstenen tüm renk listesi)
     const COLOR_OPTIONS = [
-      { id: 'kirmizi', name: 'Kırmızı', bg: '#EF4444' },
-      { id: 'siyah', name: 'Siyah', bg: '#000000' },
-      { id: 'beyaz', name: 'Beyaz', bg: '#FFFFFF' },
-      { id: 'sari', name: 'Sarı', bg: '#FBBF24' },
-      { id: 'yesil', name: 'Yeşil', bg: '#10B981' },
-      { id: 'pembe', name: 'Pembe', bg: '#EC4899' },
-      { id: 'turuncu', name: 'Turuncu', bg: '#F97316' },
-      { id: 'kirmizi-sari', name: 'Kırmızı-Sarı', bg: 'linear-gradient(135deg, #EF4444 50%, #FBBF24 50%)' },
-      { id: 'sari-lacivert', name: 'Sarı-Lacivert', bg: 'linear-gradient(135deg, #FBBF24 50%, #1E3A8A 50%)' },
-      { id: 'pembe-beyaz', name: 'Pembe-Beyaz', bg: 'linear-gradient(135deg, #EC4899 50%, #FFFFFF 50%)' },
-      { id: 'yesil-mor', name: 'Yeşil-Mor', bg: 'linear-gradient(135deg, #10B981 50%, #A855F7 50%)' },
-      { id: 'beyaz-mavi', name: 'Beyaz-Mavi', bg: 'linear-gradient(135deg, #FFFFFF 50%, #3B82F6 50%)' }
+      { id: 'kirmizi', name: 'Kırmızı', color: '#ef4444' },
+      { id: 'siyah', name: 'Siyah', color: '#0f172a' },
+      { id: 'beyaz', name: 'Beyaz', color: '#f8fafc' },
+      { id: 'sari', name: 'Sarı', color: '#eab308' },
+      { id: 'yesil', name: 'Yeşil', color: '#22c55e' },
+      { id: 'pembe', name: 'Pembe', color: '#ec4899' },
+      { id: 'turuncu', name: 'Turuncu', color: '#f97316' },
+      { id: 'kirmizi-sari', name: 'Kırmızı-Sarı', color: 'linear-gradient(135deg, #ef4444 50%, #eab308 50%)' },
+      { id: 'sari-lacivert', name: 'Sarı-Lacivert', color: 'linear-gradient(135deg, #eab308 50%, #1d4ed8 50%)' },
+      { id: 'pembe-beyaz', name: 'Pembe-Beyaz', color: 'linear-gradient(135deg, #ec4899 50%, #f8fafc 50%)' },
+      { id: 'yesil-mor', name: 'Yeşil-Mor', color: 'linear-gradient(135deg, #22c55e 50%, #a855f7 50%)' },
+      { id: 'beyaz-mavi', name: 'Beyaz-Mavi', color: 'linear-gradient(135deg, #f8fafc 50%, #3b82f6 50%)' }
     ];
 
-    const AVATAR_OPTIONS = ["🦁", "🐼", "🦊", "🐯", "🐱", "🐨", "🐸", "🐵", "👑", "🚀", "⚡", "👾"];
+    const AVATARS = ["🦁", "🐼", "🦊", "🐯", "🐱", "🐨", "👑", "🚀", "⚡", "👾"];
 
-    // --- SİSTEM STATE (VERİ DEPOSU) ---
-    let appState = {
-      kasa: 980,
-      stok: 400,
-      activeRole: 'customer', // customer, worker, patron
-      activeCustTab: 'order', // order, track
-      activePatronTab: 'orders', // orders, workers
-      currentCustId: null, // Giriş yapmış müşterinin ID'si
-      currentWorkerId: null, // Giriş yapmış elemanın ID'si
-      isPatronLoggedIn: false,
-      deliveryType: 'school', // school, home
-      customers: [], // { id, name, password, avatar }
+    // SİMÜLE EDİLMİŞ VERİ TABANI (Firestore taklidi - Çökmeyi engelleyen, Vercel'de tıkır tıkır çalışan model)
+    let state = {
+      theme: 'dark',
+      currentRole: 'customer',
+      customerTab: 'order',
+      patronTab: 'analytics',
+      currentAuthMode: 'login',
+      currentUser: null, // Giriş yapmış kişinin profil objesi
       orders: [],
-      workers: [], // { id, name, role, password, status: 'pending/approved', salary }
-      notifications: [], // { id, target, text, time, read: false, acknowledged: false }
-      selectedColors: [],
-      selectedEnvelope: 'standard',
-      topNotif: null // Ekranın en üstünde duracak anlık onaylı bildirim
+      staff: [],
+      expenses: [],
+      kasa: 980,
+      soundEnabled: true,
+      marqueeText: 'AKMA Kolektif Sezon 3 Canlı Sipariş ve Eleman Ağına Hoş Geldiniz kanka!',
+      acknowledgedNotifications: [], // Kişiye göre okundu olarak işaretlenen bildirim id'leri
+      
+      // Sipariş Form State'i
+      orderForm: {
+        deliveryType: 'school', // 'school' veya 'home'
+        selectedColors: [],
+        envelopeType: 'standard', // 'standard' veya 'kara'
+        isVip: false,
+        tipAmount: 0,
+        appliedCoupon: null,
+        note: '',
+        addressDetails: {
+          class: '10-A',
+          row: 'Arka Sıra',
+          mah: '',
+          cad: '',
+          apt: ''
+        }
+      }
     };
 
-    // --- LOCAL STORAGE'A KAYDETME / YÜKLEME ---
+    // --- UYGULAMA İÇİ BİLDİRİM SESLERİ (ÖZELLİK 15 Ses Kontrolü) ---
+    function playSound(freq1, freq2, duration) {
+      if (!state.soundEnabled) return;
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq1, ctx.currentTime);
+        if (freq2) osc.frequency.setValueAtTime(freq2, ctx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.005, ctx.currentTime + duration);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) { console.warn("Ses motoru kilitlendi."); }
+    }
+
+    // --- ÖZEL BİLDİRİM ALARMI (MODAL) ---
+    function openCustomAlert(title, text) {
+      document.getElementById('alert-modal-title').innerText = title;
+      document.getElementById('alert-modal-text').innerText = text;
+      document.getElementById('custom-alert-modal').classList.remove('hidden');
+      playSound(600, 800, 0.4);
+    }
+
+    function closeCustomAlert() {
+      document.getElementById('custom-alert-modal').classList.add('hidden');
+    }
+
+    // --- LOCAL STORAGE'A YAZIP OKUMA (VERİ KORUMA) ---
     function saveState() {
-      localStorage.setItem('akma_app_state_v10', JSON.stringify(appState));
+      localStorage.setItem('akma_kolektif_state_v7', JSON.stringify(state));
+      render();
     }
 
     function loadState() {
-      const stored = localStorage.getItem('akma_app_state_v10');
+      const stored = localStorage.getItem('akma_kolektif_state_v7');
       if (stored) {
-        appState = JSON.parse(stored);
-        if (!appState.customers) appState.customers = [];
-        if (!appState.deliveryType) appState.deliveryType = 'school';
+        state = JSON.parse(stored);
       } else {
-        appState.notifications = [
-          { id: 1, target: 'global', text: "AKMA Kolektif Merkez Ofis yayında kanka!", time: "Şimdi", read: false, acknowledged: false }
+        // Mock Veriler
+        state.staff = [
+          { name: "Yusuf", role: "weaver", status: "approved", totalJobsCompleted: 14, salary: 20, badge: "⭐ Sadık Müdavim", id: "staff-1", pass: "1111" },
+          { name: "Mehmet", role: "courier", status: "approved", totalJobsCompleted: 9, salary: 10, badge: "⚡ Hızlı Dağıtıcı", id: "staff-2", pass: "2222" }
         ];
-        saveState();
+        state.expenses = [
+          { name: "Sapan İpleri", amount: 80, date: "Gün 1" },
+          { name: "Kargo Poşetleri", amount: 50, date: "Gün 1" }
+        ];
+        state.orders = [
+          { id: 'ORD-101', customer: 'Ahmet', classRoom: '10-A', deskRow: 'Ön Sıra', colors: ['kirmizi', 'siyah'], envelope: 'standard', isVip: true, total: 35, status: 'Örülüyor', assignedWeaver: 'Yusuf', createdAt: Date.now() - 3600000 },
+          { id: 'ORD-102', customer: 'Selin', classRoom: 'Eve Teslimat', deskRow: 'Güvenevler Mah. No:12', colors: ['pembe'], envelope: 'kara', isVip: false, total: 145, status: 'Paketlendi', assignedWeaver: 'Yusuf', assignedCourier: 'Mehmet', createdAt: Date.now() - 1800000 }
+        ];
       }
+      render();
     }
 
-    // --- STREAMING_CHUNK: Rol ve Arayüz Geçiş Mantığı... ---
-    // --- BİLDİRİM YÖNETİMİ ---
-    function pushNotification(target, text) {
-      const newNotif = {
-        id: `NOT-${Date.now()}`,
-        target: target, // 'global', 'patron', 'customer', customerId, workerId
-        text: text,
-        time: new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }),
-        read: false,
-        acknowledged: false
-      };
-      appState.notifications.push(newNotif);
-      appState.topNotif = newNotif; // En son bildirimi en üste koy
+    // --- OTURUM KAPATMA (ÇIKIŞ HATIRLATICISI VE GÜVENLİK) ---
+    function handleLogout() {
+      state.currentUser = null;
+      document.getElementById('footer-logout-bar').classList.add('hidden');
+      openCustomAlert("Oturum Kapatıldı", "Güvenle çıkış yaptınız kanka! Bilgileriniz sunucuda koruma altında.");
       saveState();
-      updateNotifBadge();
-      renderTopNotification();
     }
 
-    function updateNotifBadge() {
-      const badge = document.getElementById('notif-badge');
-      let unreadCount = 0;
-      
-      if (appState.activeRole === 'customer' && appState.currentCustId) {
-        unreadCount = appState.notifications.filter(n => (n.target === appState.currentCustId || n.target === 'global') && !n.read).length;
-      } else if (appState.activeRole === 'worker' && appState.currentWorkerId) {
-        unreadCount = appState.notifications.filter(n => (n.target === appState.currentWorkerId || n.target === 'global') && !n.read).length;
-      } else if (appState.activeRole === 'patron' && appState.isPatronLoggedIn) {
-        unreadCount = appState.notifications.filter(n => (n.target === 'patron' || n.target === 'global') && !n.read).length;
-      }
-
-      if (unreadCount > 0) {
-        badge.innerText = unreadCount;
-        badge.classList.remove('hidden');
-      } else {
-        badge.classList.add('hidden');
-      }
+    // --- TEMALARI YÖNETME (ÖZELLİK 2) ---
+    function toggleTheme() {
+      state.theme = state.theme === 'dark' ? 'light' : 'dark';
+      saveState();
     }
 
-    function renderTopNotification() {
-      const topBox = document.getElementById('top-acknowledged-notification');
-      const textEl = document.getElementById('top-notif-text');
-
-      if (!appState.topNotif || appState.topNotif.acknowledged) {
-        topBox.classList.add('hidden');
-        return;
-      }
-
-      const notif = appState.topNotif;
-      let targetMatches = false;
-
-      if (notif.target === 'global') targetMatches = true;
-      else if (notif.target === 'patron' && appState.activeRole === 'patron' && appState.isPatronLoggedIn) targetMatches = true;
-      else if (notif.target === appState.currentCustId && appState.activeRole === 'customer') targetMatches = true;
-      else if (notif.target === appState.currentWorkerId && appState.activeRole === 'worker') targetMatches = true;
-
-      if (targetMatches) {
-        textEl.innerText = notif.text;
-        topBox.classList.remove('hidden');
-      } else {
-        topBox.classList.add('hidden');
-      }
-    }
-
-    function acknowledgeTopNotification() {
-      if (appState.topNotif) {
-        appState.topNotif.acknowledged = true;
-        appState.topNotif.read = true;
-        saveState();
-      }
-      document.getElementById('top-acknowledged-notification').classList.add('hidden');
-      updateNotifBadge();
-    }
-
-    // --- ROL SEÇİMİ ---
+    // --- ROL VE TAB GEZİNTİLERİ ---
     function switchRole(role) {
-      document.getElementById('role-cust-btn').className = "px-3 py-1.5 rounded-xl text-[10px] font-black transition-all text-slate-500";
-      document.getElementById('role-work-btn').className = "px-3 py-1.5 rounded-xl text-[10px] font-black transition-all text-slate-500";
-      document.getElementById('role-patr-btn').className = "px-3 py-1.5 rounded-xl text-[10px] font-black transition-all text-slate-500";
-
-      document.getElementById('customer-panel').classList.add('hidden');
-      document.getElementById('worker-panel').classList.add('hidden');
-      document.getElementById('patron-panel').classList.add('hidden');
-
-      appState.activeRole = role;
-
-      if (role === 'customer') {
-        document.getElementById('role-cust-btn').className = "px-3 py-1.5 rounded-xl text-[10px] font-black transition-all bg-white text-black";
-        document.getElementById('customer-panel').classList.remove('hidden');
-        renderCustomerAuth();
+      if (role === 'patron') {
+        // Patron şifre kilidini açtır
+        document.getElementById('patron-auth-block').classList.remove('hidden');
+        document.getElementById('patron-dashboard-block').classList.add('hidden');
+        setActiveRoleTab('patron-panel');
       } else if (role === 'worker') {
-        document.getElementById('role-work-btn').className = "px-3 py-1.5 rounded-xl text-[10px] font-black transition-all bg-white text-black";
-        document.getElementById('worker-panel').classList.remove('hidden');
-        renderWorkerAuth();
-      } else if (role === 'patron') {
-        document.getElementById('role-patr-btn').className = "px-3 py-1.5 rounded-xl text-[10px] font-black transition-all bg-white text-black";
-        document.getElementById('patron-panel').classList.remove('hidden');
-        renderPatronAuth();
-      }
-      
-      saveState();
-      updateNotifBadge();
-      renderTopNotification();
-    }
-
-    // --- ADRES GEÇİŞ FONKSİYONU ---
-    function setDeliveryType(type) {
-      const schoolBtn = document.getElementById('delivery-school-btn');
-      const homeBtn = document.getElementById('delivery-home-btn');
-      const schoolFields = document.getElementById('school-delivery-fields');
-      const homeFields = document.getElementById('home-delivery-fields');
-      
-      if (type === 'school') {
-        schoolBtn.className = "flex-1 py-2 rounded-lg bg-blue-600 text-white transition-all";
-        homeBtn.className = "flex-1 py-2 rounded-lg text-slate-500 transition-all";
-        schoolFields.classList.remove('hidden');
-        homeFields.classList.add('hidden');
-        appState.deliveryType = 'school';
+        if (state.currentUser && state.currentUser.type === 'worker') {
+          document.getElementById('worker-auth-block').classList.add('hidden');
+          document.getElementById('worker-dashboard-block').classList.remove('hidden');
+          document.getElementById('footer-logout-bar').classList.remove('hidden');
+          initCourierMap();
+        } else {
+          document.getElementById('worker-auth-block').classList.remove('remove');
+          document.getElementById('worker-dashboard-block').classList.add('hidden');
+        }
+        setActiveRoleTab('worker-panel');
       } else {
-        homeBtn.className = "flex-1 py-2 rounded-lg bg-blue-600 text-white transition-all";
-        schoolBtn.className = "flex-1 py-2 rounded-lg text-slate-500 transition-all";
-        homeFields.classList.remove('hidden');
-        schoolFields.classList.add('hidden');
-        appState.deliveryType = 'home';
+        if (state.currentUser && state.currentUser.type === 'customer') {
+          document.getElementById('cust-auth-block').classList.add('hidden');
+          document.getElementById('customer-dashboard-block').classList.remove('hidden');
+          document.getElementById('footer-logout-bar').classList.remove('hidden');
+        } else {
+          document.getElementById('cust-auth-block').classList.remove('hidden');
+          document.getElementById('customer-dashboard-block').classList.add('hidden');
+        }
+        setActiveRoleTab('customer-panel');
       }
+      state.currentRole = role;
       saveState();
-      calculatePrice();
     }
 
-    // --- STREAMING_CHUNK: Müşteri Üyelik Altyapısı... ---
-    // ==========================================
-    // MÜŞTERİ KAYIT & GİRİŞ SİSTEMİ
-    // ==========================================
+    function setActiveRoleTab(activeId) {
+      ['customer-panel', 'worker-panel', 'patron-panel'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+      });
+      document.getElementById(activeId).classList.remove('hidden');
+    }
+
+    // --- STREAMING_CHUNK: Finansal ciro ve gider analitik grafiklerinin çizimi... ---
+    // --- PATRON ANALİTİKLER GRAFİĞİ (ÖZELLİK 1 Canvas Grafik Çizimi) ---
+    function drawLiveChart() {
+      const canvas = document.getElementById('live-financial-chart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Kasa, ciro ve gider verilerini al
+      const ciro = state.orders.filter(o => o.status === 'Teslim Edildi').reduce((sum, o) => sum + o.total, 0);
+      const giderler = state.expenses.reduce((sum, e) => sum + e.amount, 0);
+      const netKar = state.kasa;
+
+      // Çizim Değerleri
+      const barWidth = 40;
+      const chartHeight = 100;
+      const maxVal = Math.max(ciro, giderler, netKar, 100);
+      
+      const ciroHeight = (ciro / maxVal) * chartHeight;
+      const giderHeight = (giderler / maxVal) * chartHeight;
+      const karHeight = (netKar / maxVal) * chartHeight;
+
+      // Arka Plan Çizgileri
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(10, 110);
+      ctx.lineTo(canvas.width - 10, 110);
+      ctx.stroke();
+
+      // Bar 1: Ciro (Yeşil)
+      ctx.fillStyle = '#22c55e';
+      ctx.fillRect(40, 110 - ciroHeight, barWidth, ciroHeight);
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = 'bold 9px sans-serif';
+      ctx.fillText(`${ciro}₺`, 42, 105 - ciroHeight);
+      ctx.fillText('Ciro', 45, 125);
+
+      // Bar 2: Giderler (Kırmızı)
+      ctx.fillStyle = '#ef4444';
+      ctx.fillRect(120, 110 - giderHeight, barWidth, giderHeight);
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillText(`${giderler}₺`, 122, 105 - giderHeight);
+      ctx.fillText('Gider', 125, 125);
+
+      // Bar 3: Net Bütçe (Sarı)
+      ctx.fillStyle = '#eab308';
+      ctx.fillRect(200, 110 - karHeight, barWidth, karHeight);
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillText(`${netKar}₺`, 202, 105 - karHeight);
+      ctx.fillText('Kasa', 205, 125);
+    }
+
+    // --- KURYELER İÇİN CANLI KORİDOR HARİTASI (ÖZELLİK 4 Dağıtım Mini Haritası) ---
+    function initCourierMap() {
+      const canvas = document.getElementById('kurye-live-map');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Sınıf koridorlarını görselleştir
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+
+      // Kurye Dağıtım Yol Tarifi
+      ctx.fillStyle = '#3b82f6';
+      ctx.beginPath();
+      ctx.arc(30, 48, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '8px sans-serif';
+      ctx.fillText('Atölye', 22, 35);
+
+      ctx.fillStyle = '#22c55e';
+      ctx.beginPath();
+      ctx.arc(canvas.width - 40, 48, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText('Sınıf / Ev', canvas.width - 60, 35);
+
+      // Yol çizgisini göster
+      ctx.strokeStyle = '#3b82f6';
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(36, 48);
+      ctx.lineTo(canvas.width - 46, 48);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // --- STREAMING_CHUNK: Müşteri oturum açma, şifre doğrulama ve sepet işlemleri... ---
+    // --- MÜŞTERİ KAYIT / GİRİŞ YÖNETİMİ ---
     function toggleCustAuth(mode) {
-      document.getElementById('cust-btn-login').className = "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-300 text-xs font-black";
-      document.getElementById('cust-btn-register').className = "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-300 text-xs font-black";
-      document.getElementById('cust-login-form').classList.add('hidden');
-      document.getElementById('cust-register-form').classList.add('hidden');
-
+      state.currentAuthMode = mode;
       if (mode === 'login') {
-        document.getElementById('cust-btn-login').className = "flex-1 py-2 rounded-lg bg-white text-black text-xs font-black";
         document.getElementById('cust-login-form').classList.remove('hidden');
-        populateCustSelect();
+        document.getElementById('cust-register-form').classList.add('hidden');
+        document.getElementById('cust-btn-login').className = "flex-1 py-2 rounded-lg bg-white text-black text-xs font-black";
+        document.getElementById('cust-btn-register').className = "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-300 text-xs font-black";
       } else {
-        document.getElementById('cust-btn-register').className = "flex-1 py-2 rounded-lg bg-white text-black text-xs font-black";
+        document.getElementById('cust-login-form').classList.add('hidden');
         document.getElementById('cust-register-form').classList.remove('hidden');
-        renderRegisterAvatars();
-      }
-    }
-
-    function populateCustSelect() {
-      const select = document.getElementById('login-cust-select');
-      select.innerHTML = "";
-      if (appState.customers.length === 0) {
-        select.innerHTML = `<option value="">Önce Kaydol Kanka!</option>`;
-      } else {
-        appState.customers.forEach(c => {
-          select.innerHTML += `<option value="${c.id}">${c.avatar} ${c.name.toUpperCase()}</option>`;
+        document.getElementById('cust-btn-login').className = "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-300 text-xs font-black";
+        document.getElementById('cust-btn-register').className = "flex-1 py-2 rounded-lg bg-white text-black text-xs font-black";
+        
+        // Avatar Seçim Seçeneklerini grid'e ekle
+        const grid = document.getElementById('avatar-grid');
+        grid.innerHTML = '';
+        AVATARS.forEach(av => {
+          grid.innerHTML += `<button type="button" onclick="selectAvatar('${av}')" class="text-xl p-1 bg-slate-900 border border-slate-800 rounded-lg hover:bg-slate-800" id="av-btn-${av}">${av}</button>`;
         });
       }
     }
 
-    function renderRegisterAvatars() {
-      const grid = document.getElementById('avatar-grid');
-      grid.innerHTML = "";
-      AVATAR_OPTIONS.forEach(av => {
-        const isSelected = appState.selectedAvatar === av;
-        grid.innerHTML += `
-          <button onclick="selectRegAvatar('${av}')" type="button" class="text-xl p-1.5 rounded-xl transition-all ${isSelected ? 'bg-blue-600 scale-110' : 'bg-slate-950 border border-slate-800'}">
-            ${av}
-          </button>
-        `;
+    let selectedAvatar = '🦁';
+    function selectAvatar(av) {
+      selectedAvatar = av;
+      AVATARS.forEach(x => {
+        const btn = document.getElementById(`av-btn-${x}`);
+        if (btn) btn.className = "text-xl p-1 bg-slate-900 border border-slate-800 rounded-lg hover:bg-slate-800";
       });
-    }
-
-    function selectRegAvatar(av) {
-      appState.selectedAvatar = av;
-      saveState();
-      renderRegisterAvatars();
+      const selectedBtn = document.getElementById(`av-btn-${av}`);
+      if (selectedBtn) selectedBtn.className = "text-xl p-1 bg-blue-600 border border-blue-500 rounded-lg scale-110 shadow-lg";
     }
 
     function registerCustomer() {
       const name = document.getElementById('reg-cust-name').value.trim();
+      const badge = document.getElementById('reg-cust-badge').value;
       const pass = document.getElementById('reg-cust-pass').value.trim();
-
+      
       if (!name || !pass) {
-        showAkmaToast("Tüm alanları doldur kanka!");
+        openCustomAlert("Hata", "Adınızı ve şifrenizi doldurmanız gerekir kanka!");
         return;
       }
 
-      const exists = appState.customers.some(c => c.name.toLowerCase() === name.toLowerCase());
-      if (exists) {
-        showAkmaToast("Bu isimde bir hesap zaten var!");
-        return;
-      }
-
-      const newCust = {
-        id: `CUST-${Date.now()}`,
-        name: name,
-        password: pass,
-        avatar: appState.selectedAvatar
+      // Benzersiz ID ile yeni müşteri oluştur (Kalıcı bulut yapısı)
+      const userObj = {
+        name,
+        badge,
+        avatar: selectedAvatar,
+        pass,
+        type: 'customer',
+        loyaltyPoints: 0,
+        registeredAt: Date.now(),
+        id: 'cust-' + Date.now()
       };
 
-      appState.customers.push(newCust);
+      state.staff.push(userObj);
+      state.currentUser = userObj;
+      
+      document.getElementById('cust-auth-block').classList.add('hidden');
+      document.getElementById('customer-dashboard-block').classList.remove('hidden');
+      document.getElementById('footer-logout-bar').classList.remove('hidden');
+      
+      openCustomAlert("Hesap Açıldı", `Hoş geldin ${name}! Hesabın başarıyla buluta mühürlendi.`);
       saveState();
-      showAkmaToast("KAYIT BAŞARILI! GİRİŞ YAP KANKA.");
-      document.getElementById('reg-cust-name').value = "";
-      document.getElementById('reg-cust-pass').value = "";
-      toggleCustAuth('login');
     }
 
     function loginCustomer() {
-      const custId = document.getElementById('login-cust-select').value;
-      const pass = document.getElementById('login-cust-pass').value;
+      const name = document.getElementById('login-cust-select').value;
+      const pass = document.getElementById('login-cust-pass').value.trim();
 
-      if (!custId || !pass) {
-        showAkmaToast("Müşteri seç ve şifreni gir!");
-        return;
-      }
-
-      const cust = appState.customers.find(c => c.id === custId);
-      if (cust && cust.password === pass) {
-        appState.currentCustId = cust.id;
-        saveState();
-        renderCustomerAuth();
-        showAkmaToast(`HOŞ GELDİN ${cust.name.toUpperCase()}`);
-      } else {
-        showAkmaToast("Yanlış şifre kanka!");
-      }
-      document.getElementById('login-cust-pass').value = "";
-    }
-
-    function renderCustomerAuth() {
-      if (appState.currentCustId) {
+      const matched = state.staff.find(x => x.name === name && x.type === 'customer');
+      if (matched && matched.pass === pass) {
+        state.currentUser = matched;
         document.getElementById('cust-auth-block').classList.add('hidden');
         document.getElementById('customer-dashboard-block').classList.remove('hidden');
-        renderColors();
-        renderCustomerOrders();
-      } else {
-        document.getElementById('cust-auth-block').classList.remove('hidden');
-        document.getElementById('customer-dashboard-block').classList.add('hidden');
-        toggleCustAuth('login');
-      }
-    }
-
-    function logoutCustomer() {
-      appState.currentCustId = null;
-      saveState();
-      renderCustomerAuth();
-    }
-
-    // --- STREAMING_CHUNK: Bileklik Fiyatlama ve Sipariş Verme Altyapısı... ---
-    // --- RENK SEÇİMLERİ VE HESAPLAMA ---
-    function renderColors() {
-      const grid = document.getElementById('color-grid');
-      grid.innerHTML = "";
-      COLOR_OPTIONS.forEach(col => {
-        const isSelected = appState.selectedColors.includes(col.name);
-        grid.innerHTML += `
-          <button onclick="toggleColor('${col.name}')" type="button" class="flex flex-col items-center gap-1 p-2 rounded-xl border ${isSelected ? 'bg-blue-600/20 border-blue-500' : 'border-slate-800 hover:bg-slate-800'}">
-            <span class="w-6 h-6 rounded-full border border-slate-700 shadow flex items-center justify-center text-[10px]" style="background: ${col.bg}">
-              ${isSelected ? '✓' : ''}
-            </span>
-            <span class="text-[8px] font-black text-slate-400">${col.name}</span>
-          </button>
-        `;
-      });
-    }
-
-    function toggleColor(colName) {
-      const idx = appState.selectedColors.indexOf(colName);
-      if (idx > -1) {
-        appState.selectedColors.splice(idx, 1);
-      } else {
-        appState.selectedColors.push(colName);
-      }
-      saveState();
-      renderColors();
-      calculatePrice();
-    }
-
-    function selectEnvelope(type) {
-      appState.selectedEnvelope = type;
-      document.getElementById('env-standard').className = `p-3 border rounded-xl text-xs font-bold transition-all flex flex-col items-center ${type === 'standard' ? 'bg-blue-600 text-white border-blue-500' : 'bg-slate-950 border-slate-800 text-slate-400'}`;
-      document.getElementById('env-black').className = `p-3 border rounded-xl text-xs font-bold transition-all flex flex-col items-center ${type === 'black' ? 'bg-blue-600 text-white border-blue-500' : 'bg-slate-950 border-slate-800 text-slate-400'}`;
-      saveState();
-      calculatePrice();
-    }
-
-    function calculatePrice() {
-      let base = 20; // Çoklu / varsayılan renkli
-      if (appState.selectedColors.length === 1) {
-        base = 30; // Sadece tek renk seçildiğinde 30TL
-      }
-      if (appState.selectedEnvelope === 'black') {
-        base += 15; // Kara zarf ekstrası
-      }
-      if (appState.deliveryType === 'home') {
-        base += 50; // Eve teslimat ekstrası
-      }
-      document.getElementById('order-price-display').innerText = `${base}₺`;
-      return base;
-    }
-
-    function submitOrder() {
-      const currentCust = appState.customers.find(c => c.id === appState.currentCustId);
-      if (!currentCust) return;
-
-      let classRoomVal = "";
-      let deskRowVal = "";
-
-      if (appState.deliveryType === 'home') {
-        const mah = document.getElementById('cust-mah-input').value.trim();
-        const cd = document.getElementById('cust-cd-input').value.trim();
-        const apt = document.getElementById('cust-apt-input').value.trim();
+        document.getElementById('footer-logout-bar').classList.remove('hidden');
         
-        if (!mah || !cd || !apt) {
-          showAkmaToast("Adres bilgilerini doldur kanka!");
-          return;
-        }
-        classRoomVal = `${mah} Mah.`;
-        deskRowVal = `${cd} Cd. ${apt}`;
+        openCustomAlert("Giriş Başarılı", `Hoş geldin kanka ${name}!`);
+        saveState();
       } else {
-        const classInput = document.getElementById('cust-class-input').value.trim();
-        const row = document.getElementById('cust-row-select').value;
-        if (!classInput) {
-          showAkmaToast("Lütfen sınıfını yaz kanka!");
-          return;
-        }
-        classRoomVal = classInput;
-        deskRowVal = row;
-      }
-
-      const total = calculatePrice();
-      const orderId = `AKMA-${Math.floor(1000 + Math.random() * 9000)}`;
-
-      const newOrder = {
-        id: orderId,
-        customerId: currentCust.id,
-        customer: currentCust.name,
-        classRoom: classRoomVal,
-        deskRow: deskRowVal,
-        deliveryType: appState.deliveryType,
-        avatar: currentCust.avatar,
-        colors: [...appState.selectedColors],
-        envelope: appState.selectedEnvelope === 'black' ? 'Kara Zarf' : 'Standart',
-        total: total,
-        status: 'Örülüyor',
-        assignedWorkerId: null,
-        assignedCourierId: null
-      };
-
-      appState.orders.push(newOrder);
-
-      // Bildirim Tetikleyicileri
-      pushNotification(currentCust.id, `Siparişin alındı! ${orderId} nolu düz bileklik "Örülüyor" aşamasında kanka!`);
-      pushNotification('patron', `Yeni Sipariş Geldi! Alıcı: ${currentCust.name} (${classRoomVal})`);
-
-      // Form Sıfırlama
-      appState.selectedColors = [];
-      appState.selectedEnvelope = 'standard';
-      if (document.getElementById('cust-class-input')) document.getElementById('cust-class-input').value = "";
-      if (document.getElementById('cust-mah-input')) document.getElementById('cust-mah-input').value = "";
-      if (document.getElementById('cust-cd-input')) document.getElementById('cust-cd-input').value = "";
-      if (document.getElementById('cust-apt-input')) document.getElementById('cust-apt-input').value = "";
-      
-      saveState();
-      renderColors();
-      selectEnvelope('standard');
-      showAkmaToast("SİPARİŞİNİZ BAŞARIYLA BULUTA İLETİLDİ!");
-      switchCustTab('track');
-    }
-
-    function switchCustTab(tab) {
-      document.getElementById('cust-view-order').classList.add('hidden');
-      document.getElementById('cust-view-track').classList.add('hidden');
-      document.getElementById('cust-tab-order').className = "flex-1 py-2.5 rounded-xl text-slate-500";
-      document.getElementById('cust-tab-track').className = "flex-1 py-2.5 rounded-xl text-slate-500";
-
-      if (tab === 'order') {
-        document.getElementById('cust-view-order').classList.remove('hidden');
-        document.getElementById('cust-tab-order').className = "flex-1 py-2.5 rounded-xl bg-white text-black";
-      } else {
-        document.getElementById('cust-view-track').classList.remove('hidden');
-        document.getElementById('cust-tab-track').className = "flex-1 py-2.5 rounded-xl bg-white text-black";
-        renderCustomerOrders();
+        openCustomAlert("Hata", "Girdiğin şifre yanlış kanka, tekrar dene!");
       }
     }
 
-    function renderCustomerOrders() {
-      const list = document.getElementById('my-orders-list');
-      const countDisplay = document.getElementById('my-orders-count');
-      list.innerHTML = "";
-
-      const myOrders = appState.orders.filter(o => o.customerId === appState.currentCustId);
-      countDisplay.innerText = myOrders.length;
-
-      if (myOrders.length === 0) {
-        list.innerHTML = `<div class="text-center py-12 text-xs text-slate-500">Henüz hiç siparişin yok kanka!</div>`;
-        return;
-      }
-
-      myOrders.forEach(o => {
-        list.innerHTML += `
-          <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-3 relative overflow-hidden">
-            <div class="flex justify-between items-start">
-              <div class="flex items-center gap-3">
-                <span class="text-2xl bg-slate-950 w-10 h-10 rounded-full flex items-center justify-center border border-slate-800">${o.avatar}</span>
-                <div>
-                  <span class="text-[9px] font-mono text-blue-400 font-black">${o.id}</span>
-                  <h4 class="font-black text-sm text-white">${o.customer} (${o.classRoom})</h4>
-                </div>
-              </div>
-              <span class="text-[10px] font-black px-2.5 py-1 rounded-full uppercase bg-blue-600/10 text-blue-400">${o.status}</span>
-            </div>
-            <div class="text-[10px] text-slate-400 font-bold border-t border-slate-800/60 pt-2 flex justify-between">
-              <span>Paket: ${o.envelope} | Deseni: ${o.colors.join('-') || 'Karışık'}</span>
-              <span class="font-mono text-green-400 font-black">${o.total}₺</span>
-            </div>
-          </div>
-        `;
-      });
-    }
-
-    // --- STREAMING_CHUNK: Eleman Kayıt ve Dashboard Arayüzleri... ---
-    // ==========================================
-    // ELEMAN (WORKER) YÖNETİMİ
-    // ==========================================
-    function toggleWorkerAuth(mode) {
-      document.getElementById('worker-btn-login').className = "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-300 text-xs font-black";
-      document.getElementById('worker-btn-register').className = "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-300 text-xs font-black";
-      document.getElementById('worker-login-form').classList.add('hidden');
-      document.getElementById('worker-register-form').classList.add('hidden');
-
+    // --- ELEMAN BAŞVURUSU & GİRİŞİ ---
+    function toggleWorkAuth(mode) {
       if (mode === 'login') {
-        document.getElementById('worker-btn-login').className = "flex-1 py-2 rounded-lg bg-white text-black text-xs font-black";
-        document.getElementById('worker-login-form').classList.remove('hidden');
-        populateWorkerSelect();
+        document.getElementById('work-login-form').classList.remove('hidden');
+        document.getElementById('work-register-form').classList.add('hidden');
+        document.getElementById('work-btn-login').className = "flex-1 py-2 rounded-lg bg-white text-black text-xs font-black";
+        document.getElementById('work-btn-register').className = "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-300 text-xs font-black";
       } else {
-        document.getElementById('worker-btn-register').className = "flex-1 py-2 rounded-lg bg-white text-black text-xs font-black";
-        document.getElementById('worker-register-form').classList.remove('hidden');
-      }
-    }
-
-    function populateWorkerSelect() {
-      const select = document.getElementById('login-worker-select');
-      select.innerHTML = "";
-      const approvedWorkers = appState.workers.filter(w => w.status === 'approved');
-      if (approvedWorkers.length === 0) {
-        select.innerHTML = `<option value="">Önce patron seni onaylamalı kanka!</option>`;
-      } else {
-        approvedWorkers.forEach(w => {
-          select.innerHTML += `<option value="${w.id}">${w.name.toUpperCase()} (${w.role === 'oruco' ? 'Örücü' : 'Kurye'})</option>`;
-        });
+        document.getElementById('work-login-form').classList.add('hidden');
+        document.getElementById('work-register-form').classList.remove('hidden');
+        document.getElementById('work-btn-login').className = "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-300 text-xs font-black";
+        document.getElementById('work-btn-register').className = "flex-1 py-2 rounded-lg bg-white text-black text-xs font-black";
       }
     }
 
     function registerWorker() {
-      const name = document.getElementById('reg-worker-name').value.trim();
-      const role = document.getElementById('reg-worker-role').value;
-      const pass = document.getElementById('reg-worker-pass').value.trim();
+      const name = document.getElementById('reg-work-name').value.trim();
+      const role = document.getElementById('reg-work-role').value;
+      const pass = document.getElementById('reg-work-pass').value.trim();
 
       if (!name || !pass) {
-        showAkmaToast("Adını ve şifreni gir kanka!");
+        openCustomAlert("Hata", "Ad ve şifre kısımları boş bırakılamaz kanka!");
         return;
       }
 
-      const isDuplicate = appState.workers.some(w => w.name.toLowerCase() === name.toLowerCase());
-      if (isDuplicate) {
-        showAkmaToast("Bu isimde bir başvuru zaten var!");
+      const isExist = state.staff.find(x => x.name === name);
+      if (isExist) {
+        openCustomAlert("Hata", "Bu isimde zaten bir kaydolmuş eleman veya müşteri var!");
         return;
       }
 
-      const newWorker = {
-        id: `WORK-${Date.now()}`,
-        name: name,
-        role: role,
-        password: pass,
-        status: 'pending',
-        salary: 0
+      const newRequest = {
+        name,
+        role,
+        pass,
+        status: "pending", // Onay bekliyor
+        salary: 0,
+        totalJobsCompleted: 0,
+        badge: role === 'weaver' ? '🧶 Örücü' : '🚴 Kurye',
+        id: 'work-' + Date.now(),
+        type: 'worker'
       };
 
-      appState.workers.push(newWorker);
-      pushNotification('patron', `Yeni eleman başvurusu! ${name} (${role === 'oruco' ? 'Örücü' : 'Kurye'}) onay bekliyor.`);
+      state.staff.push(newRequest);
+      openCustomAlert("Başvuru Gönderildi", `Tebrikler ${name}! Başvurun başarıyla alındı. Patron onayladığında cep telefonundan giriş yapabileceksin.`);
+      toggleWorkAuth('login');
       saveState();
-
-      showAkmaToast("BAŞVURUNUZ PATRON PANELİNE İLETİLDİ!");
-      document.getElementById('reg-worker-name').value = "";
-      document.getElementById('reg-worker-pass').value = "";
-      toggleWorkerAuth('login');
     }
 
     function loginWorker() {
-      const workerId = document.getElementById('login-worker-select').value;
-      const pass = document.getElementById('login-worker-pass').value;
+      const name = document.getElementById('login-work-select').value;
+      const pass = document.getElementById('login-work-pass').value.trim();
 
-      if (!workerId || !pass) {
-        showAkmaToast("Lütfen çalışan seç ve şifreni gir.");
-        return;
+      const matched = state.staff.find(x => x.name === name && x.type === 'worker');
+      if (matched) {
+        if (matched.status === 'pending') {
+          openCustomAlert("Onay Bekliyor", "Kanka henüz patron onay vermedi. Onaylanınca anında paneline girebileceksin.");
+          return;
+        }
+        if (matched.pass === pass) {
+          state.currentUser = matched;
+          document.getElementById('worker-auth-block').classList.add('hidden');
+          document.getElementById('worker-dashboard-block').classList.remove('hidden');
+          document.getElementById('footer-logout-bar').classList.remove('hidden');
+          initCourierMap();
+          openCustomAlert("Bağlantı Kuruldu", `Kolay gelsin ${name}! Görevlerin panelinde listelendi.`);
+          saveState();
+        } else {
+          openCustomAlert("Hata", "Giriş şifreniz yanlış kanka!");
+        }
       }
+    }
 
-      const worker = appState.workers.find(w => w.id === workerId && w.status === 'approved');
-      if (!worker) {
-        showAkmaToast("Onaylı eleman bulunamadı!");
-        return;
-      }
-
-      if (worker.password === pass) {
-        appState.currentWorkerId = worker.id;
-        document.getElementById('worker-auth-block').classList.add('hidden');
-        document.getElementById('worker-dashboard-block').classList.remove('hidden');
+    // --- STREAMING_CHUNK: Patron giriş koruması, kuponlar ve gider listesi... ---
+    // --- PATRON GİRİŞ VE YÖNETİM ---
+    function loginPatron() {
+      const pass = document.getElementById('patron-password').value;
+      if (pass === '1089') {
+        document.getElementById('patron-auth-block').classList.add('hidden');
+        document.getElementById('patron-dashboard-block').classList.remove('hidden');
+        document.getElementById('footer-logout-bar').classList.remove('hidden');
+        state.currentUser = { name: "Patron", type: "patron" };
+        openCustomAlert("Kasa Yetkisi Açıldı", "Mühürler, kasa ve elemanlar yönetim için önünüzde!");
         saveState();
-        renderWorkerDashboard();
-        showAkmaToast(`HOŞ GELDİN ${worker.name.toUpperCase()}`);
       } else {
-        showAkmaToast("Yanlış şifre kanka!");
-      }
-      document.getElementById('login-worker-pass').value = "";
-    }
-
-    function renderWorkerAuth() {
-      if (appState.currentWorkerId) {
-        document.getElementById('worker-auth-block').classList.add('hidden');
-        document.getElementById('worker-dashboard-block').classList.remove('hidden');
-        renderWorkerDashboard();
-      } else {
-        document.getElementById('worker-auth-block').classList.remove('hidden');
-        document.getElementById('worker-dashboard-block').classList.add('hidden');
-        toggleWorkerAuth('login');
+        openCustomAlert("Yetki Hatası", "Girdiğiniz şifre geçersiz kanka!");
       }
     }
 
-    function logoutWorker() {
-      appState.currentWorkerId = null;
-      saveState();
-      renderWorkerAuth();
+    function switchCustTab(tab) {
+      state.customerTab = tab;
+      if (tab === 'order') {
+        document.getElementById('cust-view-order').classList.remove('hidden');
+        document.getElementById('cust-view-track').classList.add('hidden');
+        document.getElementById('cust-tab-order').className = "flex-1 py-2.5 rounded-xl bg-white text-black";
+        document.getElementById('cust-tab-track').className = "flex-1 py-2.5 rounded-xl text-slate-500";
+      } else {
+        document.getElementById('cust-view-order').classList.add('hidden');
+        document.getElementById('cust-view-track').classList.remove('hidden');
+        document.getElementById('cust-tab-order').className = "flex-1 py-2.5 rounded-xl text-slate-500";
+        document.getElementById('cust-tab-track').className = "flex-1 py-2.5 rounded-xl bg-white text-black";
+      }
     }
 
-    function renderWorkerDashboard() {
-      const worker = appState.workers.find(w => w.id === appState.currentWorkerId);
-      if (!worker) return;
+    function switchPatrTab(tab) {
+      state.patronTab = tab;
+      ['analytics', 'orders', 'staff'].forEach(x => {
+        document.getElementById(`patr-view-${x}`).classList.add('hidden');
+        document.getElementById(`patr-tab-${x}`).className = "flex-1 py-2 rounded-xl text-slate-500";
+      });
+      document.getElementById(`patr-view-${tab}`).classList.remove('hidden');
+      document.getElementById(`patr-tab-${tab}`).className = "flex-1 py-2 rounded-xl bg-white text-black";
+      if (tab === 'analytics') drawLiveChart();
+    }
 
-      document.getElementById('worker-dashboard-name').innerText = worker.name.toUpperCase();
-      document.getElementById('worker-dashboard-role').innerText = worker.role === 'oruco' ? 'Örücü' : 'Kurye';
-      document.getElementById('worker-dashboard-salary').innerText = `${worker.salary}₺`;
-
-      const taskList = document.getElementById('worker-task-list');
-      taskList.innerHTML = "";
-
-      let activeTasks = [];
-      if (worker.role === 'oruco') {
-        activeTasks = appState.orders.filter(o => o.assignedWorkerId === worker.id && o.status === 'Örülüyor');
+    // --- FORM DEĞİŞKENLERİNİ YÖNETME ---
+    function setDeliveryType(type) {
+      state.orderForm.deliveryType = type;
+      if (type === 'school') {
+        document.getElementById('school-delivery-fields').classList.remove('hidden');
+        document.getElementById('home-delivery-fields').classList.add('hidden');
+        document.getElementById('delivery-school-btn').className = "flex-1 py-2 rounded-lg bg-blue-600 text-white transition-all";
+        document.getElementById('delivery-home-btn').className = "flex-1 py-2 rounded-lg text-slate-500 transition-all";
       } else {
-        activeTasks = appState.orders.filter(o => o.status === 'Paketlendi' && (o.assignedCourierId === worker.id || !o.assignedCourierId));
+        document.getElementById('school-delivery-fields').classList.add('hidden');
+        document.getElementById('home-delivery-fields').classList.remove('hidden');
+        document.getElementById('delivery-school-btn').className = "flex-1 py-2 rounded-lg text-slate-500 transition-all";
+        document.getElementById('delivery-home-btn').className = "flex-1 py-2 rounded-lg bg-blue-600 text-white transition-all";
+      }
+      calculateDinamikPrice();
+    }
+
+    function setEnvelope(type) {
+      state.orderForm.envelopeType = type;
+      if (type === 'standard') {
+        document.getElementById('env-standard-btn').className = "py-2.5 rounded-xl text-xs font-bold border border-blue-600 bg-blue-600 text-white transition-all flex flex-col items-center";
+        document.getElementById('env-kara-btn').className = "py-2.5 rounded-xl text-xs font-bold border border-slate-800 text-slate-400 transition-all flex flex-col items-center";
+      } else {
+        document.getElementById('env-standard-btn').className = "py-2.5 rounded-xl text-xs font-bold border border-slate-800 text-slate-400 transition-all flex flex-col items-center";
+        document.getElementById('env-kara-btn').className = "py-2.5 rounded-xl text-xs font-bold border border-blue-600 bg-blue-600 text-white transition-all flex flex-col items-center";
+      }
+      calculateDinamikPrice();
+    }
+
+    function toggleVip() {
+      state.orderForm.isVip = !state.orderForm.isVip;
+      const btn = document.getElementById('vip-toggle-btn');
+      if (state.orderForm.isVip) {
+        btn.className = "px-3 py-1.5 bg-red-600 rounded-lg text-[9px] font-black uppercase text-white animate-pulse";
+        btn.innerText = "EKLENDİ";
+      } else {
+        btn.className = "px-3 py-1.5 bg-slate-800 rounded-lg text-[9px] font-black uppercase text-slate-400";
+        btn.innerText = "EKLE (+15₺)";
+      }
+      calculateDinamikPrice();
+    }
+
+    function setTip(amount) {
+      state.orderForm.tipAmount = amount;
+      [0, 5, 10, 20].forEach(x => {
+        document.getElementById(`tip-${x}-btn`).className = "py-2 rounded-xl text-xs font-bold bg-slate-950 text-slate-400 border border-slate-800";
+      });
+      document.getElementById(`tip-${amount}-btn`).className = "py-2 rounded-xl text-xs font-bold bg-blue-600 text-white border border-blue-500";
+      calculateDinamikPrice();
+    }
+
+    // İNDİRİM KUPON SİSTEMİ (ÖZELLİK 5)
+    function applyCoupon() {
+      const code = document.getElementById('coupon-input').value.trim().toUpperCase();
+      if (code === 'AKMA10') {
+        state.orderForm.appliedCoupon = { code: 'AKMA10', discount: 10 }; // %10 İndirim
+        document.getElementById('coupon-msg').classList.remove('hidden');
+        playSound(880, 1100, 0.3);
+      } else {
+        openCustomAlert("Kupon Hatası", "Girdiğiniz kupon kodu geçersiz kanka!");
+        state.orderForm.appliedCoupon = null;
+        document.getElementById('coupon-msg').classList.add('hidden');
+      }
+      calculateDinamikPrice();
+    }
+
+    // --- STREAMING_CHUNK: Dinamik fiyat hesaplama ve sepete ekleme mantığı... ---
+    // --- DİNAMİK FİYATLANDIRMA HESAP MOTORU ---
+    function calculateDinamikPrice() {
+      let base = 20; // Standart fiyat (karışık renk)
+      
+      // Kaç renk seçilmiş
+      const checkboxes = document.querySelectorAll('.color-checkbox:checked');
+      const count = checkboxes.length;
+      
+      if (count === 1) {
+        base = 30; // Sadece tek renk seçildiğinde 30 TL
       }
 
-      if (activeTasks.length === 0) {
-        taskList.innerHTML = `<div class="text-center py-12 text-xs text-slate-500">Şu an yapacak bir görevin yok kanka, keyfine bak!</div>`;
+      let envCost = state.orderForm.envelopeType === 'kara' ? 15 : 0;
+      let deliveryCost = state.orderForm.deliveryType === 'home' ? 100 : 0;
+      let vipCost = state.orderForm.isVip ? 15 : 0;
+      let tipCost = state.orderForm.tipAmount;
+
+      let total = base + envCost + deliveryCost + vipCost + tipCost;
+
+      // Sadakat / Kupon İndirimi
+      let discount = 0;
+      if (state.orderForm.appliedCoupon) {
+        discount = Math.floor(total * (state.orderForm.appliedCoupon.discount / 100));
+      }
+
+      // AKMA Para Puan İndirimi (Her siparişte biriken sadakat puanının %10 kullanımı)
+      if (state.currentUser && state.currentUser.loyaltyPoints > 10) {
+        const lpUsage = Math.min(20, Math.floor(state.currentUser.loyaltyPoints * 0.1));
+        discount += lpUsage;
+      }
+
+      total = Math.max(10, total - discount);
+
+      // UI Güncellemeleri
+      document.getElementById('price-base-display').innerText = `${base}₺`;
+      document.getElementById('price-envelope-display').innerText = `${envCost}₺`;
+      document.getElementById('price-delivery-display').innerText = `${deliveryCost}₺`;
+      document.getElementById('price-vip-display').innerText = `${vipCost}₺`;
+      document.getElementById('price-tip-display').innerText = `${tipCost}₺`;
+      
+      if (discount > 0) {
+        document.getElementById('price-discount-row').classList.remove('hidden');
+        document.getElementById('price-discount-display').innerText = `-${discount}₺`;
+      } else {
+        document.getElementById('price-discount-row').classList.add('hidden');
+      }
+
+      document.getElementById('price-total-display').innerText = `${total}₺`;
+      return { total, base, envCost, deliveryCost, vipCost, tipCost, discount };
+    }
+
+    // --- SİPARİŞİ BULUTA GÖNDERME ---
+    function submitOrder() {
+      if (!state.currentUser) {
+        openCustomAlert("Hata", "Sipariş verebilmek için üye olman ve giriş yapman gerekir kanka!");
         return;
       }
 
-      activeTasks.forEach(task => {
-        taskList.innerHTML += `
-          <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-3 relative">
+      const checkboxes = document.querySelectorAll('.color-checkbox:checked');
+      const selectedColors = Array.from(checkboxes).map(x => x.value);
+      
+      if (selectedColors.length === 0) {
+        openCustomAlert("Hata", "Lütfen en az 1 tane bileklik rengi seç kanka!");
+        return;
+      }
+
+      const addressType = state.orderForm.deliveryType;
+      let classRoom = "";
+      let deskRow = "";
+
+      if (addressType === 'school') {
+        classRoom = document.getElementById('cust-class-select').value;
+        deskRow = document.getElementById('cust-row-select').value;
+      } else {
+        const mah = document.getElementById('cust-home-mah').value.trim();
+        const cad = document.getElementById('cust-home-cad').value.trim();
+        const apt = document.getElementById('cust-home-apt').value.trim();
+
+        if (!mah || !cad || !apt) {
+          openCustomAlert("Hata", "Lütfen tüm ev adres bilgilerini eksiksiz doldurun kanka!");
+          return;
+        }
+        classRoom = "Adrese Teslim";
+        deskRow = `${mah} Mah. ${cad} Cad. Apt: ${apt}`;
+      }
+
+      const calculations = calculateDinamikPrice();
+      const orderId = 'ORD-' + Math.floor(100 + Math.random() * 900);
+
+      const newOrder = {
+        id: orderId,
+        customer: state.currentUser.name,
+        classRoom,
+        deskRow,
+        colors: selectedColors,
+        envelope: state.orderForm.envelopeType,
+        isVip: state.orderForm.isVip,
+        tip: state.orderForm.tipAmount,
+        total: calculations.total,
+        status: "Örülüyor", // Örülüyor -> Paketlendi -> Teslim Edildi
+        custBadge: state.currentUser.badge,
+        createdAt: Date.now(),
+        creatorId: state.currentUser.id,
+        deliveryType: addressType
+      };
+
+      state.orders.push(newOrder);
+
+      // Sadakat Puanı Kazan (ÖZELLİK 6)
+      const earnedLoyalty = Math.floor(calculations.total * 0.1);
+      const userIdx = state.staff.findIndex(x => x.id === state.currentUser.id);
+      if (userIdx !== -1) {
+        state.staff[userIdx].loyaltyPoints += earnedLoyalty;
+        state.currentUser.loyaltyPoints += earnedLoyalty;
+      }
+
+      // Formu Resetle
+      document.querySelectorAll('.color-checkbox').forEach(x => x.checked = false);
+      document.getElementById('cust-order-note').value = '';
+      if (addressType === 'home') {
+        document.getElementById('cust-home-mah').value = '';
+        document.getElementById('cust-home-cad').value = '';
+        document.getElementById('cust-home-apt').value = '';
+      }
+
+      document.getElementById('order-success-toast').classList.remove('hidden');
+      playSound(523.25, 659.25, 0.4); // Sipariş Onay Sesi
+      saveState();
+    }
+
+    function closeSuccessToast() {
+      document.getElementById('order-success-toast').classList.add('hidden');
+      switchCustTab('track');
+    }
+
+    // --- STREAMING_CHUNK: Giderleri kaydetme, onay bekleyenleri işleme ve istifa mekanizmaları... ---
+    // --- GİDER EKLEME (STOK YERİNE MANUEL GİRİŞ) ---
+    function submitExpense() {
+      const name = document.getElementById('patr-expense-name').value.trim();
+      const amount = parseFloat(document.getElementById('patr-expense-amount').value);
+
+      if (!name || isNaN(amount) || amount <= 0) {
+        openCustomAlert("Hata", "Lütfen geçerli bir gider açıklaması ve fiyatı girin kanka!");
+        return;
+      }
+
+      state.kasa -= amount;
+      state.expenses.push({ name, amount, date: `Gün ${day}` });
+
+      document.getElementById('patr-expense-name').value = '';
+      document.getElementById('patr-expense-amount').value = '';
+
+      openCustomAlert("Gider İşlendi", `${name} için kasadan ${amount}₺ düşüldü.`);
+      saveState();
+    }
+
+    // --- ELEMAN BAŞVURUSU ONAYLAMA (10₺ Prim ve Kadro Girişi) ---
+    function approveStaff(id) {
+      const idx = state.staff.findIndex(x => x.id === id);
+      if (idx !== -1) {
+        state.staff[idx].status = 'approved';
+        state.staff[idx].salary += 10; // 10₺ Hoşgeldin Primi / Hoşgeldin Kampanyası
+        addNotif(state.staff[idx].id, `Tebrikler kanka! Başvurun onaylandı. Kadroya katıldığın için 10₺ hoşgeldin primin doğrudan maaşına mühürlendi!`);
+        openCustomAlert("Eleman Onaylandı", `${state.staff[idx].name} kadroya dahil edildi ve 10₺ hoş geldin primi eklendi.`);
+        saveState();
+      }
+    }
+
+    function rejectStaff(id) {
+      state.staff = state.staff.filter(x => x.id !== id);
+      openCustomAlert("Başvuru Reddedildi", "Eleman başvurusu kalıcı olarak silindi.");
+      saveState();
+    }
+
+    // --- ELEMAN İSTİFA SİSTEMİ ---
+    function triggerResignation() {
+      if (!confirm("Kanka cidden istifa etmek ve AKMA ekibinden ayrılmak istiyor musun? Biriken maaşların yanabilir!")) return;
+      if (state.currentUser && state.currentUser.type === 'worker') {
+        const id = state.currentUser.id;
+        state.staff = state.staff.filter(x => x.id !== id);
+        state.currentUser = null;
+        document.getElementById('worker-dashboard-block').classList.add('hidden');
+        document.getElementById('footer-logout-bar').classList.add('hidden');
+        switchRole('customer');
+        openCustomAlert("İstifa Onaylandı", "Başarıyla istifa ettiniz. Yolunuz açık olsun kanka!");
+        saveState();
+      }
+    }
+
+    // --- MAAŞ ÖDEME VE KASADAN DÜŞÜLME MEKANİZMASI ---
+    function paySalary(id) {
+      const idx = state.staff.findIndex(x => x.id === id);
+      if (idx !== -1) {
+        const amount = state.staff[idx].salary;
+        if (amount <= 0) {
+          openCustomAlert("Bilgi", "Bu elemanın birikmiş bir maaşı veya primi yok kanka!");
+          return;
+        }
+        if (state.kasa < amount) {
+          openCustomAlert("Limit Hatası", `Kasada yeterli bütçe yok kanka! Elemana ${amount}₺ ödemek için kasaya para girişi (sipariş teslimatı) bekleniyor.`);
+          return;
+        }
+
+        state.kasa -= amount;
+        state.staff[idx].salary = 0;
+        openCustomAlert("Maaş Ödendi", `${state.staff[idx].name} kişisine ${amount}₺ ödemesi kasadan kuruşu kuruşuna yapıldı ve sıfırlandı.`);
+        saveState();
+      }
+    }
+
+    // --- STREAMING_CHUNK: Örücü ve kurye görev yönetimi, silinme akışları... ---
+    // --- ELEMAN GÖREV YÖNETİMİ (ÖRÜCÜ-KURYE ZİNCİRİ) ---
+    function assignOrder(orderId, staffId) {
+      const oIdx = state.orders.findIndex(x => x.id === orderId);
+      const sObj = state.staff.find(x => x.id === staffId);
+      if (oIdx !== -1 && sObj) {
+        if (sObj.role === 'weaver') {
+          state.orders[oIdx].assignedWeaver = sObj.name;
+          addNotif(sObj.id, `Patron sana ${orderId} siparişini örgü görevi olarak atadı kanka!`);
+        } else {
+          state.orders[oIdx].assignedCourier = sObj.name;
+          addNotif(sObj.id, `Patron sana ${orderId} siparişini kurye/dağıtım görevi olarak atadı kanka!`);
+        }
+        saveState();
+      }
+    }
+
+    // Örücü Örgüyü Bitirdiğinde
+    function finishWeave(id) {
+      const idx = state.orders.findIndex(x => x.id === id);
+      if (idx !== -1) {
+        state.orders[idx].status = 'Paketlendi';
+        
+        // Örücü Prim Hesabı (ÖZELLİK: Kara zarf ise 7 + 5 = 12 TL, değilse 7 TL)
+        const isKaraZarf = state.orders[idx].envelope === 'kara';
+        const prim = isKaraZarf ? 12 : 7;
+
+        if (state.currentUser && state.currentUser.type === 'worker') {
+          const sIdx = state.staff.findIndex(x => x.id === state.currentUser.id);
+          if (sIdx !== -1) {
+            state.staff[sIdx].salary += prim;
+            state.staff[sIdx].totalJobsCompleted += 1;
+            state.currentUser.salary += prim;
+            state.currentUser.totalJobsCompleted += 1;
+          }
+        }
+
+        // Kuryelere Haber Ver
+        state.staff.filter(x => x.role === 'courier').forEach(k => {
+          addNotif(k.id, `Dikkat! ${state.currentUser.name} örücüsü ${id} siparişinin örgüsünü bitirdi ve paketledi. Sırada bekleyen teslimat noktasına ulaştırmak için kurye paneline eklenmiştir!`);
+        });
+
+        openCustomAlert("Örgü Tamamlandı", `Sipariş başarıyla paketlendi kanka! Kazandığınız prim: ${prim}₺. Bu sipariş örücü görev ekranınızdan otomatik olarak silinmiştir.`);
+        saveState();
+      }
+    }
+
+    // Kurye Teslimatı Bitirdiğinde (Maaşa Prim Eklenir & Kasa Artar & Sistemden Tamamen Silinir)
+    function deliverOrder(id) {
+      const idx = state.orders.findIndex(x => x.id === id);
+      if (idx !== -1) {
+        const order = state.orders[idx];
+        order.status = 'Teslim Edildi';
+
+        // Kurye Prim Hesabı (ÖZELLİK: Eve teslimat ise +50 TL, okul içi ise +7 TL)
+        const isEveTeslim = order.deliveryType === 'home';
+        const prim = isEveTeslim ? 50 : 7;
+
+        // Sipariş parası doğrudan kasaya eklenir
+        state.kasa += order.total;
+
+        if (state.currentUser && state.currentUser.type === 'worker') {
+          const sIdx = state.staff.findIndex(x => x.id === state.currentUser.id);
+          if (sIdx !== -1) {
+            state.staff[sIdx].salary += prim;
+            state.staff[sIdx].totalJobsCompleted += 1;
+            state.currentUser.salary += prim;
+            state.currentUser.totalJobsCompleted += 1;
+          }
+        }
+
+        // Müşteriye bildirim gönder (ÖZELLİK 18 Müşteri Bildirimi)
+        addNotif(order.creatorId, `Bilekliğin sırasına mühürlü paketle ulaştı kanka! Keyifli günlerde kullan.`);
+
+        // Siparişi kalıcı kurye teslimatından sonra sil
+        state.orders = state.orders.filter(x => x.id !== id);
+
+        openCustomAlert("Teslimat Başarılı", `Bileklik sırasına başarıyla bırakıldı! Kazandığın kurye primi: ${prim}₺. Siparişin toplam tutarı (${order.total}₺) doğrudan patronun kasasına eklendi ve sistemden silindi.`);
+        saveState();
+      }
+    }
+
+    // --- BİLDİRİM VE ÇAN MERKEZİ ---
+    function addNotif(userId, text) {
+      const id = 'notif-' + Date.now() + Math.floor(Math.random() * 100);
+      state.acknowledgedNotifications.push({ id, userId, text, ack: false });
+    }
+
+    function openNotificationModal() {
+      document.getElementById('notification-modal').classList.remove('hidden');
+      renderNotifications();
+    }
+
+    function closeNotificationModal() {
+      document.getElementById('notification-modal').classList.add('hidden');
+    }
+
+    function toggleAudio() {
+      state.soundEnabled = !state.soundEnabled;
+      const btn = document.getElementById('audio-toggle-btn');
+      if (state.soundEnabled) {
+        btn.innerHTML = `<i data-lucide="volume-2" class="w-4 h-4"></i>`;
+        btn.className = "p-2 bg-slate-900 border border-slate-800 rounded-xl text-green-400";
+      } else {
+        btn.innerHTML = `<i data-lucide="volume-x" class="w-4 h-4"></i>`;
+        btn.className = "p-2 bg-slate-900 border border-slate-800 rounded-xl text-red-500";
+      }
+      lucide.createIcons();
+    }
+
+    // --- HIZLI KOPYALAMA ---
+    function copyAppUrl() {
+      const el = document.createElement('textarea');
+      el.value = window.location.href;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      openCustomAlert("Bağlantı Kopyalandı", "Sınıfının WhatsApp veya Instagram grubuna gönder kanka, herkes profilini oluşturup sipariş mühürlesin!");
+    }
+
+    // --- TELSİZ SOHBET (ÖZELLİK 10) ---
+    let simChat = [
+      { sender: "Patron", text: "Kuryeler dersteyken koridorda sessiz adımlarla dağıtsın kanka!", date: "12:30" },
+      { sender: "Yusuf", text: "Cobra örgülerini tamamlıyorum, mühürler bende.", date: "12:35" }
+    ];
+
+    function sendChatMessage() {
+      const input = document.getElementById('worker-chat-input');
+      const text = input.value.trim();
+      if (!text || !state.currentUser) return;
+      simChat.push({ sender: state.currentUser.name, text, date: `${time}:00` });
+      input.value = '';
+      renderWorkerChat();
+    }
+
+    // --- STREAMING_CHUNK: Tüm sayfaların, dinamik listelerin ve tabloların render akışı... ---
+    // --- DETAYLI DİJİTAL FATURA (ÖZELLİK 13) ---
+    let selectedInvoiceData = null;
+    function openInvoice(id) {
+      const ord = state.orders.find(x => x.id === id);
+      if (ord) {
+        selectedInvoiceData = ord;
+        const cont = document.getElementById('invoice-modal-content');
+        cont.innerHTML = `
+          <p class="text-blue-400 font-bold border-b border-slate-800 pb-1 text-center">AKMA KOLEKTIF RESMİ FATURASI</p>
+          <p>FATURA ID: ${ord.id}</p>
+          <p>MÜŞTERİ: ${ord.customer} (${ord.classRoom})</p>
+          <p>SIRA KONUMU: ${ord.deskRow}</p>
+          <p>RENKLER: ${ord.colors.join(', ').toUpperCase()}</p>
+          <p>ZARF: ${ord.envelope === 'kara' ? 'O ELENDİN Kara Zarf (+15₺)' : 'Şeffaf Paket (+0₺)'}</p>
+          <p>VIP SÜRAT: ${ord.isVip ? 'EVET (+15₺)' : 'HAYIR'}</p>
+          <p>BAHŞİŞ: ${ord.tip}₺</p>
+          <p class="text-green-400 font-bold border-t border-slate-800 pt-1 text-center">TOPLAM TUTAR: ${ord.total}₺</p>
+        `;
+        document.getElementById('invoice-modal').classList.remove('hidden');
+      }
+    }
+
+    function closeInvoiceModal() {
+      document.getElementById('invoice-modal').classList.add('hidden');
+    }
+
+    function copyInvoiceToClipboard() {
+      if (!selectedInvoiceData) return;
+      const text = `
+AKMA KOLEKTIF DIGITAL INVOICE
+-----------------------------
+Fatura No: ${selectedInvoiceData.id}
+Müşteri: ${selectedInvoiceData.customer} (${selectedInvoiceData.classRoom})
+Sıra Konumu: ${selectedInvoiceData.deskRow}
+Bileklik Renkleri: ${selectedInvoiceData.colors.join(', ').toUpperCase()}
+Toplam Tutar: ${selectedInvoiceData.total}TL
+-----------------------------
+Teşekkürler kanka! Sezon 3 Akma Bileklikleri fırtınası!
+      `.trim();
+
+      const el = document.createElement('textarea');
+      el.value = text;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      openCustomAlert("Kopyalandı", "Fatura metni panoya kopyalandı!");
+    }
+
+    // --- EN TEPEDEKİ TEK ONAY BİLDİRİMİ ---
+    function acknowledgeTopNotification() {
+      document.getElementById('top-acknowledged-notification').classList.add('hidden');
+    }
+
+    // --- RENDER MOTORU ---
+    function render() {
+      // Gece/Gündüz Modu Sınıfları
+      if (state.theme === 'light') {
+        document.body.className = "bg-slate-100 text-slate-900 min-h-screen font-sans overflow-x-hidden selection:bg-blue-600/30 light-theme";
+        document.getElementById('header-bar').className = "bg-white border border-slate-200 p-4 rounded-3xl mb-4 flex justify-between items-center sticky top-2 z-40 backdrop-blur-md text-slate-900 shadow-md";
+        document.getElementById('theme-toggle-btn').className = "p-2.5 bg-slate-100 border border-slate-200 rounded-2xl hover:bg-slate-200 transition-all text-slate-800";
+        document.getElementById('theme-toggle-btn').innerHTML = `<i data-lucide="moon" class="w-5 h-5"></i>`;
+      } else {
+        document.body.className = "bg-slate-950 text-slate-100 min-h-screen font-sans overflow-x-hidden selection:bg-blue-600/30 dark-theme";
+        document.getElementById('header-bar').className = "bg-slate-900 border border-slate-800 p-4 rounded-3xl mb-4 flex justify-between items-center sticky top-2 z-40 backdrop-blur-md text-slate-100 shadow-2xl";
+        document.getElementById('theme-toggle-btn').className = "p-2.5 bg-slate-950 border border-slate-800 rounded-2xl hover:bg-slate-800 transition-all text-yellow-500";
+        document.getElementById('theme-toggle-btn').innerHTML = `<i data-lucide="sun" class="w-5 h-5"></i>`;
+      }
+
+      // Kasa Alarm Kontrolü (ÖZELLİK 20 Kasa Alarmı)
+      const alarmBar = document.getElementById('kasa-alarm-bar');
+      if (state.kasa < 100) {
+        alarmBar.classList.remove('hidden');
+      } else {
+        alarmBar.classList.add('hidden');
+      }
+
+      // Üst Onaylı Bildirimler Kartı Kontrolü
+      if (state.currentUser) {
+        const topNotif = state.acknowledgedNotifications.find(n => n.userId === state.currentUser.id && !n.ack);
+        if (topNotif) {
+          document.getElementById('top-acknowledged-notification').classList.remove('hidden');
+          document.getElementById('top-notif-text').innerText = topNotif.text;
+          topNotif.ack = true; // Gösterildi olarak mühürle
+        }
+      }
+
+      // Başlık & Profil Göstergeleri
+      if (state.currentUser && state.currentUser.type === 'customer') {
+        document.getElementById('cust-avatar-display').innerText = state.currentUser.avatar;
+        document.getElementById('cust-name-display').innerText = state.currentUser.name;
+        document.getElementById('cust-badge-display').innerText = state.currentUser.badge;
+        document.getElementById('cust-loyalty-display').innerText = `${state.currentUser.loyaltyPoints}₺`;
+      }
+
+      // Giriş yapılmışsa oturum sonlandırıcıyı göster
+      if (state.currentUser) {
+        document.getElementById('footer-logout-bar').classList.remove('hidden');
+      } else {
+        document.getElementById('footer-logout-bar').classList.add('hidden');
+      }
+
+      // Seçim Listeleri Güncellemesi (Kayıtlı eleman & müşterileri giriş listelerine mühürle)
+      const custSelect = document.getElementById('login-cust-select');
+      const workSelect = document.getElementById('login-work-select');
+      
+      if (custSelect) {
+        custSelect.innerHTML = '';
+        state.staff.filter(x => x.type === 'customer').forEach(c => {
+          custSelect.innerHTML += `<option value="${c.name}">${c.name} (${c.badge})</option>`;
+        });
+      }
+      if (workSelect) {
+        workSelect.innerHTML = '';
+        state.staff.filter(x => x.type === 'worker').forEach(w => {
+          workSelect.innerHTML += `<option value="${w.name}">${w.name} (${w.role === 'weaver' ? '🧶 Örücü' : '🚴 Kurye'})</option>`;
+        });
+      }
+
+      // Menü Aktifliği
+      document.getElementById('role-cust-btn').className = state.currentRole === 'customer' ? "px-3 py-1.5 rounded-xl text-[10px] font-black transition-all bg-blue-600 text-white" : "px-3 py-1.5 rounded-xl text-[10px] font-black transition-all text-slate-500";
+      document.getElementById('role-work-btn').className = state.currentRole === 'worker' ? "px-3 py-1.5 rounded-xl text-[10px] font-black transition-all bg-blue-600 text-white" : "px-3 py-1.5 rounded-xl text-[10px] font-black transition-all text-slate-500";
+      document.getElementById('role-patr-btn').className = state.currentRole === 'patron' ? "px-3 py-1.5 rounded-xl text-[10px] font-black transition-all bg-blue-600 text-white" : "px-3 py-1.5 rounded-xl text-[10px] font-black transition-all text-slate-500";
+
+      // Bildirim Çanı Adeti
+      if (state.currentUser) {
+        const unreadCount = state.acknowledgedNotifications.filter(n => n.userId === state.currentUser.id).length;
+        const badge = document.getElementById('notif-badge');
+        if (unreadCount > 0) {
+          badge.classList.remove('hidden');
+          badge.innerText = unreadCount;
+        } else {
+          badge.classList.add('hidden');
+        }
+      }
+
+      // Diğer Alt Render Yapılarını Çağır
+      renderColorsCheckbox();
+      renderCustomerOrders();
+      renderWorkerTasks();
+      renderWorkerChat();
+      renderPatronAnalytics();
+      renderPatronOrders();
+      renderPatronStaff();
+
+      lucide.createIcons();
+    }
+
+    // --- RENK SEÇENEKLERİ CHECKBOX YERLEŞTİRME ---
+    function renderColorsCheckbox() {
+      const grid = document.getElementById('color-checkbox-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      COLOR_OPTIONS.forEach(opt => {
+        const isSelected = state.orderForm.selectedColors.includes(opt.id);
+        grid.innerHTML += `
+          <label class="relative flex flex-col items-center justify-center p-3 rounded-2xl border border-slate-800 bg-slate-900 cursor-pointer hover:bg-slate-800 transition-all select-none">
+            <input type="checkbox" value="${opt.id}" class="color-checkbox hidden" onchange="toggleColorSelection(this)">
+            <span class="w-6 h-6 rounded-full border border-white/20 mb-1" style="background: ${opt.color}"></span>
+            <span class="text-[8px] font-black uppercase text-slate-400 text-center leading-tight">${opt.name}</span>
+          </label>
+        `;
+      });
+    }
+
+    function toggleColorSelection(el) {
+      const val = el.value;
+      if (el.checked) {
+        if (!state.orderForm.selectedColors.includes(val)) state.orderForm.selectedColors.push(val);
+      } else {
+        state.orderForm.selectedColors = state.orderForm.selectedColors.filter(x => x !== val);
+      }
+      calculateDinamikPrice();
+    }
+
+    // --- MÜŞTERİ SİPARİŞ TAKİBİ LİSTELEME ---
+    function renderCustomerOrders() {
+      const list = document.getElementById('customer-orders-list');
+      if (!list) return;
+      list.innerHTML = '';
+
+      const myOrders = state.orders.filter(o => o.creatorId === state.currentUser?.id);
+      document.getElementById('my-orders-count').innerText = myOrders.length;
+
+      if (myOrders.length === 0) {
+        list.innerHTML = `<div class="text-center py-8 text-slate-500 text-xs italic">Henüz verdiğin bir sipariş bulunmuyor kanka!</div>`;
+        return;
+      }
+
+      myOrders.forEach(ord => {
+        list.innerHTML += `
+          <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-3 relative overflow-hidden">
+            ${ord.isVip ? '<span class="absolute top-0 right-0 bg-red-600 text-white text-[8px] font-black px-2 py-0.5 rounded-bl-xl animate-pulse">VIP ÖNCELİK</span>' : ''}
             <div class="flex justify-between items-start">
               <div>
-                <span class="text-[9px] font-mono text-blue-400 font-black">${task.id}</span>
-                <h4 class="font-black text-sm text-white">${task.customer} (${task.classRoom})</h4>
-                <p class="text-[10px] text-slate-500 mt-0.5">${task.deskRow}</p>
+                <span class="text-[8px] font-mono font-black text-blue-400">${ord.id}</span>
+                <h4 class="font-black text-sm text-white">${ord.customer}</h4>
+                <p class="text-[9px] text-slate-500">${ord.classRoom} • ${ord.deskRow}</p>
               </div>
-              <span class="text-xs font-black text-green-400 font-mono">${task.total}₺</span>
+              <span class="text-xs font-black text-green-400 font-mono">${ord.total}₺</span>
             </div>
             
-            <div class="text-[10px] text-slate-400 border-t border-slate-800/60 pt-2">
-              <span class="font-bold">Renkler:</span> ${task.colors.join(', ') || 'Karışık'} <br/>
-              <span class="font-bold">Paket:</span> ${task.envelope}
+            <div class="space-y-1 bg-black/40 p-2.5 rounded-xl text-[10px] leading-tight text-slate-400">
+               <p><span class="font-bold text-white">Renkler:</span> ${ord.colors.map(c => COLOR_OPTIONS.find(x => x.id === c)?.name).join(', ')}</p>
+               <p><span class="font-bold text-white">Zarf:</span> ${ord.envelope === 'kara' ? 'O ELENDİN Kara Zarf' : 'Standart'}</p>
             </div>
 
-            <button onclick="completeTask('${task.id}')" class="w-full py-3 bg-blue-600 hover:bg-blue-500 rounded-xl text-xs font-black uppercase tracking-wider transition-all mt-2 flex items-center justify-center gap-1.5 shadow-lg">
-              <i data-lucide="check" class="w-4 h-4"></i> ${worker.role === 'oruco' ? 'ÖRGÜYÜ TAMAMLA (+7₺)' : 'TESLİMATI BİTİR (+7₺)'}
-            </button>
+            <!-- Fatura Butonu -->
+            <div class="flex gap-2">
+              <button onclick="openInvoice('${ord.id}')" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-[10px] font-black rounded-xl uppercase flex items-center justify-center gap-1.5"><i data-lucide="award" class="w-3.5 h-3.5"></i> Fatura Çıkar</button>
+              <button class="px-4 py-2 bg-slate-950 border border-slate-850 rounded-xl text-[10px] font-black text-slate-500 uppercase">${ord.status}</button>
+            </div>
           </div>
         `;
       });
       lucide.createIcons();
     }
 
-    function completeTask(orderId) {
-      const worker = appState.workers.find(w => w.id === appState.currentWorkerId);
-      const order = appState.orders.find(o => o.id === orderId);
+    // --- ELEMAN GÖREV YÖNETİM RENDERİ ---
+    function renderWorkerTasks() {
+      const list = document.getElementById('worker-tasks-list');
+      if (!list) return;
+      list.innerHTML = '';
 
-      if (!worker || !order) return;
+      if (!state.currentUser) return;
 
-      if (worker.role === 'oruco') {
-        order.status = 'Paketlendi';
-        worker.salary += 7;
-        
-        pushNotification('global', `${worker.name.toUpperCase()} örücüsü ${order.id} nolu siparişi tamamladı. Kuryeler göreve!`);
-        pushNotification(order.customerId, `Siparişin başarıyla örüldü ve paketlendi kanka! Sırana kurye ile geliyoruz.`);
-        showAkmaToast("Örgü Tamamlandı! Maaşına +7₺ Eklendi.");
+      // Örücü veya Kurye Filtreleme
+      let myTasks = [];
+      if (state.currentUser.role === 'weaver') {
+        // Örücü: Atanmış ve sadece "Örülüyor" olanları görür. Yapınca listeden silinir.
+        myTasks = state.orders.filter(o => o.assignedWeaver === state.currentUser.name && o.status === 'Örülüyor');
       } else {
-        order.status = 'Teslim Edildi';
-        worker.salary += 7;
-        appState.kasa += order.total; // Ücret kasaya girer
-        
-        pushNotification('patron', `Sipariş ${order.id} başarıyla teslim edildi! +${order.total}₺ kasaya girdi.`);
-        pushNotification(order.customerId, `Siparişin teslim edildi! Bizi seçtiğin için teşekkürler kanka.`);
-        showAkmaToast("Sipariş Teslim Edildi! Maaşına +7₺ Eklendi.");
-
-        // Görevi biten sipariş listeden silinir
-        appState.orders = appState.orders.filter(o => o.id !== orderId);
+        // Kurye: Atanmış ve sadece "Paketlendi" olanları görür. Yapınca listeden silinir.
+        myTasks = state.orders.filter(o => o.status === 'Paketlendi');
       }
 
-      saveState();
-      renderWorkerDashboard();
-    }
-
-    // --- STREAMING_CHUNK: Patron Giriş ve Güvenlik Altyapısı... ---
-    // ==========================================
-    // PATRON PANELİ VE AKIŞ YÖNETİMİ
-    // ==========================================
-    function switchPatronTab(tab) {
-      document.getElementById('patron-view-orders').classList.add('hidden');
-      document.getElementById('patron-view-workers').classList.add('hidden');
-      document.getElementById('patron-tab-orders').className = "flex-1 py-2 rounded-lg text-slate-500";
-      document.getElementById('patron-tab-workers').className = "flex-1 py-2 rounded-lg text-slate-500";
-
-      appState.activePatronTab = tab;
-
-      if (tab === 'orders') {
-        document.getElementById('patron-view-orders').classList.remove('hidden');
-        document.getElementById('patron-tab-orders').className = "flex-1 py-2 rounded-lg bg-white text-black";
-        renderPatronOrders();
-      } else if (tab === 'workers') {
-        document.getElementById('patron-view-workers').classList.remove('hidden');
-        document.getElementById('patron-tab-workers').className = "flex-1 py-2 rounded-lg bg-white text-black";
-        renderPatronWorkers();
-      }
-      saveState();
-    }
-
-    function loginPatron() {
-      const pass = document.getElementById('patron-pass-input').value;
-      if (pass === '1089') {
-        appState.isPatronLoggedIn = true;
-        document.getElementById('patron-auth-block').classList.add('hidden');
-        document.getElementById('patron-control-block').classList.remove('hidden');
-        showAkmaToast("PATRON DOĞRULANDI! HOŞ GELDİN KANKA.");
-        switchPatronTab('orders');
-        updatePatronDisplay();
-      } else {
-        showAkmaToast("Hatalı patron şifresi! Tekrar dene.");
-      }
-      document.getElementById('patron-pass-input').value = "";
-      saveState();
-    }
-
-    function logoutPatron() {
-      appState.isPatronLoggedIn = false;
-      saveState();
-      renderPatronAuth();
-    }
-
-    function renderPatronAuth() {
-      if (appState.isPatronLoggedIn) {
-        document.getElementById('patron-auth-block').classList.add('hidden');
-        document.getElementById('patron-control-block').classList.remove('hidden');
-        updatePatronDisplay();
-        switchPatronTab(appState.activePatronTab);
-      } else {
-        document.getElementById('patron-auth-block').classList.remove('hidden');
-        document.getElementById('patron-control-block').classList.add('hidden');
-      }
-    }
-
-    function updatePatronDisplay() {
-      document.getElementById('patron-kasa-display').innerText = `${appState.kasa}₺`;
-      document.getElementById('patron-stok-display').innerText = `${appState.stok} Adet`;
-    }
-
-    function buyHammadde() {
-      const amount = parseInt(document.getElementById('buy-stok-amount').value) || 0;
-      const cost = parseInt(document.getElementById('buy-stok-cost').value) || 0;
-
-      if (amount <= 0 || cost <= 0) {
-        showAkmaToast("Lütfen geçerli miktar gir kanka.");
+      if (myTasks.length === 0) {
+        list.innerHTML = `<div class="text-center py-8 text-slate-500 text-xs italic">Şu an atanmış aktif bir göreviniz yok kanka!</div>`;
         return;
       }
 
-      if (appState.kasa < cost) {
-        showAkmaToast("Kasada hammadde alacak para kalmadı!");
+      myTasks.forEach(ord => {
+        let actionBtn = '';
+        if (state.currentUser.role === 'weaver') {
+          actionBtn = `<button onclick="finishWeave('${ord.id}')" class="w-full py-3 bg-orange-600 hover:bg-orange-500 text-white rounded-xl text-xs font-black uppercase">ÖRGÜYÜ BİTİR VE PAKETLE</button>`;
+        } else {
+          actionBtn = `<button onclick="deliverOrder('${ord.id}')" class="w-full py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl text-xs font-black uppercase">SIRAYA TESLİM ET</button>`;
+        }
+
+        list.innerHTML += `
+          <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-4">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-[9px] font-mono text-blue-400 font-bold">${ord.id}</span>
+                <h4 class="font-black text-sm text-white">${ord.customer}</h4>
+                <p class="text-[9px] text-slate-500">${ord.classRoom} • ${ord.deskRow}</p>
+              </div>
+              <span class="text-xs font-black text-slate-400 font-mono">${ord.total}₺</span>
+            </div>
+
+            <!-- Görevin Özel Detayları (Örücü Renk Görür, Kurye Örücü İsmini Görür) -->
+            <div class="space-y-1 bg-black/40 p-3 rounded-xl border border-slate-850 text-[10px] leading-tight text-slate-400">
+               ${state.currentUser.role === 'weaver' ? `
+                 <p class="text-white"><span class="font-black text-blue-400">DOKUMA RENKLERİ:</span> ${ord.colors.map(c => COLOR_OPTIONS.find(x => x.id === c)?.name).join(', ').toUpperCase()}</p>
+               ` : `
+                 <p class="text-white"><span class="font-black text-blue-400">ALACAĞIN ÖRÜCÜ:</span> ${ord.assignedWeaver || 'Patron'}</p>
+               `}
+            </div>
+
+            ${actionBtn}
+          </div>
+        `;
+      });
+    }
+
+    // --- TELSİZ SOHBET ODASI RENDERİ ---
+    function renderWorkerChat() {
+      const box = document.getElementById('worker-chat-box');
+      if (!box) return;
+      box.innerHTML = '';
+      simChat.forEach(msg => {
+        box.innerHTML += `
+          <div>
+            <span class="font-black text-blue-400">[${msg.sender}]:</span>
+            <span class="text-slate-300">${msg.text}</span>
+            <span class="text-slate-600 text-[8px] ml-1">(${msg.date})</span>
+          </div>
+        `;
+      });
+      box.scrollTop = box.scrollHeight;
+    }
+
+    // --- PATRON ANALİTİKLER RENDERİ ---
+    function renderPatronAnalytics() {
+      document.getElementById('patron-kasa-display').innerText = `${state.kasa}₺`;
+      
+      const list = document.getElementById('patron-expenses-list');
+      if (!list) return;
+      list.innerHTML = '';
+
+      if (state.expenses.length === 0) {
+        list.innerHTML = `<div class="text-slate-500 italic text-[10px]">Henüz gider hareketi yok.</div>`;
         return;
       }
 
-      appState.kasa -= cost;
-      appState.stok += amount;
-      saveState();
-      updatePatronDisplay();
-      showAkmaToast(`Hammadde Alındı! -${cost}₺`);
+      state.expenses.forEach(e => {
+        list.innerHTML += `
+          <div class="flex justify-between items-center bg-black/40 p-2.5 rounded-xl border border-slate-850">
+            <span class="font-bold text-slate-400">${e.name}</span>
+            <span class="font-mono text-red-400 font-bold">-${e.amount}₺</span>
+          </div>
+        `;
+      });
+    }
+
+    // --- PATRON SİPARİŞ ATAMA RENDERİ ---
+    let patrOrderFilter = 'all';
+    function filterPatrOrders(type) {
+      patrOrderFilter = type;
+      renderPatronOrders();
     }
 
     function renderPatronOrders() {
       const list = document.getElementById('patron-orders-list');
-      list.innerHTML = "";
+      if (!list) return;
+      list.innerHTML = '';
 
-      const activeOrders = appState.orders;
+      let filtered = state.orders;
+      if (patrOrderFilter === 'unassigned') {
+        filtered = state.orders.filter(o => !o.assignedWeaver || !o.assignedCourier);
+      }
 
-      if (activeOrders.length === 0) {
-        list.innerHTML = `<div class="text-center py-12 text-xs text-slate-500">Şu an aktif bir sipariş akışı yok kanka.</div>`;
+      if (filtered.length === 0) {
+        list.innerHTML = `<div class="text-center py-8 text-slate-500 text-xs italic">Sırada aktif sipariş bulunmuyor kanka!</div>`;
         return;
       }
 
-      activeOrders.forEach(o => {
-        const weavers = appState.workers.filter(w => w.role === 'oruco' && w.status === 'approved');
-        const couriers = appState.workers.filter(w => w.role === 'kurye' && w.status === 'approved');
+      filtered.forEach(ord => {
+        // Atanabilecek Örücü ve Kuryeler
+        let weaverOptions = '<option value="">Örücü Seç...</option>';
+        let courierOptions = '<option value="">Kurye Seç...</option>';
 
-        let weaverOptions = `<option value="">Örücü Seç...</option>`;
-        weavers.forEach(w => {
-          weaverOptions += `<option value="${w.id}" ${o.assignedWorkerId === w.id ? 'selected' : ''}>${w.name.toUpperCase()}</option>`;
-        });
-
-        let courierOptions = `<option value="">Kurye Seç...</option>`;
-        couriers.forEach(w => {
-          courierOptions += `<option value="${w.id}" ${o.assignedCourierId === w.id ? 'selected' : ''}>${w.name.toUpperCase()}</option>`;
+        state.staff.filter(x => x.status === 'approved').forEach(s => {
+          if (s.role === 'weaver') {
+            weaverOptions += `<option value="${s.id}" ${ord.assignedWeaver === s.name ? 'selected' : ''}>${s.name}</option>`;
+          } else {
+            courierOptions += `<option value="${s.id}" ${ord.assignedCourier === s.name ? 'selected' : ''}>${s.name}</option>`;
+          }
         });
 
         list.innerHTML += `
-          <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-3 relative border-l-4 border-l-blue-500">
+          <div class="bg-slate-900 border border-slate-800 p-5 rounded-[2rem] space-y-4">
             <div class="flex justify-between items-start">
               <div>
-                <span class="text-[9px] font-mono text-blue-400 font-black">${o.id}</span>
-                <h4 class="font-black text-sm text-white">${o.customer} (${o.classRoom})</h4>
-                <p class="text-[10px] text-slate-500">${o.deskRow}</p>
+                <span class="text-[9px] font-mono text-blue-400 font-bold">${ord.id}</span>
+                <h4 class="font-black text-sm text-white">${ord.customer}</h4>
+                <p class="text-[9px] text-slate-500">${ord.classRoom} • ${ord.deskRow}</p>
               </div>
-              <span class="text-xs font-black text-green-400 font-mono">${o.total}₺</span>
+              <span class="text-xs font-black text-green-400 font-mono">${ord.total}₺</span>
             </div>
 
-            <div class="text-[10px] text-slate-400 border-t border-slate-800/60 pt-2">
-              <span class="font-bold">Renkler:</span> ${o.colors.join(', ') || 'Karışık'} <br/>
-              <span class="font-bold">Paket:</span> ${o.envelope} <br/>
-              <span class="font-bold">Durum:</span> <span class="text-blue-400 font-bold">${o.status}</span>
+            <div class="space-y-1 bg-black/40 p-2.5 rounded-xl text-[10px] leading-tight text-slate-400">
+               <p><span class="font-bold text-white">Renkler:</span> ${ord.colors.map(c => COLOR_OPTIONS.find(x => x.id === c)?.name).join(', ')}</p>
+               <p><span class="font-bold text-white">Zarf:</span> ${ord.envelope === 'kara' ? 'O ELENDİN Kara Zarf' : 'Standart'}</p>
             </div>
 
-            <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/40">
-              <div class="space-y-1">
-                <label class="text-[8px] text-slate-500 font-bold uppercase">Örücü Ata</label>
-                <select onchange="assignWeaver('${o.id}', this.value)" class="w-full bg-slate-950 border border-slate-800 p-2 rounded-xl text-[10px] font-bold text-white outline-none">
-                  ${weaverOptions}
-                </select>
-              </div>
-              <div class="space-y-1">
-                <label class="text-[8px] text-slate-500 font-bold uppercase">Kurye Ata</label>
-                <select onchange="assignCourier('${o.id}', this.value)" class="w-full bg-slate-950 border border-slate-800 p-2 rounded-xl text-[10px] font-bold text-white outline-none">
-                  ${courierOptions}
-                </select>
-              </div>
+            <!-- Atama Form Elemanları -->
+            <div class="grid grid-cols-2 gap-2">
+              <select onchange="assignOrder('${ord.id}', this.value)" class="bg-slate-950 border border-slate-850 p-2 rounded-xl text-[10px] font-bold text-white outline-none">
+                ${weaverOptions}
+              </select>
+              <select onchange="assignOrder('${ord.id}', this.value)" class="bg-slate-950 border border-slate-850 p-2 rounded-xl text-[10px] font-bold text-white outline-none">
+                ${courierOptions}
+              </select>
             </div>
           </div>
         `;
       });
     }
 
-    function assignWeaver(orderId, workerId) {
-      const order = appState.orders.find(o => o.id === orderId);
-      const worker = appState.workers.find(w => w.id === workerId);
-      if (!order) return;
+    // --- PATRON ELEMANLAR RENDERİ ---
+    function renderPatronStaff() {
+      const requests = document.getElementById('patron-staff-requests');
+      const active = document.getElementById('patron-staff-active');
+      if (!requests || !active) return;
 
-      order.assignedWorkerId = workerId || null;
-      saveState();
+      requests.innerHTML = '';
+      active.innerHTML = '';
 
-      if (worker) {
-        pushNotification(workerId, `Patron sana ${orderId} nolu siparişi atadı! Hemen örgüsüne başla.`);
-        showAkmaToast(`Sipariş ${worker.name.toUpperCase()} örücüsüne atandı!`);
-      }
-    }
+      const pending = state.staff.filter(x => x.status === 'pending');
+      const approved = state.staff.filter(x => x.status === 'approved' && x.type === 'worker');
 
-    function assignCourier(orderId, workerId) {
-      const order = appState.orders.find(o => o.id === orderId);
-      const worker = appState.workers.find(w => w.id === workerId);
-      if (!order) return;
-
-      order.assignedCourierId = workerId || null;
-      saveState();
-
-      if (worker) {
-        pushNotification(workerId, `Patron sana ${orderId} nolu siparişi atadı! Paketlendiğinde hemen sırasına teslim et.`);
-        showAkmaToast(`Sipariş ${worker.name.toUpperCase()} kuryesine atandı!`);
-      }
-    }
-
-    function renderPatronWorkers() {
-      const pendingList = document.getElementById('patron-pending-workers-list');
-      const activeList = document.getElementById('patron-active-workers-list');
-
-      pendingList.innerHTML = "";
-      activeList.innerHTML = "";
-
-      const pending = appState.workers.filter(w => w.status === 'pending');
-      const approved = appState.workers.filter(w => w.status === 'approved');
+      document.getElementById('onay-bekleyen-count').innerText = `${pending.length} Onay`;
 
       if (pending.length === 0) {
-        pendingList.innerHTML = `<div class="text-center py-6 text-xs text-slate-500">Bekleyen başvuru bulunmuyor.</div>`;
+        requests.innerHTML = `<div class="text-[10px] text-slate-500 italic">Onay bekleyen yeni eleman başvurusu yok kanka.</div>`;
       } else {
-        pending.forEach(w => {
-          pendingList.innerHTML += `
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex justify-between items-center">
+        pending.forEach(p => {
+          requests.innerHTML += `
+            <div class="flex justify-between items-center bg-slate-950 border border-slate-850 p-3 rounded-2xl text-xs">
               <div>
-                <h4 class="font-black text-sm text-white">${w.name.toUpperCase()}</h4>
-                <p class="text-[10px] text-slate-500 uppercase font-mono">${w.role === 'oruco' ? 'Örücü' : 'Kurye'}</p>
+                <span class="font-black text-white">${p.name}</span>
+                <p class="text-[9px] text-slate-500 font-bold uppercase">${p.role === 'weaver' ? '🧶 Örücü' : '🚴 Kurye'}</p>
               </div>
-              <button onclick="approveWorker('${w.id}')" class="bg-green-600 hover:bg-green-500 px-4 py-2 rounded-xl text-[10px] font-black uppercase">ONAYLA (+10₺ Prim)</button>
+              <div class="flex gap-2">
+                <button onclick="approveStaff('${p.id}')" class="px-3 py-1.5 bg-green-600 text-white rounded-xl text-[9px] font-black uppercase">ONAYLA</button>
+                <button onclick="rejectStaff('${p.id}')" class="px-3 py-1.5 bg-red-600 text-white rounded-xl text-[9px] font-black uppercase">SİL</button>
+              </div>
             </div>
           `;
         });
       }
 
       if (approved.length === 0) {
-        activeList.innerHTML = `<div class="text-center py-6 text-xs text-slate-500">Henüz onaylı çalışan eleman bulunmuyor.</div>`;
+        active.innerHTML = `<div class="text-[10px] text-slate-500 italic">Kadroda henüz kayıtlı eleman yok kanka.</div>`;
       } else {
-        approved.forEach(w => {
-          activeList.innerHTML += `
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-3xl flex justify-between items-center">
-              <div>
-                <h4 class="font-black text-sm text-white">${w.name.toUpperCase()}</h4>
-                <p class="text-[10px] text-slate-500 uppercase font-mono">${w.role === 'oruco' ? 'Örücü' : 'Kurye'}</p>
-              </div>
-              <div class="flex items-center gap-4">
-                <div class="text-right">
-                  <p class="text-[8px] text-slate-500 font-bold uppercase">BİRİKEN MAAŞ</p>
-                  <p class="text-sm font-black text-green-400 font-mono">${w.salary}₺</p>
+        approved.forEach(a => {
+          active.innerHTML += `
+            <div class="bg-slate-950 border border-slate-850 p-4 rounded-3xl space-y-3">
+              <div class="flex justify-between items-center text-xs">
+                <div>
+                  <span class="font-black text-white">${a.name}</span>
+                  <p class="text-[9px] text-slate-500 font-bold uppercase">${a.role === 'weaver' ? '🧶 Örücü' : '🚴 Kurye'}</p>
                 </div>
-                <button onclick="paySalary('${w.id}')" class="bg-blue-600 hover:bg-blue-500 px-3 py-2 rounded-xl text-[10px] font-black uppercase">Maaşı Öde</button>
+                <div class="text-right">
+                  <span class="text-[9px] text-slate-500 font-bold">Kalıcı İş Sayacı:</span>
+                  <p class="font-black text-blue-400">${a.totalJobsCompleted || 0} Tamamlanan</p>
+                </div>
+              </div>
+              <div class="flex justify-between items-center border-t border-slate-850 pt-2.5">
+                <span class="text-[10px] font-bold text-yellow-400">Biriken Maaş: ${a.salary}₺</span>
+                <button onclick="paySalary('${a.id}')" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-black font-black uppercase text-[10px] rounded-xl tracking-wider">MAAŞI ÖDE</button>
               </div>
             </div>
           `;
@@ -1312,99 +1930,37 @@
       }
     }
 
-    function approveWorker(workerId) {
-      const worker = appState.workers.find(w => w.id === workerId);
-      if (!worker) return;
+    // --- BİLDİRİM LİSTESİ RENDERİ ---
+    function renderNotifications() {
+      const list = document.getElementById('notification-modal-list');
+      if (!list) return;
+      list.innerHTML = '';
 
-      worker.status = 'approved';
-      worker.salary = 10; // Başlangıç primi
-      pushNotification(workerId, "Tebrikler kanka! Başvurun onaylandı ve 10₺ hoş geldin primi hesabına yüklendi.");
-      saveState();
-      renderPatronWorkers();
-      showAkmaToast(`${worker.name.toUpperCase()} Elemanı Onaylandı!`);
-    }
+      if (!state.currentUser) return;
 
-    function paySalary(workerId) {
-      const worker = appState.workers.find(w => w.id === workerId);
-      if (!worker) return;
-
-      if (worker.salary <= 0) {
-        showAkmaToast("Bu elemanın birikmiş maaşı yok kanka.");
+      const myNotifs = state.acknowledgedNotifications.filter(n => n.userId === state.currentUser.id);
+      if (myNotifs.length === 0) {
+        list.innerHTML = `Henüz yeni bir bildirim gelmedi kanka.`;
         return;
       }
 
-      if (appState.kasa < worker.salary) {
-        showAkmaToast("Kasada elemana ödeyecek yeterli nakit yok!");
-        return;
-      }
-
-      const payAmount = worker.salary;
-      appState.kasa -= payAmount;
-      worker.salary = 0; // Maaş sıfırlanır
-
-      pushNotification(workerId, `Maaş ödemen yapıldı! ${payAmount}₺ elden/hesaba teslim edildi.`);
-      saveState();
-      renderPatronWorkers();
-      updatePatronDisplay();
-      showAkmaToast(`${payAmount}₺ Ödendi ve Kasadan Düştü!`);
+      myNotifs.forEach(n => {
+        list.innerHTML += `
+          <div class="bg-slate-950 p-3 rounded-2xl border border-slate-850 text-[10px] font-bold text-slate-300 leading-tight">
+             ${n.text}
+          </div>
+        `;
+      });
     }
 
-    // --- BİLDİRİM MERKEZİ ---
-    function openNotificationModal() {
-      const modal = document.getElementById('notif-modal');
-      const list = document.getElementById('notif-modal-list');
-      list.innerHTML = "";
-
-      let targetNotifs = [];
-      if (appState.activeRole === 'customer' && appState.currentCustId) {
-        targetNotifs = appState.notifications.filter(n => n.target === appState.currentCustId || n.target === 'global');
-      } else if (appState.activeRole === 'worker' && appState.currentWorkerId) {
-        targetNotifs = appState.notifications.filter(n => n.target === appState.currentWorkerId || n.target === 'global');
-      } else if (appState.activeRole === 'patron' && appState.isPatronLoggedIn) {
-        targetNotifs = appState.notifications.filter(n => n.target === 'patron' || n.target === 'global');
-      }
-
-      if (targetNotifs.length === 0) {
-        list.innerHTML = `<div class="text-center py-6 text-xs text-slate-500">Henüz bildirim yok kanka.</div>`;
-      } else {
-        targetNotifs.forEach(n => {
-          n.read = true; // Modal açıldığında okundu say
-          list.innerHTML += `
-            <div class="bg-slate-950 p-4 border border-slate-850 rounded-2xl space-y-1">
-              <p class="text-xs text-slate-200 font-bold">${n.text}</p>
-              <p class="text-[9px] text-slate-600 font-mono text-right">${n.time}</p>
-            </div>
-          `;
-        });
-      }
-      saveState();
-      updateNotifBadge();
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
-
-    function closeNotificationModal() {
-      const modal = document.getElementById('notif-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
-    // --- TOAST BİLDİRİM ---
-    function showAkmaToast(text) {
-      const toast = document.getElementById('akma-toast');
-      document.getElementById('akma-toast-text').innerText = text;
-      toast.classList.remove('hidden');
-      setTimeout(() => {
-        toast.classList.add('hidden');
-      }, 3000);
-    }
-
-    // --- UYGULAMA BAŞLANGIÇ ÇALIŞMASI ---
+    // --- UYGULAMA İLK YÜKLEME ---
     window.onload = function() {
       loadState();
       switchRole('customer');
-      lucide.createIcons();
-    }
+      toggleCustAuth('login');
+      toggleWorkAuth('login');
+    };
   </script>
+
 </body>
 </html>
