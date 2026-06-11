@@ -1081,6 +1081,32 @@
       switchRole('customer');
       lucide.createIcons();
     }
+// --- BULUT SENKRONİZASYON SİSTEMİ ---
+    async function fetchOrdersFromCloud() {
+      try {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbySF_3m7GTWTlZYNXRNvnP_cEDZRTMBcojMr98ZR9m3R-Fno2MlWSca65uXaBtKVa68fg/exec");
+        const data = await response.json();
+        
+        // Gelen veriyi appState'e aktar (Başlık satırını atlıyoruz: slice(1))
+        if (data.length > 1) {
+          appState.orders = data.slice(1).map(row => ({
+            id: row[0],
+            customer: row[1],
+            classRoom: row[2],
+            total: row[3],
+            status: row[4]
+          }));
+          if(appState.activeRole === 'patron') renderPatronOrders();
+        }
+      } catch (e) {
+        console.log("Bulut bağlantısı hata verdi:", e);
+      }
+    }
+
+    // Her 10 saniyede bir otomatik güncelle
+    setInterval(() => {
+      if (appState.activeRole === 'patron') fetchOrdersFromCloud();
+    }, 10000);
   </script>
 </body>
 </html>
